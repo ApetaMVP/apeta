@@ -6,7 +6,7 @@ import LeftNav from "~/components/LeftNav";
 import TopHeader from "~/components/TopHeader";
 import { getUserId } from "~/server/cookie";
 
-export default function Home() {
+export default function Site() {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
 

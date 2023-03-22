@@ -34,7 +34,7 @@ export async function login(email: string, password: string) {
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return json({ error: `Invalid username or password` }, { status: 401 });
   }
-  return await createUserSession(user.id, "/home");
+  return await createUserSession(user.id, "/site");
 }
 
 export async function register(
@@ -61,7 +61,7 @@ export async function register(
         username,
       },
     });
-    return await createUserSession(user.id, "/home");
+    return await createUserSession(user.id, "/site");
   } catch (err) {
     return json(
       { error: `Error occurred creating user: ${err}` },
@@ -80,5 +80,5 @@ export async function logout(request: Request) {
 }
 
 export async function redirectAuthUser(request: Request) {
-  return (await validateUser(request)) ? redirect("/home") : null;
+  return (await validateUser(request)) ? redirect("/site") : null;
 }

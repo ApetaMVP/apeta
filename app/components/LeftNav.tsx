@@ -36,8 +36,8 @@ export default function LeftNav(props: LeftNavProps) {
           label="For You"
           icon={<IconHome />}
           component="a"
-          href="/home"
-          active={activeLink.includes("/home")}
+          href="/site"
+          active={activeLink.includes("/site")}
           p="md"
         />
         <NavLink
