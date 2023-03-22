@@ -10,8 +10,7 @@ export default function Site() {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
 
-  const { userId } = useLoaderData<typeof loader>();
-  const loggedIn = userId ? true : false;
+  const { loggedIn } = useLoaderData<typeof loader>();
 
   return (
     <AppShell
@@ -43,5 +42,5 @@ export default function Site() {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
-  return { userId };
+  return { loggedIn: userId ? true : false };
 };

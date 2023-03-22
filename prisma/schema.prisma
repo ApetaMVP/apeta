@@ -23,7 +23,7 @@ model User {
 model Post {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   author    User     @relation(fields: [authorId], references: [id])
-  authorId  String   @unique @db.ObjectId
+  authorId  String   @db.ObjectId
   mediaUrl  String
   caption   String
   createdAt DateTime @default(now())

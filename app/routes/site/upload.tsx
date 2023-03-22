@@ -1,9 +1,12 @@
 import { Box, Button, Card, Grid, Group, Stack, Textarea } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { ActionArgs, redirect } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 import { z } from "zod";
 import FileUpload from "~/components/ui/FileUpload";
 import LinkButton from "~/components/ui/LinkButton";
+import { getUserId } from "~/server/cookie";
+import { createPost } from "~/server/post";
 
 const schema = z.object({
   caption: z.string(),
@@ -46,4 +49,13 @@ export default function Upload() {
       </Grid>
     </Box>
   );
+}
+
+export async function action({ request }: ActionArgs) {
+  const { caption } = Object.fromEntries((await request.formData()).entries());
+  const userId = await getUserId(request);
+
+  await createPost(userId!, "https://youtu.be/ZOJNSivJA8Y", caption as string);
+
+  return redirect(`/site`);
 }
