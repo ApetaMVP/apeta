@@ -22,8 +22,9 @@ export default function LeftNav(props: LeftNavProps) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       setActiveLink(window?.location.href);
+      console.log(activeLink);
     }
-  }, []);
+  }, [activeLink]);
 
   return (
     <Navbar
@@ -37,7 +38,7 @@ export default function LeftNav(props: LeftNavProps) {
           icon={<IconHome />}
           component="a"
           href="/site"
-          active={activeLink.includes("/site")}
+          active={activeLink.includes("/for-you")}
           p="md"
         />
         <NavLink
