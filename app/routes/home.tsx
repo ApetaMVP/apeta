@@ -1,8 +1,10 @@
 import { AppShell, Box, useMantineTheme } from "@mantine/core";
+import { LoaderFunction } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
 import { useState } from "react";
 import LeftNav from "~/components/LeftNav";
 import TopHeader from "~/components/TopHeader";
+import { requireAuth } from "~/server/auth";
 
 export default function Home() {
   const theme = useMantineTheme();
@@ -26,3 +28,7 @@ export default function Home() {
     </AppShell>
   );
 }
+
+export const loader: LoaderFunction = async ({ request }) => {
+  return await requireAuth(request);
+};

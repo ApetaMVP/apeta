@@ -32,7 +32,7 @@ export default function TopHeader(props: TopHeaderProps) {
         </MediaQuery>
         <Group position="apart" w="100%">
           <Box w={150}>
-            <Image src="logo.png" alt="Apeta Logo" />
+            <Image src="/logo.png" alt="Apeta Logo" />
           </Box>
           <TextInput placeholder="Search" icon={<IconSearch />} w="33%" />
           <Box>
