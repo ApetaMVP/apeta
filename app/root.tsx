@@ -1,8 +1,4 @@
-import {
-  createEmotionCache,
-  MantineProvider,
-  useMantineTheme,
-} from "@mantine/core";
+import { createEmotionCache, MantineProvider } from "@mantine/core";
 import type { MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -24,7 +20,22 @@ createEmotionCache({ key: "mantine" });
 export default function App() {
   return (
     <MantineProvider
-      theme={useMantineTheme()}
+      theme={{
+        colors: {
+          brand: [
+            "#ffe3e3",
+            "#ffb4b4",
+            "#fb8585",
+            "#f75454",
+            "#f42525",
+            "#d40b0b",
+            "#d40b0b",
+            "#d40b0b",
+            "#d40b0b",
+          ],
+        },
+        primaryColor: "brand",
+      }}
       withGlobalStyles
       withNormalizeCSS
     >
