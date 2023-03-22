@@ -1,7 +1,6 @@
 import {
   Box,
   Burger,
-  Button,
   Group,
   Header,
   Image,
@@ -10,6 +9,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
+import LinkButton from "./ui/LinkButton";
 
 interface TopHeaderProps {
   opened: boolean;
@@ -36,16 +36,16 @@ export default function TopHeader(props: TopHeaderProps) {
             <Image src="/logo.png" alt="Apeta Logo" />
           </Box>
           <TextInput placeholder="Search" icon={<IconSearch />} w="33%" />
-          {!props.loggedIn && (
-            <Box>
-              <Button variant="default" mr="sm">
-                + Upload
-              </Button>
-              <Button component="a" href="/auth/login">
+          <Box>
+            <LinkButton variant="default" link="/site/upload">
+              + Upload
+            </LinkButton>
+            {!props.loggedIn && (
+              <LinkButton link="/auth/login" ml="xs">
                 Log In
-              </Button>
-            </Box>
-          )}
+              </LinkButton>
+            )}
+          </Box>
         </Group>
       </div>
     </Header>
