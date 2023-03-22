@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 interface LeftNavProps {
   opened: boolean;
   setOpened: React.Dispatch<any>;
+  loggedIn: boolean;
 }
 
 export default function LeftNav(props: LeftNavProps) {
@@ -48,17 +49,21 @@ export default function LeftNav(props: LeftNavProps) {
           p="md"
         />
       </Navbar.Section>
-      <Divider my="sm" />
-      <Navbar.Section>
-        <Stack mx="lg">
-          <Text c="dimmed" size="sm">
-            Log in to upload videos, edit videos, and view comments
-          </Text>
-          <Button variant="outline" w="100%">
-            Log In
-          </Button>
-        </Stack>
-      </Navbar.Section>
+      {!props.loggedIn && (
+        <>
+          <Divider my="sm" />
+          <Navbar.Section>
+            <Stack mx="lg">
+              <Text c="dimmed" size="sm">
+                Log in to upload videos, edit videos, and view comments
+              </Text>
+              <Button variant="outline" w="100%">
+                Log In
+              </Button>
+            </Stack>
+          </Navbar.Section>
+        </>
+      )}
       <Divider my="sm" />
       <Stack mx="lg" spacing="xs">
         <Text fz="lg">Discover</Text>

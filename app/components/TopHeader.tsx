@@ -15,6 +15,7 @@ interface TopHeaderProps {
   opened: boolean;
   setOpened: React.Dispatch<any>;
   theme: MantineTheme;
+  loggedIn: boolean;
 }
 
 export default function TopHeader(props: TopHeaderProps) {
@@ -35,12 +36,14 @@ export default function TopHeader(props: TopHeaderProps) {
             <Image src="/logo.png" alt="Apeta Logo" />
           </Box>
           <TextInput placeholder="Search" icon={<IconSearch />} w="33%" />
-          <Box>
-            <Button variant="default" mr="sm">
-              + Upload
-            </Button>
-            <Button>Log In</Button>
-          </Box>
+          {!props.loggedIn && (
+            <Box>
+              <Button variant="default" mr="sm">
+                + Upload
+              </Button>
+              <Button>Log In</Button>
+            </Box>
+          )}
         </Group>
       </div>
     </Header>

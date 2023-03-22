@@ -25,11 +25,7 @@ async function validateUser(request: Request) {
 }
 
 export async function requireAuth(request: Request) {
-  const session = await getUserSession(request);
-  const userId = session.get("userId");
-  if (!userId || typeof userId !== "string") {
-    throw redirect("/auth/login");
-  }
+  const userId = getUserId(request);
   return { userId };
 }
 

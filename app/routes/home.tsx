@@ -1,14 +1,16 @@
 import { AppShell, Box, useMantineTheme } from "@mantine/core";
 import { LoaderFunction } from "@remix-run/node";
-import { Outlet } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import LeftNav from "~/components/LeftNav";
 import TopHeader from "~/components/TopHeader";
-import { requireAuth } from "~/server/auth";
+import { getUserId } from "~/server/cookie";
 
 export default function Home() {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
+
+  const { userId } = useLoaderData<typeof loader>();
 
   return (
     <AppShell
@@ -19,8 +21,21 @@ export default function Home() {
       }}
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
-      navbar={<LeftNav opened={opened} setOpened={setOpened} />}
-      header={<TopHeader opened={opened} setOpened={setOpened} theme={theme} />}
+      navbar={
+        <LeftNav
+          opened={opened}
+          setOpened={setOpened}
+          loggedIn={userId ? true : false}
+        />
+      }
+      header={
+        <TopHeader
+          opened={opened}
+          setOpened={setOpened}
+          theme={theme}
+          loggedIn={userId ? true : false}
+        />
+      }
     >
       <Box>
         <Outlet />
@@ -30,5 +45,6 @@ export default function Home() {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return await requireAuth(request);
+  const userId = await getUserId(request);
+  return { userId };
 };
