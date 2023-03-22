@@ -11,6 +11,7 @@ export default function Home() {
   const [opened, setOpened] = useState(false);
 
   const { userId } = useLoaderData<typeof loader>();
+  const loggedIn = userId ? true : false;
 
   return (
     <AppShell
@@ -22,18 +23,14 @@ export default function Home() {
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
       navbar={
-        <LeftNav
-          opened={opened}
-          setOpened={setOpened}
-          loggedIn={userId ? true : false}
-        />
+        <LeftNav opened={opened} setOpened={setOpened} loggedIn={loggedIn} />
       }
       header={
         <TopHeader
           opened={opened}
           setOpened={setOpened}
           theme={theme}
-          loggedIn={userId ? true : false}
+          loggedIn={loggedIn}
         />
       }
     >

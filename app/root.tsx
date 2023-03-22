@@ -35,6 +35,14 @@ export default function App() {
           ],
         },
         primaryColor: "brand",
+        components: {
+          Card: {
+            defaultProps: {
+              shadow: "lg",
+              withBorder: true,
+            },
+          },
+        },
       }}
       withGlobalStyles
       withNormalizeCSS

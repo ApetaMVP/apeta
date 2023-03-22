@@ -57,7 +57,12 @@ export default function LeftNav(props: LeftNavProps) {
               <Text c="dimmed" size="sm">
                 Log in to upload videos, edit videos, and view comments
               </Text>
-              <Button variant="outline" w="100%">
+              <Button
+                variant="outline"
+                w="100%"
+                component="a"
+                href="/auth/login"
+              >
                 Log In
               </Button>
             </Stack>

@@ -41,7 +41,9 @@ export default function TopHeader(props: TopHeaderProps) {
               <Button variant="default" mr="sm">
                 + Upload
               </Button>
-              <Button>Log In</Button>
+              <Button component="a" href="/auth/login">
+                Log In
+              </Button>
             </Box>
           )}
         </Group>

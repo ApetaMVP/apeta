@@ -56,7 +56,7 @@ export default function Register() {
 
   return (
     <Center h="100vh" bg="gray.1">
-      <Card w="50%" shadow="lg" withBorder>
+      <Card w="50%">
         <Form method="post">
           <Stack>
             <img src="/logo.png" alt="Apeta Logo" width={100} />

@@ -39,7 +39,7 @@ export default function Login() {
 
   return (
     <Center h="100vh" bg="gray.1">
-      <Card w="50%" shadow="lg" withBorder>
+      <Card w="50%">
         <Form method="post" action="/auth/login">
           <Stack>
             <img src="/logo.png" alt="Apeta Logo" width={100} />
