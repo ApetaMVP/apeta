@@ -12,6 +12,17 @@ const schema = z.object({
   caption: z.string(),
 });
 
+export async function action({ request }: ActionArgs) {
+  const { caption } = Object.fromEntries((await request.formData()).entries());
+  const userId = await getUserId(request);
+  await createPost(
+    userId!,
+    "https://www.w3schools.com/html/mov_bbb.mp4",
+    caption as string
+  );
+  return redirect(`/site`);
+}
+
 export default function Upload() {
   const form = useForm({
     validate: zodResolver(schema),
@@ -49,13 +60,4 @@ export default function Upload() {
       </Grid>
     </Box>
   );
-}
-
-export async function action({ request }: ActionArgs) {
-  const { caption } = Object.fromEntries((await request.formData()).entries());
-  const userId = await getUserId(request);
-
-  await createPost(userId!, "https://youtu.be/ZOJNSivJA8Y", caption as string);
-
-  return redirect(`/site`);
 }

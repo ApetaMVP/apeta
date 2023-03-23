@@ -22,7 +22,6 @@ export default function LeftNav(props: LeftNavProps) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       setActiveLink(window?.location.href);
-      console.log(activeLink);
     }
   }, [activeLink]);
 
@@ -37,7 +36,7 @@ export default function LeftNav(props: LeftNavProps) {
           label="For You"
           icon={<IconHome />}
           component="a"
-          href="/site"
+          href="/site/for-you"
           active={activeLink.includes("/for-you")}
           p="md"
         />
