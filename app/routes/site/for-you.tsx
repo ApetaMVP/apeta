@@ -6,7 +6,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import FypPostCard from "~/components/FypPostCard";
 import { getUserId } from "~/server/cookie";
 import { getFypPosts, likePost } from "~/server/post";
-import { FypPost } from "~/utils/types";
+import { Post } from "~/utils/types";
 
 const BATCH = 4;
 
@@ -29,9 +29,7 @@ export async function action({ request }: ActionArgs) {
 export default function ForYou() {
   const data = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
-  const [posts, setPosts] = useState<FypPost[]>(
-    data.posts as unknown as FypPost[]
-  );
+  const [posts, setPosts] = useState<Post[]>(data.posts as unknown as Post[]);
   const [page, setPage] = useState(0);
   const [end, setEnd] = useState(false);
 
