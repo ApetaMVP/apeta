@@ -1,4 +1,7 @@
+import { json } from "@remix-run/node";
+import { FypPost } from "~/utils/types";
 import { prisma } from "./prisma";
+import { getUserWithLikes } from "./user";
 
 export async function createPost(
   userId: string,
@@ -10,14 +13,75 @@ export async function createPost(
       authorId: userId,
       mediaUrl,
       caption,
+      likeCount: 0,
     },
   });
 }
 
-export async function getPosts(start: number, limit: number) {
-  return await prisma.post.findMany({
+export async function getFypPosts(
+  userId: string,
+  start: number,
+  limit: number
+) {
+  const dbPosts = await prisma.post.findMany({
+    orderBy: { createdAt: "desc" },
     skip: start,
     take: limit,
     include: { author: true },
   });
+  if (!userId) {
+    return dbPosts;
+  }
+  const user = await getUserWithLikes(userId);
+  let posts: FypPost[] = [];
+  for (const dbp of dbPosts) {
+    let post: FypPost = dbp;
+    if (user?.likes?.some((l) => l.postId === dbp.id)) {
+      post.iLiked = true;
+    } else {
+      post.iLiked = false;
+    }
+    posts.push(post);
+  }
+  return posts;
+}
+
+export async function likePost(userId: string, postId: string) {
+  const alreadyLiked = await prisma.like.findFirst({
+    where: {
+      userId,
+      postId,
+    },
+  });
+  if (!alreadyLiked) {
+    await prisma.like.create({
+      data: {
+        userId,
+        postId,
+      },
+    });
+    await prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        likeCount: {
+          increment: 1,
+        },
+      },
+    });
+  } else {
+    await prisma.like.deleteMany({ where: { userId, postId } });
+    await prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        likeCount: {
+          decrement: 1,
+        },
+      },
+    });
+  }
+  return json({ success: true });
 }

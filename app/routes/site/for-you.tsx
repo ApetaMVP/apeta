@@ -1,19 +1,30 @@
 import { Center, Stack } from "@mantine/core";
-import { json, LoaderArgs } from "@remix-run/node";
+import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PostCard from "~/components/PostCard";
-import { getPosts } from "~/server/post";
+import { getUserId } from "~/server/cookie";
+import { getFypPosts, likePost } from "~/server/post";
 import { Post } from "~/utils/types";
 
 const BATCH = 4;
 
 export const loader = async ({ request }: LoaderArgs) => {
+  const userId = await getUserId(request);
   const { searchParams } = new URL(request.url);
   const start = Number(searchParams.get("start") || "0");
-  return json({ posts: await getPosts(start, BATCH) });
+  return json({
+    loggedIn: userId ? true : false,
+    posts: await getFypPosts(userId as string, start, BATCH),
+  });
 };
+
+export async function action({ request }: ActionArgs) {
+  const userId = await getUserId(request);
+  const { postId } = Object.fromEntries((await request.formData()).entries());
+  return await likePost(userId!, postId as string);
+}
 
 export default function ForYou() {
   const data = useLoaderData<typeof loader>();
@@ -60,7 +71,7 @@ export default function ForYou() {
       <Stack>
         {posts.map((p) => (
           <Center key={p.id}>
-            <PostCard post={p} />
+            <PostCard post={p} loggedIn={data.loggedIn} />
           </Center>
         ))}
       </Stack>

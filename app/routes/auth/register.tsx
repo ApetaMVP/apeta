@@ -11,7 +11,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
-import { ActionArgs, LoaderFunction } from "@remix-run/node";
+import { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { z } from "zod";
 import { redirectAuthUser, register } from "~/server/auth";
@@ -37,6 +37,22 @@ const schema = z
       });
     }
   });
+
+export const loader = async ({ request }: LoaderArgs) => {
+  return await redirectAuthUser(request);
+};
+
+export async function action({ request }: ActionArgs) {
+  const { email, password, name, username } = Object.fromEntries(
+    (await request.formData()).entries()
+  );
+  return await register(
+    email as string,
+    password as string,
+    name as string,
+    username as string
+  );
+}
 
 export default function Register() {
   const actionData = useActionData();
@@ -105,21 +121,5 @@ export default function Register() {
         </Form>
       </Card>
     </Center>
-  );
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
-  return await redirectAuthUser(request);
-};
-
-export async function action({ request }: ActionArgs) {
-  const { email, password, name, username } = Object.fromEntries(
-    (await request.formData()).entries()
-  );
-  return await register(
-    email as string,
-    password as string,
-    name as string,
-    username as string
   );
 }
