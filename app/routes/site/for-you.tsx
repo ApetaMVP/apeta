@@ -3,7 +3,7 @@ import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import PostCard from "~/components/PostCard";
+import FypPostCard from "~/components/FypPostCard";
 import { getUserId } from "~/server/cookie";
 import { getFypPosts, likePost } from "~/server/post";
 import { FypPost } from "~/utils/types";
@@ -73,7 +73,7 @@ export default function ForYou() {
       <Stack>
         {posts.map((p) => (
           <Center key={p.id}>
-            <PostCard post={p} loggedIn={data.loggedIn} />
+            <FypPostCard post={p} loggedIn={data.loggedIn} />
           </Center>
         ))}
       </Stack>

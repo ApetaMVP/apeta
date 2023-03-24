@@ -14,6 +14,7 @@ export async function createPost(
       mediaUrl,
       caption,
       likeCount: 0,
+      commentCount: 0,
     },
   });
 }
@@ -44,6 +45,13 @@ export async function getFypPosts(
     posts.push(post);
   }
   return posts;
+}
+
+export async function getFullPost(postId: string) {
+  return await prisma.post.findUnique({
+    where: { id: postId },
+    include: { author: true, comments: { include: { user: true } } },
+  });
 }
 
 export async function likePost(userId: string, postId: string) {
@@ -83,5 +91,36 @@ export async function likePost(userId: string, postId: string) {
       },
     });
   }
+  return json({ success: true });
+}
+
+export async function commentOnPost(
+  userId: string,
+  postId: string,
+  content: string
+) {
+  await prisma.comment.create({
+    data: {
+      content,
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      post: {
+        connect: {
+          id: postId,
+        },
+      },
+    },
+  });
+  await prisma.post.update({
+    where: { id: postId },
+    data: {
+      commentCount: {
+        increment: 1,
+      },
+    },
+  });
   return json({ success: true });
 }

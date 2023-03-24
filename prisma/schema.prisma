@@ -8,29 +8,32 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
   password  String
   name      String
-  username  String   @unique
+  username  String    @unique
   posts     Post[]
   likes     Like[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("users")
 }
 
 model Post {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String   @db.ObjectId
-  mediaUrl  String
-  caption   String
-  likes     Like[]
-  likeCount Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  author       User      @relation(fields: [authorId], references: [id])
+  authorId     String    @db.ObjectId
+  mediaUrl     String
+  caption      String
+  likes        Like[]
+  comments     Comment[]
+  likeCount    Int
+  commentCount Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@map("posts")
 }
@@ -45,4 +48,17 @@ model Like {
   updatedAt DateTime @updatedAt
 
   @@map("likes")
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  postId    String?  @db.ObjectId
+  post      Post?    @relation(fields: [postId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("comment")
 }
