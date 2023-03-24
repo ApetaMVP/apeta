@@ -1,4 +1,5 @@
 import { createEmotionCache, MantineProvider } from "@mantine/core";
+import { StylesPlaceholder } from "@mantine/remix";
 import type { MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -49,6 +50,7 @@ export default function App() {
     >
       <html lang="en">
         <head>
+          <StylesPlaceholder />
           <Meta />
           <Links />
         </head>
