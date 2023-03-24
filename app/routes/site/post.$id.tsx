@@ -39,9 +39,10 @@ const feedbackSchema = z.object({
 });
 
 export const loader = async ({ request, params }: LoaderArgs) => {
+  const userId = await getUserId(request);
   const postId = params.id;
   const post = await getFullPost(postId!);
-  return json({ post });
+  return json({ post, loggedIn: userId ? true : false });
 };
 
 export async function action({ request, params }: ActionArgs) {
@@ -67,6 +68,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function Post() {
   const data = useLoaderData<typeof loader>();
   const post = data.post as unknown as FullPost;
+  const loggedIn = data.loggedIn;
   const [timestamp, setTimestamp] = useState(0.0);
   const [paused, setPaused] = useState(true);
 
@@ -150,47 +152,51 @@ export default function Post() {
           {post.comments?.map((c) => (
             <CommentBubble comment={c} key={c.id} />
           ))}
-          <Form method="post" onSubmit={optimisticCommentClear}>
-            <TextEditor handleChange={handleCommentChange} />
-            <TextInput
-              name="comment"
-              {...commentForm.getInputProps("comment")}
-              type="hidden"
-            />
-            <TextInput name="target" value="comment" type="hidden" />
-            <Button
-              type="submit"
-              disabled={!commentForm.isValid()}
-              fullWidth
-              mt="md"
-            >
-              Submit Comment
-            </Button>
-          </Form>
+          {loggedIn && (
+            <Form method="post" onSubmit={optimisticCommentClear}>
+              <TextEditor handleChange={handleCommentChange} />
+              <TextInput
+                name="comment"
+                {...commentForm.getInputProps("comment")}
+                type="hidden"
+              />
+              <TextInput name="target" value="comment" type="hidden" />
+              <Button
+                type="submit"
+                disabled={!commentForm.isValid()}
+                fullWidth
+                mt="md"
+              >
+                Submit Comment
+              </Button>
+            </Form>
+          )}
         </Stack>
       </Card>
       <Box>
-        <Card>
-          <Form method="post" onSubmit={optimisticFeedbackClear}>
-            <Textarea
-              name="feedback"
-              label="Feedback"
-              {...feedbackForm.getInputProps("msg")}
-            />
-            {!paused && <Overlay></Overlay>}
-            <TextInput name="timestamp" value={timestamp} type="hidden" />
-            <TextInput name="target" value="feedback" type="hidden" />
-            <Button
-              type="submit"
-              disabled={!feedbackForm.isValid()}
-              fullWidth
-              mt="md"
-            >
-              Submit Feedback
-            </Button>
-          </Form>
-        </Card>
-        <Stack mt="sm">
+        {loggedIn && (
+          <Card mb="sm">
+            <Form method="post" onSubmit={optimisticFeedbackClear}>
+              <Textarea
+                name="feedback"
+                label="Feedback"
+                {...feedbackForm.getInputProps("msg")}
+              />
+              {!paused && <Overlay></Overlay>}
+              <TextInput name="timestamp" value={timestamp} type="hidden" />
+              <TextInput name="target" value="feedback" type="hidden" />
+              <Button
+                type="submit"
+                disabled={!feedbackForm.isValid()}
+                fullWidth
+                mt="md"
+              >
+                Submit Feedback
+              </Button>
+            </Form>
+          </Card>
+        )}
+        <Stack>
           {post.feedback?.map((f) => (
             <Card key={f.id}>
               <Anchor onClick={(e) => setTimestamp(f.timestamp)}>
