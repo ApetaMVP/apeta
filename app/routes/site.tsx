@@ -1,10 +1,15 @@
 import { AppShell, Box, useMantineTheme } from "@mantine/core";
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import LeftNav from "~/components/LeftNav";
 import TopHeader from "~/components/TopHeader";
 import { getUserId } from "~/server/cookie";
+
+export const loader = async ({ request }: LoaderArgs) => {
+  const userId = await getUserId(request);
+  return { loggedIn: userId ? true : false };
+};
 
 export default function Site() {
   const theme = useMantineTheme();
@@ -39,8 +44,3 @@ export default function Site() {
     </AppShell>
   );
 }
-
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  return { loggedIn: userId ? true : false };
-};

@@ -4,7 +4,6 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",
-    "start": "remix-serve build",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -19,13 +18,14 @@
     "@prisma/client": "^4.11.0",
     "@remix-run/node": "^1.14.3",
     "@remix-run/react": "^1.14.3",
-    "@remix-run/serve": "^1.14.3",
+    "@remix-run/vercel": "^1.14.3",
     "@tabler/icons": "^1.118.0",
     "@tiptap/extension-link": "^2.0.0-beta.220",
     "@tiptap/extension-underline": "^2.0.0-beta.220",
     "@tiptap/pm": "^2.0.0-beta.220",
     "@tiptap/react": "^2.0.0-beta.220",
     "@tiptap/starter-kit": "^2.0.0-beta.220",
+    "@vercel/node": "^2.6.2",
     "bcryptjs": "^2.4.3",
     "html-react-parser": "^3.0.14",
     "isbot": "^3.6.5",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@remix-run/dev": "^1.14.3",
     "@remix-run/eslint-config": "^1.14.3",
+    "@remix-run/serve": "^1.14.3",
     "@types/bcryptjs": "^2.4.2",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
