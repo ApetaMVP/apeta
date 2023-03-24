@@ -7,22 +7,21 @@ import {
   Center,
   Divider,
   Grid,
-  Group,
-  Paper,
   Stack,
   Text,
-  Textarea,
+  TextInput,
   Title,
-  useMantineTheme,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { IconHeart } from "@tabler/icons";
+
 import { z } from "zod";
+import CommentBubble from "~/components/CommentBubble";
+import TextEditor from "~/components/ui/TextEditor";
 import { getUserId } from "~/server/cookie";
 import { commentOnPost, getFullPost } from "~/server/post";
-import { timeAgo } from "~/utils/time";
 import { FullPost } from "~/utils/types";
 
 const schema = z.object({
@@ -52,6 +51,10 @@ export default function Post() {
       comment: "",
     },
   });
+
+  const handleCommentChange = (comment: string) => {
+    form.setValues({ comment });
+  };
 
   const optimisticClear = () => {
     form.reset();
@@ -89,26 +92,16 @@ export default function Post() {
         <Stack>
           <Title order={5}>Comments</Title>
           {post.comments?.map((c) => (
-            <Paper bg={useMantineTheme().colors.gray[0]} radius="md" p="sm">
-              <Stack>
-                <Group>
-                  <Text fw={700}>{c.user.username}</Text>
-                  <Text c="dimmed" fz="sm">
-                    {timeAgo.format(new Date(c.createdAt))}
-                  </Text>
-                </Group>
-                <Text>{c.content}</Text>
-              </Stack>
-            </Paper>
+            <CommentBubble comment={c} key={c.id} />
           ))}
           <Form method="post" onSubmit={optimisticClear}>
-            <Textarea
+            <TextEditor handleChange={handleCommentChange} />
+            <TextInput
               name="comment"
               {...form.getInputProps("comment")}
-              minRows={4}
-              mb="xs"
+              type="hidden"
             />
-            <Button type="submit" fullWidth disabled={!form.isValid()}>
+            <Button type="submit" disabled={!form.isValid()} fullWidth mt="md">
               Submit Comment
             </Button>
           </Form>
