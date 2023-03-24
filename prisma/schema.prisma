@@ -8,32 +8,34 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  email     String    @unique
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  email     String     @unique
   password  String
   name      String
-  username  String    @unique
+  username  String     @unique
   posts     Post[]
   likes     Like[]
   comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  feedback  Feedback[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("users")
 }
 
 model Post {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  author       User      @relation(fields: [authorId], references: [id])
-  authorId     String    @db.ObjectId
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  author       User       @relation(fields: [authorId], references: [id])
+  authorId     String     @db.ObjectId
   mediaUrl     String
   caption      String
   likes        Like[]
   comments     Comment[]
+  feedback     Feedback[]
   likeCount    Int
   commentCount Int
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@map("posts")
 }
@@ -42,8 +44,8 @@ model Like {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
-  postId    String?  @db.ObjectId
-  Post      Post?    @relation(fields: [postId], references: [id])
+  postId    String   @db.ObjectId
+  Post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -54,11 +56,25 @@ model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
-  postId    String?  @db.ObjectId
-  post      Post?    @relation(fields: [postId], references: [id])
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id])
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("comment")
+}
+
+model Feedback {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  msg       String
+  timestamp Float
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id])
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("feedback")
 }

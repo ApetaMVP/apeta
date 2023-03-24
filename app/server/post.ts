@@ -50,7 +50,11 @@ export async function getFypPosts(
 export async function getFullPost(postId: string) {
   return await prisma.post.findUnique({
     where: { id: postId },
-    include: { author: true, comments: { include: { user: true } } },
+    include: {
+      author: true,
+      comments: { include: { user: true } },
+      feedback: { include: { user: true }, orderBy: { timestamp: "asc" } },
+    },
   });
 }
 
@@ -119,6 +123,31 @@ export async function commentOnPost(
     data: {
       commentCount: {
         increment: 1,
+      },
+    },
+  });
+  return json({ success: true });
+}
+
+export async function leaveFeedbackOnPost(
+  userId: string,
+  postId: string,
+  msg: string,
+  timestamp: number
+) {
+  await prisma.feedback.create({
+    data: {
+      msg,
+      timestamp,
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      post: {
+        connect: {
+          id: postId,
+        },
       },
     },
   });

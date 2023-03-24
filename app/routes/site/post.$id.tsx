@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   AspectRatio,
   Box,
   Button,
@@ -7,8 +8,11 @@ import {
   Center,
   Divider,
   Grid,
+  Group,
+  Overlay,
   Stack,
   Text,
+  Textarea,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -16,16 +20,22 @@ import { useForm, zodResolver } from "@mantine/form";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { IconHeart } from "@tabler/icons";
+import { useState } from "react";
 
 import { z } from "zod";
 import CommentBubble from "~/components/CommentBubble";
 import TextEditor from "~/components/ui/TextEditor";
+import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie";
-import { commentOnPost, getFullPost } from "~/server/post";
+import { commentOnPost, getFullPost, leaveFeedbackOnPost } from "~/server/post";
 import { FullPost } from "~/utils/types";
 
-const schema = z.object({
+const commentSchema = z.object({
   comment: z.string().nonempty({ message: "Comment cannot be empty" }),
+});
+
+const feedbackSchema = z.object({
+  msg: z.string().nonempty({ message: "Feedback cannot be empty" }),
 });
 
 export const loader = async ({ request, params }: LoaderArgs) => {
@@ -35,37 +45,83 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { comment } = Object.fromEntries((await request.formData()).entries());
+  const { target, comment, feedback, timestamp } = Object.fromEntries(
+    (await request.formData()).entries()
+  );
   const userId = await getUserId(request);
   const postId = params.id;
-  return await commentOnPost(userId!, postId!, comment as string);
+  if (target === "comment") {
+    return await commentOnPost(userId!, postId!, comment as string);
+  } else if (target === "feedback") {
+    return await leaveFeedbackOnPost(
+      userId!,
+      postId!,
+      feedback as string,
+      Number(timestamp)
+    );
+  } else {
+    return null;
+  }
 }
 
 export default function Post() {
   const data = useLoaderData<typeof loader>();
   const post = data.post as unknown as FullPost;
+  const [timestamp, setTimestamp] = useState(0.0);
+  const [paused, setPaused] = useState(true);
 
-  const form = useForm({
-    validate: zodResolver(schema),
+  const commentForm = useForm({
+    validate: zodResolver(commentSchema),
     initialValues: {
       comment: "",
     },
   });
 
+  const feedbackForm = useForm({
+    validate: zodResolver(feedbackSchema),
+    initialValues: {
+      msg: "",
+    },
+  });
+
   const handleCommentChange = (comment: string) => {
-    form.setValues({ comment });
+    commentForm.setValues({ comment });
   };
 
-  const optimisticClear = () => {
-    form.reset();
+  const optimisticCommentClear = () => {
+    commentForm.setValues({ comment: "" });
+    commentForm.reset();
+  };
+
+  const optimisticFeedbackClear = () => {
+    feedbackForm.setValues({ msg: "" });
+    feedbackForm.reset();
+  };
+
+  const onTimestamp = (t: number) => {
+    setTimestamp(t);
+  };
+
+  const onPause = () => {
+    setPaused(true);
+  };
+
+  const onPlay = () => {
+    setPaused(false);
   };
 
   return (
-    <Center>
-      <Card w="50%">
+    <Group position="apart" align="start" grow>
+      <Card>
         <Card.Section>
           <AspectRatio ratio={16 / 9}>
-            <video controls src={post.mediaUrl}></video>
+            <Video
+              src={post.mediaUrl}
+              timestamp={timestamp}
+              onTimestamp={onTimestamp}
+              onPause={onPause}
+              onPlay={onPlay}
+            />
           </AspectRatio>
         </Card.Section>
         <Grid p="md">
@@ -94,19 +150,58 @@ export default function Post() {
           {post.comments?.map((c) => (
             <CommentBubble comment={c} key={c.id} />
           ))}
-          <Form method="post" onSubmit={optimisticClear}>
+          <Form method="post" onSubmit={optimisticCommentClear}>
             <TextEditor handleChange={handleCommentChange} />
             <TextInput
               name="comment"
-              {...form.getInputProps("comment")}
+              {...commentForm.getInputProps("comment")}
               type="hidden"
             />
-            <Button type="submit" disabled={!form.isValid()} fullWidth mt="md">
+            <TextInput name="target" value="comment" type="hidden" />
+            <Button
+              type="submit"
+              disabled={!commentForm.isValid()}
+              fullWidth
+              mt="md"
+            >
               Submit Comment
             </Button>
           </Form>
         </Stack>
       </Card>
-    </Center>
+      <Box>
+        <Card>
+          <Form method="post" onSubmit={optimisticFeedbackClear}>
+            <Textarea
+              name="feedback"
+              label="Feedback"
+              {...feedbackForm.getInputProps("msg")}
+            />
+            {!paused && <Overlay></Overlay>}
+            <TextInput name="timestamp" value={timestamp} type="hidden" />
+            <TextInput name="target" value="feedback" type="hidden" />
+            <Button
+              type="submit"
+              disabled={!feedbackForm.isValid()}
+              fullWidth
+              mt="md"
+            >
+              Submit Feedback
+            </Button>
+          </Form>
+        </Card>
+        <Stack mt="sm">
+          {post.feedback?.map((f) => (
+            <Card key={f.id}>
+              <Anchor onClick={(e) => setTimestamp(f.timestamp)}>
+                @ {f.timestamp.toFixed(2)}
+              </Anchor>
+              <Title order={5}>{f.user.username}</Title>
+              <Text>{f.msg}</Text>
+            </Card>
+          ))}
+        </Stack>
+      </Box>
+    </Group>
   );
 }
