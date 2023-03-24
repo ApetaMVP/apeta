@@ -1,6 +1,6 @@
 import { Group, Paper, Text, useMantineTheme } from "@mantine/core";
 import parse from "html-react-parser";
-import { timeAgo } from "~/utils/time";
+import TimeAgo from "react-timeago";
 import { Comment } from "~/utils/types";
 
 interface CommentBubbleProps {
@@ -15,7 +15,7 @@ export default function CommentBubble(props: CommentBubbleProps) {
       <Group>
         <Text fw={700}>{comment.user.username}</Text>
         <Text c="dimmed" fz="sm">
-          {timeAgo.format(new Date(comment.createdAt))}
+          <TimeAgo date={comment.createdAt} />
         </Text>
       </Group>
       <Text>{parse(comment.content)}</Text>
