@@ -71,6 +71,7 @@ export default function Post() {
   const loggedIn = data.loggedIn;
   const [timestamp, setTimestamp] = useState(0.0);
   const [paused, setPaused] = useState(true);
+  const [comment, setComment] = useState("");
 
   const commentForm = useForm({
     validate: zodResolver(commentSchema),
@@ -86,11 +87,13 @@ export default function Post() {
     },
   });
 
-  const handleCommentChange = (comment: string) => {
-    commentForm.setValues({ comment });
+  const handleCommentChange = (c: string) => {
+    setComment(c);
+    commentForm.setValues({ comment: c });
   };
 
   const optimisticCommentClear = () => {
+    setComment("");
     commentForm.setValues({ comment: "" });
     commentForm.reset();
   };
@@ -154,7 +157,10 @@ export default function Post() {
           ))}
           {loggedIn && (
             <Form method="post" onSubmit={optimisticCommentClear}>
-              <TextEditor handleChange={handleCommentChange} />
+              <TextEditor
+                comment={comment}
+                handleChange={handleCommentChange}
+              />
               <TextInput
                 name="comment"
                 {...commentForm.getInputProps("comment")}
