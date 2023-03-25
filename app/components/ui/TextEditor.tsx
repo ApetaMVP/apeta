@@ -44,10 +44,10 @@ export default function TextEditor(props: TextEditorProps) {
           <RichTextEditor.OrderedList />
         </RichTextEditor.ControlsGroup>
 
-        <RichTextEditor.ControlsGroup>
+        {/* <RichTextEditor.ControlsGroup>
           <RichTextEditor.Link />
           <RichTextEditor.Unlink />
-        </RichTextEditor.ControlsGroup>
+        </RichTextEditor.ControlsGroup> */}
       </RichTextEditor.Toolbar>
 
       <RichTextEditor.Content />
