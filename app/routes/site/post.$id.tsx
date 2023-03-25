@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Anchor,
   AspectRatio,
   Box,
   Button,
@@ -24,6 +23,7 @@ import { useState } from "react";
 
 import { z } from "zod";
 import CommentBubble from "~/components/CommentBubble";
+import FeedbackCard from "~/components/FeedbackCard";
 import TextEditor from "~/components/ui/TextEditor";
 import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie";
@@ -204,13 +204,7 @@ export default function Post() {
         )}
         <Stack>
           {post.feedback?.map((f) => (
-            <Card key={f.id}>
-              <Anchor onClick={(e) => setTimestamp(f.timestamp)}>
-                @ {f.timestamp.toFixed(2)}
-              </Anchor>
-              <Title order={5}>{f.user.username}</Title>
-              <Text>{f.msg}</Text>
-            </Card>
+            <FeedbackCard key={f.id} feedback={f} onTimestamp={onTimestamp} />
           ))}
         </Stack>
       </Box>
