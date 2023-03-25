@@ -49,7 +49,7 @@ export default function ForYou() {
 
   return (
     <InfiniteScroll
-      dataLength={posts.length}
+      dataLength={page * 3}
       next={getPosts}
       hasMore={!end}
       loader={""}
