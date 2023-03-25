@@ -8,7 +8,7 @@ export default function FileUpload(props: Partial<DropzoneProps>) {
       onDrop={(files) => console.log("accepted files", files)}
       onReject={(files) => console.log("rejected files", files)}
       maxSize={3 * 1024 ** 2}
-      accept={["video/mp4"]}
+      accept={["video/mp4", "video/mpeg", "video/webm", "video/quicktime"]}
       {...props}
     >
       <Stack>
@@ -30,7 +30,7 @@ export default function FileUpload(props: Partial<DropzoneProps>) {
           Drag or click here to upload a video
         </Text>
         <Text size="xl" align="center" c="dimmed" fz="sm">
-          Must be less MP4 less than 100MB
+          Must be less than 100MB
         </Text>
       </Stack>
     </Dropzone>
