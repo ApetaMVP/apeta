@@ -8,7 +8,7 @@ import { getUserId } from "~/server/cookie";
 import { getFypPosts, likePost } from "~/server/post";
 import { Post } from "~/utils/types";
 
-const BATCH = 4;
+const BATCH = 6;
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
@@ -49,7 +49,7 @@ export default function ForYou() {
 
   return (
     <InfiniteScroll
-      dataLength={posts.length}
+      dataLength={page * 3}
       next={getPosts}
       hasMore={!end}
       loader={""}

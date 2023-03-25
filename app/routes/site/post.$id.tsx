@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Anchor,
   AspectRatio,
   Box,
   Button,
@@ -24,6 +23,7 @@ import { useState } from "react";
 
 import { z } from "zod";
 import CommentBubble from "~/components/CommentBubble";
+import FeedbackCard from "~/components/FeedbackCard";
 import TextEditor from "~/components/ui/TextEditor";
 import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie";
@@ -71,6 +71,7 @@ export default function Post() {
   const loggedIn = data.loggedIn;
   const [timestamp, setTimestamp] = useState(0.0);
   const [paused, setPaused] = useState(true);
+  const [comment, setComment] = useState("");
 
   const commentForm = useForm({
     validate: zodResolver(commentSchema),
@@ -86,11 +87,13 @@ export default function Post() {
     },
   });
 
-  const handleCommentChange = (comment: string) => {
-    commentForm.setValues({ comment });
+  const handleCommentChange = (c: string) => {
+    setComment(c);
+    commentForm.setValues({ comment: c });
   };
 
   const optimisticCommentClear = () => {
+    setComment("");
     commentForm.setValues({ comment: "" });
     commentForm.reset();
   };
@@ -154,7 +157,10 @@ export default function Post() {
           ))}
           {loggedIn && (
             <Form method="post" onSubmit={optimisticCommentClear}>
-              <TextEditor handleChange={handleCommentChange} />
+              <TextEditor
+                comment={comment}
+                handleChange={handleCommentChange}
+              />
               <TextInput
                 name="comment"
                 {...commentForm.getInputProps("comment")}
@@ -198,13 +204,7 @@ export default function Post() {
         )}
         <Stack>
           {post.feedback?.map((f) => (
-            <Card key={f.id}>
-              <Anchor onClick={(e) => setTimestamp(f.timestamp)}>
-                @ {f.timestamp.toFixed(2)}
-              </Anchor>
-              <Title order={5}>{f.user.username}</Title>
-              <Text>{f.msg}</Text>
-            </Card>
+            <FeedbackCard key={f.id} feedback={f} onTimestamp={onTimestamp} />
           ))}
         </Stack>
       </Box>

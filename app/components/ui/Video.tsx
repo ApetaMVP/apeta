@@ -2,11 +2,11 @@ import { useEffect, useRef } from "react";
 
 interface VideoProps {
   src: string;
-  timestamp?: number;
-  onTimestamp?: (timestamp: number) => void;
-  handleTimestampChange?: (timestamp: number) => void;
-  onPause?: () => void;
-  onPlay?: () => void;
+  timestamp: number;
+  onTimestamp: (timestamp: number) => void;
+  handleTimestampChange: (timestamp: number) => void;
+  onPause: () => void;
+  onPlay: () => void;
 }
 
 export default function Video(props: VideoProps) {
@@ -19,11 +19,12 @@ export default function Video(props: VideoProps) {
     }
   }, [timestamp]);
 
-  const handleTimestamp = () => {
+  const handlePause = () => {
     const timestamp = Number(videoRef?.current?.["currentTime"]);
     if (onTimestamp) {
       onTimestamp(timestamp);
     }
+    onPause();
   };
 
   return (
@@ -31,8 +32,7 @@ export default function Video(props: VideoProps) {
       controls
       ref={videoRef}
       src={src}
-      onTimeUpdate={handleTimestamp}
-      onPause={onPause}
+      onPause={handlePause}
       onPlay={onPlay}
     />
   );
