@@ -1,5 +1,6 @@
 import { Anchor, Card, Text, Title } from "@mantine/core";
 import { Feedback } from "~/utils/types";
+import VideoEditor from "./editor/VideoEditor";
 
 interface FeedbackCardProps {
   feedback: Feedback;
@@ -17,6 +18,7 @@ export default function FeedbackCard(props: FeedbackCardProps) {
       </Anchor>
       <Title order={5}>{feedback.user.username}</Title>
       <Text>{feedback.msg}</Text>
+      <VideoEditor />
     </Card>
   );
 }
