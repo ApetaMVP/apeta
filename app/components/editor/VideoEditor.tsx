@@ -1,4 +1,3 @@
-import { Box } from "@mantine/core";
 import {
   IconArrowNarrowRight,
   IconBrush,
@@ -8,10 +7,14 @@ import {
 import { useState } from "react";
 import Content from "./Content";
 
-interface VideoEditorProps {}
+interface VideoEditorProps {
+  frame: string;
+  onImg: (image: string) => void;
+}
 
 export default function VideoEditor(props: VideoEditorProps) {
-  const [color, setColor] = useState("black");
+  const { frame, onImg } = props;
+  const [color, setColor] = useState("#d40b0b");
   const [tool, setTool] = useState("brush");
 
   const toolbarItems = [
@@ -21,23 +24,23 @@ export default function VideoEditor(props: VideoEditorProps) {
     { name: "rectangle", image: <IconRectangle /> },
   ];
 
-  const changeColor = (e: any) => {
-    setColor(e.target.style.backgroundColor);
+  const changeColor = (e: any, c: any) => {
+    setColor(c);
   };
 
-  const changeTool = (e: any, tool: any) => {
-    setTool(tool);
+  const changeTool = (e: any, t: any) => {
+    setTool(t);
   };
 
   return (
-    <Box style={{ cursor: "crosshair" }}>
-      <Content
-        items={toolbarItems}
-        activeItem={tool}
-        handleClick={changeTool}
-        color={color}
-      />
-      {/* <ColorPanel selectedColor={color} handleClick={changeColor} /> */}
-    </Box>
+    <Content
+      items={toolbarItems}
+      activeItem={tool}
+      handleTool={changeTool}
+      handleColor={changeColor}
+      color={color}
+      frame={frame}
+      onImg={onImg}
+    />
   );
 }

@@ -1,15 +1,21 @@
+import { AspectRatio, Card, Group, Stack } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
+import ColorPanel from "./ColorPanel";
 import Toolbox from "./Toolbox";
 
 interface ContentProps {
+  frame: string;
   items: any;
   activeItem: any;
   color: string;
-  handleClick: any;
+  handleTool: (e: any, tool: string) => void;
+  handleColor: (e: any, color: string) => void;
+  onImg: (image: string) => void;
 }
 
 export default function Content(props: ContentProps) {
-  const { items, activeItem, color, handleClick } = props;
+  const { frame, items, activeItem, color, handleTool, handleColor, onImg } =
+    props;
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
@@ -21,17 +27,31 @@ export default function Content(props: ContentProps) {
 
   useEffect(() => {
     const { ctx } = getCtxs();
-    let localCanvasRef = document.getElementById("canvas") as HTMLCanvasElement;
+    const localCanvasRef = getCanvas();
     let canvasRect = localCanvasRef.getBoundingClientRect();
     setOffsetX(canvasRect.left);
     setOffsetY(canvasRect.top);
     var background = new Image();
-    background.src =
-      "https://cdn.sstatic.net/Img/teams/teams-illo-free-sidebar-promo.svg?v=47faa659a05e";
     background.onload = () => {
-      ctx.drawImage(background, 0, 0);
+      const canvasAspectRatio = localCanvasRef.width / localCanvasRef.height;
+      const imageAspectRatio = background.width / background.height;
+      let drawWidth, drawHeight, x, y;
+      if (imageAspectRatio > canvasAspectRatio) {
+        drawWidth = localCanvasRef.width;
+        drawHeight = drawWidth / imageAspectRatio;
+        x = 0;
+        y = (localCanvasRef.height - drawHeight) / 2;
+      } else {
+        drawHeight = localCanvasRef.height;
+        drawWidth = drawHeight * imageAspectRatio;
+        y = 0;
+        x = (localCanvasRef.width - drawWidth) / 2;
+      }
+      ctx.drawImage(background, x, y, drawWidth, drawHeight);
+      onImg(localCanvasRef.toDataURL());
     };
-  }, [canvasRef, canvasOverlayRef]);
+    background.src = frame;
+  }, [canvasRef, canvasOverlayRef, frame]);
 
   const getCtxs = () => {
     let ctx = (
@@ -41,6 +61,10 @@ export default function Content(props: ContentProps) {
       document.getElementById("canvasOverlay") as HTMLCanvasElement
     ).getContext("2d");
     return { ctx, ctxOverlay };
+  };
+
+  const getCanvas = () => {
+    return document.getElementById("canvas") as HTMLCanvasElement;
   };
 
   const handleMouseDown = (e: any) => {
@@ -57,12 +81,11 @@ export default function Content(props: ContentProps) {
       }
     } else if (activeItem === "line" || activeItem === "rectangle") {
       ctxOverlay.strokeStyle = color;
-      ctxOverlay.lineWidth = 1;
+      ctxOverlay.lineWidth = 5;
       ctxOverlay.lineJoin = ctx.lineCap = "round";
       setStartX(e.clientX - offsetX);
       setStartY(e.clientY - offsetY);
     }
-    console.log("done");
   };
 
   const handleMouseMove = (e: any) => {
@@ -105,34 +128,49 @@ export default function Content(props: ContentProps) {
     }
     ctx.closePath();
     setIsDrawing(false);
+    const localCanvasRef = getCanvas();
+    onImg(localCanvasRef.toDataURL());
   };
 
   return (
-    <>
-      <Toolbox
-        items={items}
-        activeItem={activeItem}
-        handleClick={handleClick}
-      />
+    <Stack>
       <div className="canvas">
-        <canvas
-          className="canvas-actual"
-          width="600px"
-          height="480px"
-          ref={canvasRef}
-          id="canvas"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-        />
-        <canvas
-          className="canvas-overlay"
-          width="600px"
-          height="480px"
-          ref={canvasOverlayRef}
-          id="canvasOverlay"
-        />
+        <Stack>
+          <Card withBorder={false} shadow="none">
+            <Card.Section mb="xs">
+              <AspectRatio ratio={16 / 9}>
+                <canvas
+                  className="canvas-actual"
+                  width="auto"
+                  height="150px"
+                  ref={canvasRef}
+                  id="canvas"
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  style={{ cursor: "crosshair" }}
+                />
+              </AspectRatio>
+            </Card.Section>
+            <Group>
+              <Toolbox
+                items={items}
+                activeItem={activeItem}
+                handleClick={handleTool}
+              />
+              <ColorPanel selectedColor={color} handleClick={handleColor} />
+            </Group>
+          </Card>
+          <canvas
+            className="canvas-overlay"
+            width="0%"
+            height="0%"
+            ref={canvasOverlayRef}
+            id="canvasOverlay"
+            hidden={true}
+          />
+        </Stack>
       </div>
-    </>
+    </Stack>
   );
 }

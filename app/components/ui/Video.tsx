@@ -53,6 +53,7 @@ export default function Video(props: VideoProps) {
         onPause={handlePause}
         onPlay={onPlay}
         crossOrigin="anonymous"
+        onSeeked={handlePause}
       />
       <canvas ref={canvasRef} style={{ display: "none" }} />
     </>

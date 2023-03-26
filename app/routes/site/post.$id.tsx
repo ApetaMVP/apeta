@@ -8,7 +8,6 @@ import {
   Divider,
   Grid,
   Group,
-  Overlay,
   Stack,
   Text,
   Textarea,
@@ -23,7 +22,8 @@ import { useState } from "react";
 
 import { z } from "zod";
 import CommentBubble from "~/components/CommentBubble";
-import FeedbackCard from "~/components/FeedbackCard";
+import VideoEditor from "~/components/editor/VideoEditor";
+import FeedbackChip from "~/components/FeedbackChip";
 import TextEditor from "~/components/ui/TextEditor";
 import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie";
@@ -74,6 +74,7 @@ export default function Post() {
   const [paused, setPaused] = useState(true);
   const [timestamp, setTimestamp] = useState(0.0);
   const [frame, setFrame] = useState("");
+  const [img, setImg] = useState("");
 
   const commentForm = useForm({
     validate: zodResolver(commentSchema),
@@ -111,6 +112,10 @@ export default function Post() {
 
   const onFrame = (f: string) => {
     setFrame(f);
+  };
+
+  const onImg = (i: string) => {
+    setImg(i);
   };
 
   return (
@@ -180,9 +185,11 @@ export default function Post() {
       </Card>
       <Box>
         {loggedIn && (
-          <Card mb="sm">
+          <Card>
+            <Card.Section>
+              <VideoEditor frame={frame} onImg={onImg} />
+            </Card.Section>
             <Form method="post" onSubmit={optimisticFeedbackClear}>
-              {!paused && <Overlay></Overlay>}
               <Textarea
                 name="feedback"
                 label="Feedback"
@@ -202,16 +209,19 @@ export default function Post() {
             </Form>
           </Card>
         )}
-        <Stack>
-          {post.feedback?.map((f) => (
-            <FeedbackCard
-              key={f.id}
-              feedback={f}
-              frame={frame}
-              onTimestamp={onTimestamp}
-            />
-          ))}
-        </Stack>
+        <Card>
+          <Stack>
+            <Title order={5}>Timestamped Comments</Title>
+            {post.feedback?.map((f) => (
+              <FeedbackChip
+                key={f.id}
+                feedback={f}
+                frame={frame}
+                onTimestamp={onTimestamp}
+              />
+            ))}
+          </Stack>
+        </Card>
       </Box>
     </Group>
   );
