@@ -7,7 +7,7 @@ export default function FileUpload(props: Partial<DropzoneProps>) {
     <Dropzone
       onDrop={(files) => console.log("accepted files", files)}
       onReject={(files) => console.log("rejected files", files)}
-      maxSize={3 * 1024 ** 2}
+      maxSize={50 * 1024 ** 2} // 50 mb
       accept={["video/mp4", "video/mpeg", "video/webm", "video/quicktime"]}
       {...props}
     >

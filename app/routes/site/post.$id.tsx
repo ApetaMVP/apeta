@@ -46,7 +46,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { target, comment, feedback, timestamp } = Object.fromEntries(
+  const { target, comment, feedback, frame, timestamp } = Object.fromEntries(
     (await request.formData()).entries()
   );
   const userId = await getUserId(request);
@@ -58,7 +58,8 @@ export async function action({ request, params }: ActionArgs) {
       userId!,
       postId!,
       feedback as string,
-      Number(timestamp)
+      Number(timestamp),
+      frame as string
     );
   } else {
     return null;
@@ -69,9 +70,10 @@ export default function Post() {
   const data = useLoaderData<typeof loader>();
   const post = data.post as unknown as FullPost;
   const loggedIn = data.loggedIn;
-  const [timestamp, setTimestamp] = useState(0.0);
-  const [paused, setPaused] = useState(true);
   const [comment, setComment] = useState("");
+  const [paused, setPaused] = useState(true);
+  const [timestamp, setTimestamp] = useState(0.0);
+  const [frame, setFrame] = useState("");
 
   const commentForm = useForm({
     validate: zodResolver(commentSchema),
@@ -107,12 +109,8 @@ export default function Post() {
     setTimestamp(t);
   };
 
-  const onPause = () => {
-    setPaused(true);
-  };
-
-  const onPlay = () => {
-    setPaused(false);
+  const onFrame = (f: string) => {
+    setFrame(f);
   };
 
   return (
@@ -124,8 +122,9 @@ export default function Post() {
               src={post.mediaUrl}
               timestamp={timestamp}
               onTimestamp={onTimestamp}
-              onPause={onPause}
-              onPlay={onPlay}
+              onFrame={onFrame}
+              onPause={() => setPaused(true)}
+              onPlay={() => setPaused(false)}
             />
           </AspectRatio>
         </Card.Section>
@@ -183,13 +182,14 @@ export default function Post() {
         {loggedIn && (
           <Card mb="sm">
             <Form method="post" onSubmit={optimisticFeedbackClear}>
+              {!paused && <Overlay></Overlay>}
               <Textarea
                 name="feedback"
                 label="Feedback"
                 {...feedbackForm.getInputProps("msg")}
               />
-              {!paused && <Overlay></Overlay>}
               <TextInput name="timestamp" value={timestamp} type="hidden" />
+              <TextInput name="frame" value={frame} type="hidden" />
               <TextInput name="target" value="feedback" type="hidden" />
               <Button
                 type="submit"
@@ -204,7 +204,12 @@ export default function Post() {
         )}
         <Stack>
           {post.feedback?.map((f) => (
-            <FeedbackCard key={f.id} feedback={f} onTimestamp={onTimestamp} />
+            <FeedbackCard
+              key={f.id}
+              feedback={f}
+              frame={frame}
+              onTimestamp={onTimestamp}
+            />
           ))}
         </Stack>
       </Box>

@@ -133,12 +133,14 @@ export async function leaveFeedbackOnPost(
   userId: string,
   postId: string,
   msg: string,
-  timestamp: number
+  timestamp: number,
+  frame: string
 ) {
   await prisma.feedback.create({
     data: {
       msg,
       timestamp,
+      frame,
       user: {
         connect: {
           id: userId,

@@ -3,11 +3,12 @@ import { Feedback } from "~/utils/types";
 
 interface FeedbackCardProps {
   feedback: Feedback;
+  frame: string;
   onTimestamp: (timestamp: number) => void;
 }
 
 export default function FeedbackCard(props: FeedbackCardProps) {
-  const { feedback, onTimestamp } = props;
+  const { feedback, frame, onTimestamp } = props;
 
   return (
     <Card>
