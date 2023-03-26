@@ -1,4 +1,4 @@
-import { AspectRatio, Card, Group, Stack } from "@mantine/core";
+import { AspectRatio, Card, Center, Stack } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
 import ColorPanel from "./ColorPanel";
 import Toolbox from "./Toolbox";
@@ -152,14 +152,16 @@ export default function Content(props: ContentProps) {
                 />
               </AspectRatio>
             </Card.Section>
-            <Group>
-              <Toolbox
-                items={items}
-                activeItem={activeItem}
-                handleClick={handleTool}
-              />
-              <ColorPanel selectedColor={color} handleClick={handleColor} />
-            </Group>
+            <Center>
+              <Stack>
+                <Toolbox
+                  items={items}
+                  activeItem={activeItem}
+                  handleClick={handleTool}
+                />
+                <ColorPanel selectedColor={color} handleClick={handleColor} />
+              </Stack>
+            </Center>
           </Card>
           <canvas
             className="canvas-overlay"

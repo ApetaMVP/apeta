@@ -1,4 +1,4 @@
-import { ActionIcon, Group } from "@mantine/core";
+import { ActionIcon, Center, Group } from "@mantine/core";
 
 interface ToolButtonProps {
   active: boolean;
@@ -33,16 +33,18 @@ export default function Toolbox(props: ToolboxProps) {
   };
 
   return (
-    <Group>
-      {items.map((i: any) => (
-        <ToolButton
-          key={i.name}
-          active={activeItem === i.name ? true : false}
-          name={i.name}
-          icon={i.image}
-          handleClick={onClick}
-        />
-      ))}
-    </Group>
+    <Center>
+      <Group>
+        {items.map((i: any) => (
+          <ToolButton
+            key={i.name}
+            active={activeItem === i.name ? true : false}
+            name={i.name}
+            icon={i.image}
+            handleClick={onClick}
+          />
+        ))}
+      </Group>
+    </Center>
   );
 }
