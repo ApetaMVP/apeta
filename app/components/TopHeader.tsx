@@ -6,9 +6,7 @@ import {
   Image,
   MantineTheme,
   MediaQuery,
-  TextInput,
 } from "@mantine/core";
-import { IconSearch } from "@tabler/icons";
 import LinkButton from "./ui/LinkButton";
 
 interface TopHeaderProps {
@@ -35,7 +33,7 @@ export default function TopHeader(props: TopHeaderProps) {
           <Box w={150}>
             <Image src="/logo.png" alt="Apeta Logo" />
           </Box>
-          <TextInput placeholder="Search" icon={<IconSearch />} w="33%" />
+          {/* <TextInput placeholder="Search" icon={<IconSearch />} w="33%" /> */}
           <Box>
             <LinkButton variant="default" link="/site/upload">
               + Upload
