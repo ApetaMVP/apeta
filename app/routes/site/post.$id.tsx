@@ -66,6 +66,8 @@ export default function Post() {
   const data = useLoaderData<typeof loader>();
   const post = data.post as unknown as FullPost;
   const loggedIn = data.loggedIn;
+
+  const [writingFeedback, setWritingFeedback] = useState(false);
   const [comment, setComment] = useState("");
   const [paused, setPaused] = useState(true);
   const [timestamp, setTimestamp] = useState(0.0);
@@ -100,6 +102,7 @@ export default function Post() {
   const optimisticFeedbackClear = () => {
     feedbackForm.setValues({ msg: "" });
     feedbackForm.reset();
+    setWritingFeedback(false);
   };
 
   const onTimestamp = (t: number) => {
@@ -115,21 +118,56 @@ export default function Post() {
   };
 
   return (
-    <Group position="apart" align="start" grow>
-      <Card>
-        <Card.Section>
-          <AspectRatio ratio={16 / 9}>
-            <Video
-              src={post.mediaUrl}
-              timestamp={timestamp}
-              onTimestamp={onTimestamp}
-              onFrame={onFrame}
-              onPause={() => setPaused(true)}
-              onPlay={() => setPaused(false)}
-            />
-          </AspectRatio>
-        </Card.Section>
+    <Group position="apart" align="start">
+      <Card w="75%">
+        {!writingFeedback && (
+          <Card.Section>
+            <AspectRatio ratio={16 / 9}>
+              <Video
+                src={post.mediaUrl}
+                timestamp={timestamp}
+                onTimestamp={onTimestamp}
+                onFrame={onFrame}
+                onPause={() => setPaused(true)}
+                onPlay={() => setPaused(false)}
+              />
+            </AspectRatio>
+          </Card.Section>
+        )}
+        {writingFeedback && (
+          <Card.Section>
+            <VideoEditor frame={frame} onImg={onImg} />
+            <Form method="post" onSubmit={optimisticFeedbackClear}>
+              <Box mx="md">
+                <Textarea
+                  name="feedback"
+                  label="Feedback"
+                  {...feedbackForm.getInputProps("msg")}
+                />
+                <TextInput name="timestamp" value={timestamp} type="hidden" />
+                <TextInput name="img" value={img} type="hidden" />
+                <TextInput name="target" value="feedback" type="hidden" />
+                <Group mt="sm" grow>
+                  <Button
+                    variant="default"
+                    onClick={(e) => setWritingFeedback(false)}
+                  >
+                    Discard
+                  </Button>
+                  <Button type="submit" disabled={!feedbackForm.isValid()}>
+                    Submit Feedback
+                  </Button>
+                </Group>
+              </Box>
+            </Form>
+          </Card.Section>
+        )}
         <Stack mt="xs">
+          {!writingFeedback && (
+            <Button onClick={(e) => setWritingFeedback(!writingFeedback)}>
+              Draw Feedback
+            </Button>
+          )}
           <Title order={3}>{post.author.username}</Title>
           <Text>{post.caption}</Text>
         </Stack>
@@ -164,7 +202,7 @@ export default function Post() {
         </Stack>
       </Card>
       <Box>
-        {loggedIn && (
+        {/* {loggedIn && (
           <Card>
             <Card.Section>
               <VideoEditor frame={frame} onImg={onImg} />
@@ -188,7 +226,7 @@ export default function Post() {
               </Button>
             </Form>
           </Card>
-        )}
+        )} */}
         <Card>
           <Stack>
             <Title order={5}>Timestamped Comments</Title>

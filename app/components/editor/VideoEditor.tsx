@@ -18,9 +18,9 @@ export default function VideoEditor(props: VideoEditorProps) {
   const [tool, setTool] = useState("brush");
 
   const toolbarItems = [
+    { name: "brush", image: <IconBrush /> },
     { name: "pencil", image: <IconPencil /> },
     { name: "line", image: <IconArrowNarrowRight /> },
-    { name: "brush", image: <IconBrush /> },
     { name: "rectangle", image: <IconRectangle /> },
   ];
 

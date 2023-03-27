@@ -22,8 +22,8 @@ export default function Content(props: ContentProps) {
   const [offsetY, setOffsetY] = useState(0);
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
-  const canvasRef = useRef(null);
-  const canvasOverlayRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasOverlayRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const { ctx } = getCtxs();
@@ -47,17 +47,17 @@ export default function Content(props: ContentProps) {
         y = 0;
         x = (localCanvasRef.width - drawWidth) / 2;
       }
-      ctx.drawImage(background, x, y, drawWidth, drawHeight);
+      ctx!.drawImage(background, x, y, drawWidth, drawHeight);
       onImg(localCanvasRef.toDataURL());
     };
     background.src = frame;
   }, [canvasRef, canvasOverlayRef, frame]);
 
   const getCtxs = () => {
-    let ctx = (
+    const ctx = (
       document.getElementById("canvas") as HTMLCanvasElement
     ).getContext("2d");
-    let ctxOverlay = (
+    const ctxOverlay = (
       document.getElementById("canvasOverlay") as HTMLCanvasElement
     ).getContext("2d");
     return { ctx, ctxOverlay };
@@ -70,19 +70,19 @@ export default function Content(props: ContentProps) {
   const handleMouseDown = (e: any) => {
     setIsDrawing(true);
     const { ctx, ctxOverlay } = getCtxs();
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1;
-    ctx.lineJoin = ctx.lineCap = "round";
+    ctx!.beginPath();
+    ctx!.strokeStyle = color;
+    ctx!.lineWidth = 1;
+    ctx!.lineJoin = ctx!.lineCap = "round";
     if (activeItem === "pencil" || activeItem === "brush") {
-      ctx.moveTo(e.clientX - offsetX, e.clientY - offsetY);
+      ctx!.moveTo(e.clientX - offsetX, e.clientY - offsetY);
       if (activeItem === "brush") {
-        ctx.lineWidth = 5;
+        ctx!.lineWidth = 5;
       }
     } else if (activeItem === "line" || activeItem === "rectangle") {
-      ctxOverlay.strokeStyle = color;
-      ctxOverlay.lineWidth = 5;
-      ctxOverlay.lineJoin = ctx.lineCap = "round";
+      ctxOverlay!.strokeStyle = color;
+      ctxOverlay!.lineWidth = 5;
+      ctxOverlay!.lineJoin = ctx!.lineCap = "round";
       setStartX(e.clientX - offsetX);
       setStartY(e.clientY - offsetY);
     }
@@ -92,22 +92,22 @@ export default function Content(props: ContentProps) {
     const { ctx, ctxOverlay } = getCtxs();
     if (isDrawing) {
       if (activeItem === "pencil" || activeItem === "brush") {
-        ctx.lineTo(e.clientX - offsetX, e.clientY - offsetY);
-        ctx.stroke();
+        ctx!.lineTo(e.clientX - offsetX, e.clientY - offsetY);
+        ctx!.stroke();
       }
       if (activeItem === "line") {
-        ctxOverlay.clearRect(0, 0, 600, 480);
-        ctxOverlay.beginPath();
-        ctxOverlay.moveTo(startX, startY);
-        ctxOverlay.lineTo(e.clientX - offsetX, e.clientY - offsetY);
-        ctxOverlay.stroke();
-        ctxOverlay.closePath();
+        ctxOverlay!.clearRect(0, 0, 600, 480);
+        ctxOverlay!.beginPath();
+        ctxOverlay!.moveTo(startX, startY);
+        ctxOverlay!.lineTo(e.clientX - offsetX, e.clientY - offsetY);
+        ctxOverlay!.stroke();
+        ctxOverlay!.closePath();
       }
       if (activeItem === "rectangle") {
-        ctxOverlay.clearRect(0, 0, 600, 480);
+        ctxOverlay!.clearRect(0, 0, 600, 480);
         let width = e.clientX - offsetX - startX;
         let height = e.clientY - offsetY - startY;
-        ctxOverlay.strokeRect(startX, startY, width, height);
+        ctxOverlay!.strokeRect(startX, startY, width, height);
       }
     }
   };
@@ -115,18 +115,18 @@ export default function Content(props: ContentProps) {
   const handleMouseUp = (e: any) => {
     const { ctx, ctxOverlay } = getCtxs();
     if (activeItem === "line") {
-      ctxOverlay.clearRect(0, 0, 600, 480);
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(e.clientX - offsetX, e.clientY - offsetY);
-      ctx.stroke();
+      ctxOverlay!.clearRect(0, 0, 600, 480);
+      ctx!.moveTo(startX, startY);
+      ctx!.lineTo(e.clientX - offsetX, e.clientY - offsetY);
+      ctx!.stroke();
     }
     if (activeItem === "rectangle") {
       let width = e.clientX - offsetX - startX;
       let height = e.clientY - offsetY - startY;
-      ctxOverlay.clearRect(0, 0, 600, 480);
-      ctx.strokeRect(startX, startY, width, height);
+      ctxOverlay!.clearRect(0, 0, 600, 480);
+      ctx!.strokeRect(startX, startY, width, height);
     }
-    ctx.closePath();
+    ctx!.closePath();
     setIsDrawing(false);
     const localCanvasRef = getCanvas();
     onImg(localCanvasRef.toDataURL());
