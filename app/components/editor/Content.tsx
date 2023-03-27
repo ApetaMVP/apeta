@@ -144,7 +144,7 @@ export default function Content(props: ContentProps) {
                 width={sectionRef.current?.clientWidth!}
                 height={
                   Math.floor(sectionRef.current?.clientWidth! * 0.5625) -
-                  Math.floor(sectionRef.current?.clientWidth! * 0.063)
+                  Math.floor(sectionRef.current?.clientWidth! * 0.062)
                 }
                 ref={canvasRef}
                 id="canvas"
