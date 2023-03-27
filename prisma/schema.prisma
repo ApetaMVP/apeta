@@ -68,6 +68,7 @@ model Comment {
 model Feedback {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   msg       String
+  img       String
   timestamp Float
   postId    String   @db.ObjectId
   post      Post     @relation(fields: [postId], references: [id])

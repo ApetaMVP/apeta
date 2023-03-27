@@ -1,14 +1,13 @@
 import {
-  ActionIcon,
+  Accordion,
+  Anchor,
   AspectRatio,
   Box,
   Button,
   Card,
-  Center,
   Divider,
-  Grid,
   Group,
-  Overlay,
+  Image,
   Stack,
   Text,
   Textarea,
@@ -18,12 +17,11 @@ import {
 import { useForm, zodResolver } from "@mantine/form";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
-import { IconHeart } from "@tabler/icons";
 import { useState } from "react";
 
 import { z } from "zod";
 import CommentBubble from "~/components/CommentBubble";
-import FeedbackCard from "~/components/FeedbackCard";
+import PhotoEditor from "~/components/editor/PhotoEditor";
 import TextEditor from "~/components/ui/TextEditor";
 import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie";
@@ -46,7 +44,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { target, comment, feedback, timestamp } = Object.fromEntries(
+  const { target, comment, feedback, img, timestamp } = Object.fromEntries(
     (await request.formData()).entries()
   );
   const userId = await getUserId(request);
@@ -58,7 +56,8 @@ export async function action({ request, params }: ActionArgs) {
       userId!,
       postId!,
       feedback as string,
-      Number(timestamp)
+      Number(timestamp),
+      img as string
     );
   } else {
     return null;
@@ -69,9 +68,13 @@ export default function Post() {
   const data = useLoaderData<typeof loader>();
   const post = data.post as unknown as FullPost;
   const loggedIn = data.loggedIn;
-  const [timestamp, setTimestamp] = useState(0.0);
-  const [paused, setPaused] = useState(true);
+
+  const [writingFeedback, setWritingFeedback] = useState(false);
   const [comment, setComment] = useState("");
+  const [paused, setPaused] = useState(true);
+  const [timestamp, setTimestamp] = useState(0.0);
+  const [frame, setFrame] = useState("");
+  const [img, setImg] = useState("");
 
   const commentForm = useForm({
     validate: zodResolver(commentSchema),
@@ -101,54 +104,75 @@ export default function Post() {
   const optimisticFeedbackClear = () => {
     feedbackForm.setValues({ msg: "" });
     feedbackForm.reset();
+    setWritingFeedback(false);
   };
 
   const onTimestamp = (t: number) => {
     setTimestamp(t);
   };
 
-  const onPause = () => {
-    setPaused(true);
+  const onFrame = (f: string) => {
+    setFrame(f);
   };
 
-  const onPlay = () => {
-    setPaused(false);
+  const onImg = (i: string) => {
+    setImg(i);
   };
 
   return (
-    <Group position="apart" align="start" grow>
-      <Card>
-        <Card.Section>
-          <AspectRatio ratio={16 / 9}>
-            <Video
-              src={post.mediaUrl}
-              timestamp={timestamp}
-              onTimestamp={onTimestamp}
-              onPause={onPause}
-              onPlay={onPlay}
-            />
-          </AspectRatio>
-        </Card.Section>
-        <Grid p="md">
-          <Grid.Col span={9}>
-            <Title order={3}>{post.author.username}</Title>
-            <Text>{post.caption}</Text>
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <Stack align="end">
-              <Box>
-                <ActionIcon type="submit" name="postId" value={post.id}>
-                  <IconHeart color="red" fill={post.iLiked ? "red" : "white"} />
-                </ActionIcon>
-                <Center>
-                  <Text fz="sm" c="gray">
-                    {post.likeCount}
-                  </Text>
-                </Center>
+    <Group position="apart" align="start">
+      <Card w="66%">
+        {!writingFeedback && (
+          <Card.Section>
+            <AspectRatio ratio={16 / 9}>
+              <Video
+                src={post.mediaUrl}
+                timestamp={timestamp}
+                onTimestamp={onTimestamp}
+                onFrame={onFrame}
+                onPause={() => setPaused(true)}
+                onPlay={() => setPaused(false)}
+              />
+            </AspectRatio>
+          </Card.Section>
+        )}
+        {writingFeedback && (
+          <Card.Section>
+            <PhotoEditor frame={frame} onImg={onImg} />
+            <Form method="post" onSubmit={optimisticFeedbackClear}>
+              <Box mx="md">
+                <Textarea
+                  name="feedback"
+                  label="Feedback"
+                  {...feedbackForm.getInputProps("msg")}
+                />
+                <TextInput name="timestamp" value={timestamp} type="hidden" />
+                <TextInput name="img" value={img} type="hidden" />
+                <TextInput name="target" value="feedback" type="hidden" />
+                <Group mt="sm" grow>
+                  <Button
+                    variant="default"
+                    onClick={(e) => setWritingFeedback(false)}
+                  >
+                    Discard
+                  </Button>
+                  <Button type="submit" disabled={!feedbackForm.isValid()}>
+                    Submit Feedback
+                  </Button>
+                </Group>
               </Box>
-            </Stack>
-          </Grid.Col>
-        </Grid>
+            </Form>
+          </Card.Section>
+        )}
+        <Stack mt="xs">
+          {!writingFeedback && (
+            <Button onClick={(e) => setWritingFeedback(!writingFeedback)}>
+              Draw Feedback
+            </Button>
+          )}
+          <Title order={3}>{post.author.username}</Title>
+          <Text>{post.caption}</Text>
+        </Stack>
         <Divider my="sm" />
         <Stack>
           <Title order={5}>Comments</Title>
@@ -179,35 +203,32 @@ export default function Post() {
           )}
         </Stack>
       </Card>
-      <Box>
-        {loggedIn && (
-          <Card mb="sm">
-            <Form method="post" onSubmit={optimisticFeedbackClear}>
-              <Textarea
-                name="feedback"
-                label="Feedback"
-                {...feedbackForm.getInputProps("msg")}
-              />
-              {!paused && <Overlay></Overlay>}
-              <TextInput name="timestamp" value={timestamp} type="hidden" />
-              <TextInput name="target" value="feedback" type="hidden" />
-              <Button
-                type="submit"
-                disabled={!feedbackForm.isValid()}
-                fullWidth
-                mt="md"
-              >
-                Submit Feedback
-              </Button>
-            </Form>
-          </Card>
-        )}
+      <Card w="30%">
         <Stack>
-          {post.feedback?.map((f) => (
-            <FeedbackCard key={f.id} feedback={f} onTimestamp={onTimestamp} />
-          ))}
+          <Title order={5}>Timestamped Comments</Title>
+          <Accordion defaultValue="Timestamped Comments">
+            {post.feedback?.map((f) => (
+              <Accordion.Item
+                key={f.id}
+                value={f.id}
+                onClick={(e) => onTimestamp(f.timestamp)}
+              >
+                <Accordion.Control>
+                  <Anchor>@{f.timestamp.toFixed(2)}</Anchor>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <Card withBorder={false} shadow="false">
+                    <Card.Section>
+                      <Image src={f.img} />
+                    </Card.Section>
+                  </Card>
+                  <Text>{f.msg}</Text>
+                </Accordion.Panel>
+              </Accordion.Item>
+            ))}
+          </Accordion>
         </Stack>
-      </Box>
+      </Card>
     </Group>
   );
 }
