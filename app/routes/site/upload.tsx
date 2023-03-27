@@ -17,7 +17,7 @@ export async function action({ request }: ActionArgs) {
   const userId = await getUserId(request);
   await createPost(
     userId!,
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     caption as string
   );
   return redirect(`/site`);

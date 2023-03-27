@@ -165,7 +165,7 @@ export default function Post() {
           </Card.Section>
         )}
         <Stack mt="xs">
-          {!writingFeedback && (
+          {loggedIn && !writingFeedback && (
             <Button onClick={(e) => setWritingFeedback(!writingFeedback)}>
               Draw Feedback
             </Button>
