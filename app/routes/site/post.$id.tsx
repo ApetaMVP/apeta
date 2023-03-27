@@ -1,10 +1,13 @@
 import {
+  Accordion,
+  Anchor,
   AspectRatio,
   Box,
   Button,
   Card,
   Divider,
   Group,
+  Image,
   Stack,
   Text,
   Textarea,
@@ -18,8 +21,7 @@ import { useState } from "react";
 
 import { z } from "zod";
 import CommentBubble from "~/components/CommentBubble";
-import VideoEditor from "~/components/editor/VideoEditor";
-import FeedbackChip from "~/components/FeedbackChip";
+import PhotoEditor from "~/components/editor/PhotoEditor";
 import TextEditor from "~/components/ui/TextEditor";
 import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie";
@@ -119,7 +121,7 @@ export default function Post() {
 
   return (
     <Group position="apart" align="start">
-      <Card w="75%">
+      <Card w="66%">
         {!writingFeedback && (
           <Card.Section>
             <AspectRatio ratio={16 / 9}>
@@ -136,7 +138,7 @@ export default function Post() {
         )}
         {writingFeedback && (
           <Card.Section>
-            <VideoEditor frame={frame} onImg={onImg} />
+            <PhotoEditor frame={frame} onImg={onImg} />
             <Form method="post" onSubmit={optimisticFeedbackClear}>
               <Box mx="md">
                 <Textarea
@@ -201,46 +203,32 @@ export default function Post() {
           )}
         </Stack>
       </Card>
-      <Box>
-        {/* {loggedIn && (
-          <Card>
-            <Card.Section>
-              <VideoEditor frame={frame} onImg={onImg} />
-            </Card.Section>
-            <Form method="post" onSubmit={optimisticFeedbackClear}>
-              <Textarea
-                name="feedback"
-                label="Feedback"
-                {...feedbackForm.getInputProps("msg")}
-              />
-              <TextInput name="timestamp" value={timestamp} type="hidden" />
-              <TextInput name="img" value={img} type="hidden" />
-              <TextInput name="target" value="feedback" type="hidden" />
-              <Button
-                type="submit"
-                disabled={!feedbackForm.isValid()}
-                fullWidth
-                mt="md"
-              >
-                Submit Feedback
-              </Button>
-            </Form>
-          </Card>
-        )} */}
-        <Card>
-          <Stack>
-            <Title order={5}>Timestamped Comments</Title>
+      <Card w="30%">
+        <Stack>
+          <Title order={5}>Timestamped Comments</Title>
+          <Accordion defaultValue="Timestamped Comments">
             {post.feedback?.map((f) => (
-              <FeedbackChip
+              <Accordion.Item
                 key={f.id}
-                feedback={f}
-                frame={frame}
-                onTimestamp={onTimestamp}
-              />
+                value={f.id}
+                onClick={(e) => onTimestamp(f.timestamp)}
+              >
+                <Accordion.Control>
+                  <Anchor>@{f.timestamp.toFixed(2)}</Anchor>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <Card withBorder={false} shadow="false">
+                    <Card.Section>
+                      <Image src={f.img} />
+                    </Card.Section>
+                  </Card>
+                  <Text>{f.msg}</Text>
+                </Accordion.Panel>
+              </Accordion.Item>
             ))}
-          </Stack>
-        </Card>
-      </Box>
+          </Accordion>
+        </Stack>
+      </Card>
     </Group>
   );
 }

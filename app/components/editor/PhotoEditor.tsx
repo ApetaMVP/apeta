@@ -7,12 +7,12 @@ import {
 import { useState } from "react";
 import Content from "./Content";
 
-interface VideoEditorProps {
+interface PhotoEditorProps {
   frame: string;
   onImg: (image: string) => void;
 }
 
-export default function VideoEditor(props: VideoEditorProps) {
+export default function PhotoEditor(props: PhotoEditorProps) {
   const { frame, onImg } = props;
   const [color, setColor] = useState("#d40b0b");
   const [tool, setTool] = useState("brush");
