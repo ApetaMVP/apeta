@@ -1,12 +1,9 @@
 import {
-  ActionIcon,
   AspectRatio,
   Box,
   Button,
   Card,
-  Center,
   Divider,
-  Grid,
   Group,
   Stack,
   Text,
@@ -17,7 +14,6 @@ import {
 import { useForm, zodResolver } from "@mantine/form";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
-import { IconHeart } from "@tabler/icons";
 import { useState } from "react";
 
 import { z } from "zod";
@@ -46,7 +42,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { target, comment, feedback, frame, timestamp } = Object.fromEntries(
+  const { target, comment, feedback, img, timestamp } = Object.fromEntries(
     (await request.formData()).entries()
   );
   const userId = await getUserId(request);
@@ -59,7 +55,7 @@ export async function action({ request, params }: ActionArgs) {
       postId!,
       feedback as string,
       Number(timestamp),
-      frame as string
+      img as string
     );
   } else {
     return null;
@@ -133,26 +129,10 @@ export default function Post() {
             />
           </AspectRatio>
         </Card.Section>
-        <Grid p="md">
-          <Grid.Col span={9}>
-            <Title order={3}>{post.author.username}</Title>
-            <Text>{post.caption}</Text>
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <Stack align="end">
-              <Box>
-                <ActionIcon type="submit" name="postId" value={post.id}>
-                  <IconHeart color="red" fill={post.iLiked ? "red" : "white"} />
-                </ActionIcon>
-                <Center>
-                  <Text fz="sm" c="gray">
-                    {post.likeCount}
-                  </Text>
-                </Center>
-              </Box>
-            </Stack>
-          </Grid.Col>
-        </Grid>
+        <Stack mt="xs">
+          <Title order={3}>{post.author.username}</Title>
+          <Text>{post.caption}</Text>
+        </Stack>
         <Divider my="sm" />
         <Stack>
           <Title order={5}>Comments</Title>
@@ -196,7 +176,7 @@ export default function Post() {
                 {...feedbackForm.getInputProps("msg")}
               />
               <TextInput name="timestamp" value={timestamp} type="hidden" />
-              <TextInput name="frame" value={frame} type="hidden" />
+              <TextInput name="img" value={img} type="hidden" />
               <TextInput name="target" value="feedback" type="hidden" />
               <Button
                 type="submit"
