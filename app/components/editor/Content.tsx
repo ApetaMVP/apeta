@@ -1,4 +1,4 @@
-import { AspectRatio, Card, Center, Stack } from "@mantine/core";
+import { Card, Center, Stack } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
 import ColorPanel from "./ColorPanel";
 import Toolbox from "./Toolbox";
@@ -22,6 +22,7 @@ export default function Content(props: ContentProps) {
   const [offsetY, setOffsetY] = useState(0);
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasOverlayRef = useRef<HTMLCanvasElement>(null);
 
@@ -137,20 +138,21 @@ export default function Content(props: ContentProps) {
       <div className="canvas">
         <Stack>
           <Card withBorder={false} shadow="none">
-            <Card.Section mb="xs">
-              <AspectRatio ratio={16 / 9}>
-                <canvas
-                  className="canvas-actual"
-                  width="auto"
-                  height="150px"
-                  ref={canvasRef}
-                  id="canvas"
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  style={{ cursor: "crosshair" }}
-                />
-              </AspectRatio>
+            <Card.Section ref={sectionRef}>
+              <canvas
+                className="canvas-actual"
+                width={sectionRef.current?.clientWidth!}
+                height={
+                  Math.floor(sectionRef.current?.clientWidth! * 0.5625) -
+                  Math.floor(sectionRef.current?.clientWidth! * 0.063)
+                }
+                ref={canvasRef}
+                id="canvas"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                style={{ cursor: "crosshair" }}
+              />
             </Card.Section>
             <Center>
               <Stack>
