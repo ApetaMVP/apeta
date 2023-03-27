@@ -214,7 +214,7 @@ export default function Post() {
                 onClick={(e) => onTimestamp(f.timestamp)}
               >
                 <Accordion.Control>
-                  <Anchor>@{f.timestamp.toFixed(2)}</Anchor>
+                  <Anchor>{formatDuration(f.timestamp)}</Anchor>
                 </Accordion.Control>
                 <Accordion.Panel>
                   <Card withBorder={false} shadow="false">
@@ -231,4 +231,12 @@ export default function Post() {
       </Card>
     </Group>
   );
+}
+
+function formatDuration(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60).toFixed(0);
+  const formattedMinutes = String(minutes).padStart(2, "0");
+  const formattedSeconds = String(remainingSeconds).padStart(2, "0");
+  return `${formattedMinutes}:${formattedSeconds}`;
 }
