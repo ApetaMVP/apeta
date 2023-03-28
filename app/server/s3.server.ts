@@ -4,7 +4,7 @@ import {
   S3,
 } from "@aws-sdk/client-s3";
 import { unstable_composeUploadHandlers } from "@remix-run/node";
-import { ulid } from "ulid";
+import short from "short-uuid";
 
 const { S3_BUCKET, AWS_REGION, ACCESS_KEY_ID, SECRET_ACCESS_KEY } = process.env;
 
@@ -43,7 +43,7 @@ async function convertToBuffer(arr: AsyncIterable<Uint8Array>) {
 export const uploadHandler = unstable_composeUploadHandlers(
   async (formField) => {
     if (formField.name === "video") {
-      const filename = `videos/${ulid()}/${formField.filename}`;
+      const filename = `videos/${short.generate()}/${formField.filename}`;
       return await uploadStreamToS3(
         formField.data,
         filename,
