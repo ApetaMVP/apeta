@@ -37,10 +37,16 @@ export default function App() {
         },
         primaryColor: "brand",
         components: {
+          Button: {
+            defaultProps: {
+              radius: "md",
+            },
+          },
           Card: {
             defaultProps: {
               shadow: "lg",
               withBorder: true,
+              radius: "md",
             },
           },
         },

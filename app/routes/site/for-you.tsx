@@ -1,4 +1,4 @@
-import { Center, Stack } from "@mantine/core";
+import { SimpleGrid } from "@mantine/core";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
@@ -8,7 +8,7 @@ import { getUserId } from "~/server/cookie.server";
 import { getFypPosts, likePost } from "~/server/post.server";
 import { Post } from "~/utils/types";
 
-const BATCH = 6;
+const BATCH = 20;
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
@@ -68,13 +68,11 @@ export default function ForYou() {
         <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
       }
     >
-      <Stack>
+      <SimpleGrid cols={2} spacing="xs">
         {posts.map((p) => (
-          <Center key={p.id}>
-            <FypPostCard post={p} loggedIn={data.loggedIn} />
-          </Center>
+          <FypPostCard post={p} loggedIn={data.loggedIn} />
         ))}
-      </Stack>
+      </SimpleGrid>
     </InfiniteScroll>
   );
 }
