@@ -7,11 +7,11 @@ import {
   Grid,
   Stack,
   Text,
-  Title,
 } from "@mantine/core";
 import { Form } from "@remix-run/react";
 import { IconHeart, IconMessage } from "@tabler/icons";
 import { FypPost } from "~/utils/types";
+import AvatarName from "./AvatarName";
 
 interface FypPostCardProps {
   post: FypPost;
@@ -39,7 +39,10 @@ export default function FypPostCard(props: FypPostCardProps) {
       </Card.Section>
       <Grid p="md">
         <Grid.Col span={9}>
-          <Title order={3}>{post.author.username}</Title>
+          <AvatarName
+            name={post.author.username}
+            avatarUrl={post.author.avatarUrl}
+          />
           <Text>{post.caption}</Text>
         </Grid.Col>
         <Grid.Col span={3}>
