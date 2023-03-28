@@ -6,11 +6,11 @@ import { useEffect } from "react";
 
 interface TextEditorProps extends Partial<RichTextEditorProps> {
   comment: string;
-  handleChange: (e: string) => void;
+  handleChange: (text: string) => void;
 }
 
 export default function TextEditor(props: TextEditorProps) {
-  const { comment } = props;
+  const { comment, handleChange } = props;
   const editor = useEditor({
     extensions: [StarterKit, Link, Underline],
     content: comment,
@@ -25,7 +25,8 @@ export default function TextEditor(props: TextEditorProps) {
   return (
     <RichTextEditor
       editor={editor}
-      onInput={(_e) => props.handleChange(editor?.getHTML()!)}
+      onInput={(_e) => handleChange(editor?.getHTML()!)}
+      onMouseLeave={(_e) => handleChange(editor?.getHTML()!)}
     >
       <RichTextEditor.Toolbar sticky stickyOffset={60}>
         <RichTextEditor.ControlsGroup>
