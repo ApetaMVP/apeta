@@ -24,8 +24,12 @@ import CommentBubble from "~/components/CommentBubble";
 import PhotoEditor from "~/components/editor/PhotoEditor";
 import TextEditor from "~/components/ui/TextEditor";
 import Video from "~/components/ui/Video";
-import { getUserId } from "~/server/cookie";
-import { commentOnPost, getFullPost, leaveFeedbackOnPost } from "~/server/post";
+import { getUserId } from "~/server/cookie.server";
+import {
+  commentOnPost,
+  getFullPost,
+  leaveFeedbackOnPost,
+} from "~/server/post.server";
 import { FullPost } from "~/utils/types";
 
 const commentSchema = z.object({

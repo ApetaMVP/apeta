@@ -4,8 +4,8 @@ import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import FypPostCard from "~/components/FypPostCard";
-import { getUserId } from "~/server/cookie";
-import { getFypPosts, likePost } from "~/server/post";
+import { getUserId } from "~/server/cookie.server";
+import { getFypPosts, likePost } from "~/server/post.server";
 import { Post } from "~/utils/types";
 
 const BATCH = 6;

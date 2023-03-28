@@ -14,7 +14,7 @@ import { useForm, zodResolver } from "@mantine/form";
 import { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { z } from "zod";
-import { redirectAuthUser, register } from "~/server/auth";
+import { redirectAuthUser, register } from "~/server/auth.server";
 
 const schema = z
   .object({

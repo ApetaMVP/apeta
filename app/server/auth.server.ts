@@ -1,12 +1,12 @@
 import { json, redirect } from "@remix-run/node";
-import bcrypt from "bcryptjs";
 import {
   createUserSession,
   destroySession,
   getUserId,
   getUserSession,
-} from "./cookie";
-import { prisma } from "./prisma";
+} from "./cookie.server";
+import { prisma } from "./prisma.server";
+import { createUser } from "./user.server";
 
 async function validateUser(request: Request) {
   const userId = await getUserId(request);
@@ -53,14 +53,7 @@ export async function register(
         { status: 406 }
       );
     }
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: await bcrypt.hash(password, 10),
-        name,
-        username,
-      },
-    });
+    const user = await createUser(email, password, name, username);
     return await createUserSession(user.id, "/site");
   } catch (err) {
     return json(

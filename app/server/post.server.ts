@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node";
 import { FypPost } from "~/utils/types";
-import { prisma } from "./prisma";
-import { getUserWithLikes } from "./user";
+import { prisma } from "./prisma.server";
+import { getUserWithLikes } from "./user.server";
 
 export async function createPost(
   userId: string,

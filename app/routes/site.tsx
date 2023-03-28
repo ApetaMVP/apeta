@@ -4,7 +4,7 @@ import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import LeftNav from "~/components/LeftNav";
 import TopHeader from "~/components/TopHeader";
-import { getUserId } from "~/server/cookie";
+import { getUserId } from "~/server/cookie.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
