@@ -29,9 +29,8 @@ model Post {
   author       User       @relation(fields: [authorId], references: [id])
   authorId     String     @db.ObjectId
   mediaUrl     String
-  caption      String
+  content      String
   likes        Like[]
-  comments     Comment[]
   feedback     Feedback[]
   likeCount    Int
   commentCount Int
@@ -46,37 +45,39 @@ model Like {
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
   postId    String   @db.ObjectId
-  Post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("likes")
 }
 
-model Comment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  postId    String   @db.ObjectId
-  post      Post     @relation(fields: [postId], references: [id])
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("comment")
-}
-
 model Feedback {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  msg       String
-  img       String
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  mediaUrl  String
   timestamp Float
-  postId    String   @db.ObjectId
-  post      Post     @relation(fields: [postId], references: [id])
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  postId    String    @db.ObjectId
+  post      Post      @relation(fields: [postId], references: [id])
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("feedback")
+}
+
+model Comment {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  mediaUrl   String?
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  feedbackId String   @db.ObjectId
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("comment")
 }
