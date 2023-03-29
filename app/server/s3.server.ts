@@ -19,7 +19,7 @@ const s3Client = new S3({
 const uploadStreamToS3 = async (
   data: AsyncIterable<Uint8Array>,
   key: string,
-  contentType: string
+  contentType: string,
 ) => {
   console.log(key);
   const params: PutObjectCommandInput = {
@@ -47,10 +47,10 @@ export const uploadHandler = unstable_composeUploadHandlers(
       return await uploadStreamToS3(
         formField.data,
         filename,
-        formField.contentType
+        formField.contentType,
       ); // Returns the key
     }
     // We are uploading the attachment and returning the key for storage and retrieval. Everything else needs to be serialized using TextDecoder.
     return new TextDecoder().decode(await convertToBuffer(formField.data));
-  }
+  },
 );

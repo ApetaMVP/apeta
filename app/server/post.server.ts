@@ -6,7 +6,7 @@ import { getUserWithLikes } from "./user.server";
 export async function createPost(
   userId: string,
   mediaUrl: string,
-  caption: string
+  caption: string,
 ) {
   return await prisma.post.create({
     data: {
@@ -22,7 +22,7 @@ export async function createPost(
 export async function getFypPosts(
   userId: string,
   start: number,
-  limit: number
+  limit: number,
 ) {
   const dbPosts = await prisma.post.findMany({
     orderBy: { createdAt: "desc" },
@@ -101,7 +101,7 @@ export async function likePost(userId: string, postId: string) {
 export async function commentOnPost(
   userId: string,
   postId: string,
-  content: string
+  content: string,
 ) {
   await prisma.comment.create({
     data: {
@@ -134,7 +134,7 @@ export async function leaveFeedbackOnPost(
   postId: string,
   msg: string,
   timestamp: number,
-  img: string
+  img: string,
 ) {
   await prisma.feedback.create({
     data: {

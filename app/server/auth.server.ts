@@ -41,7 +41,7 @@ export async function register(
   email: string,
   password: string,
   name: string,
-  username: string
+  username: string,
 ) {
   try {
     const existingUser = await prisma.user.findFirst({
@@ -50,7 +50,7 @@ export async function register(
     if (existingUser) {
       return json(
         { error: `Email or username already in use` },
-        { status: 406 }
+        { status: 406 },
       );
     }
     const user = await createUser(email, password, name, username);
@@ -58,7 +58,7 @@ export async function register(
   } catch (err) {
     return json(
       { error: `Error occurred creating user: ${err}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -7,7 +7,7 @@ export async function createUser(
   password: string,
   name: string,
   username: string,
-  avatar = `data:image/svg+xml;utf8,${generateFromString("example@test.com")}`
+  avatar = `data:image/svg+xml;utf8,${generateFromString("example@test.com")}`,
 ) {
   return await prisma.user.create({
     data: {
