@@ -34,9 +34,9 @@ export async function getFypPosts(
     return dbPosts;
   }
   const user = await getUserWithLikes(userId);
-  let posts: FypPost[] = [];
+  const posts: FypPost[] = [];
   for (const dbp of dbPosts) {
-    let post: FypPost = dbp;
+    const post: FypPost = dbp;
     if (user?.likes?.some((l) => l.postId === dbp.id)) {
       post.iLiked = true;
     } else {

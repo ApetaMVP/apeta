@@ -5,8 +5,8 @@ import { IconCloud, IconUpload, IconX } from "@tabler/icons";
 export default function FileUpload(props: Partial<DropzoneProps>) {
   return (
     <Dropzone
-      onDrop={(files) => console.log("accepted files", files)}
-      onReject={(files) => console.log("rejected files", files)}
+      onDrop={(files) => alert("accepted files")}
+      onReject={(files) => alert("rejected files")}
       maxSize={50 * 1024 ** 2} // 50 mb
       accept={["video/mp4", "video/mpeg", "video/webm", "video/quicktime"]}
       {...props}

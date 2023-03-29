@@ -26,9 +26,10 @@ export default function Video(props: VideoProps) {
     if (frame) {
       onFrame(frame);
     }
-    const timestamp = Number(videoRef?.current?.["currentTime"]);
+    /* tslint:disable:no-string-literal */
+    const t = Number(videoRef?.current?.["currentTime"]);
     if (onTimestamp) {
-      onTimestamp(timestamp);
+      onTimestamp(t);
     }
     onPause();
   };

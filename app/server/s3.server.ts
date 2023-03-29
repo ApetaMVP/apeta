@@ -21,7 +21,6 @@ const uploadStreamToS3 = async (
   key: string,
   contentType: string,
 ) => {
-  console.log(key);
   const params: PutObjectCommandInput = {
     Bucket: S3_BUCKET,
     Key: key,
