@@ -70,7 +70,7 @@ export default function ForYou() {
     >
       <SimpleGrid cols={2} spacing="xs">
         {posts.map((p) => (
-          <FypPostCard post={p} loggedIn={data.loggedIn} />
+          <FypPostCard key={p.id} post={p} loggedIn={data.loggedIn} />
         ))}
       </SimpleGrid>
     </InfiniteScroll>

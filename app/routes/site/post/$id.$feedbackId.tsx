@@ -31,7 +31,6 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   const userId = await getUserId(request);
   const feedbackId = params.feedbackId;
   const feedback = await getFeedback(feedbackId!);
-  console.log(feedback);
   return json({ feedback, loggedIn: userId ? true : false });
 };
 

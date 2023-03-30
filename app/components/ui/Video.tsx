@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 interface VideoProps {
   src: string;
   timestamp: number;
+  onLoaded: () => void;
   onTimestamp: (timestamp: number) => void;
   onFrame: (frame: string) => void;
   onPlay: () => void;
@@ -10,7 +11,8 @@ interface VideoProps {
 }
 
 export default function Video(props: VideoProps) {
-  const { src, timestamp, onTimestamp, onFrame, onPause, onPlay } = props;
+  const { src, timestamp, onLoaded, onTimestamp, onFrame, onPause, onPlay } =
+    props;
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -51,6 +53,7 @@ export default function Video(props: VideoProps) {
         controls
         ref={videoRef}
         src={src}
+        onLoadedData={onLoaded}
         onPause={handlePause}
         onPlay={onPlay}
         crossOrigin="anonymous"

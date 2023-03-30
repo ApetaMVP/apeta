@@ -56,6 +56,7 @@ export default function Post() {
   const loggedIn = data.loggedIn;
 
   const [writingFeedback, setWritingFeedback] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const [paused, setPaused] = useState(true);
   const [timestamp, setTimestamp] = useState(0.0);
   const [frame, setFrame] = useState("");
@@ -72,6 +73,11 @@ export default function Post() {
     feedbackForm.setValues({ msg: "" });
     feedbackForm.reset();
     setWritingFeedback(false);
+  };
+
+  const onLoaded = () => {
+    console.log(img);
+    setVideoLoaded(true);
   };
 
   const onTimestamp = (t: number) => {
@@ -100,6 +106,7 @@ export default function Post() {
               <Video
                 src={post.mediaUrl}
                 timestamp={timestamp}
+                onLoaded={onLoaded}
                 onTimestamp={onTimestamp}
                 onFrame={onFrame}
                 onPause={() => setPaused(true)}
@@ -137,7 +144,10 @@ export default function Post() {
         )}
         <Stack mt="xs">
           {loggedIn && !writingFeedback && (
-            <Button onClick={(_e) => setWritingFeedback(!writingFeedback)}>
+            <Button
+              onClick={(_e) => setWritingFeedback(!writingFeedback)}
+              disabled={!videoLoaded}
+            >
               Draw Feedback
             </Button>
           )}
