@@ -1,4 +1,15 @@
-import { Anchor, Card, Image, Stack, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Anchor,
+  Box,
+  Card,
+  Center,
+  Group,
+  Image,
+  Stack,
+  Text,
+} from "@mantine/core";
+import { IconMessage } from "@tabler/icons";
 import { Feedback } from "~/utils/types";
 import AvatarName from "./AvatarName";
 
@@ -11,12 +22,7 @@ interface FeedbackCardProps {
 export default function FeedbackCard(props: FeedbackCardProps) {
   const { feedback, handleTimestamp } = props;
   return (
-    <Card
-      onClick={(_e) => {
-        window.location.href = `/site/post/${feedback.postId}/${feedback.id}`;
-      }}
-      style={{ cursor: "pointer" }}
-    >
+    <Card>
       <Card.Section>
         <Image src={feedback.mediaUrl} />
       </Card.Section>
@@ -25,14 +31,30 @@ export default function FeedbackCard(props: FeedbackCardProps) {
           name={feedback.user.username}
           avatarUrl={feedback.user.avatarUrl}
         />
-        <Anchor
-          onClick={(e) => {
-            e.stopPropagation();
-            handleTimestamp(feedback.timestamp);
-          }}
-        >
-          {formatDuration(feedback.timestamp)}
-        </Anchor>
+        <Group position="apart">
+          <Anchor
+            onClick={(e) => {
+              e.stopPropagation();
+              handleTimestamp(feedback.timestamp);
+            }}
+          >
+            {formatDuration(feedback.timestamp)}
+          </Anchor>
+          <Box>
+            <ActionIcon
+              onClick={(_e) => {
+                window.location.href = `/site/post/${feedback.postId}/${feedback.id}`;
+              }}
+            >
+              <IconMessage color="black" />
+            </ActionIcon>
+            <Center>
+              <Text fz="sm" c="gray">
+                {feedback.commentCount}
+              </Text>
+            </Center>
+          </Box>
+        </Group>
         <Text lineClamp={3}>{feedback.content}</Text>
       </Stack>
     </Card>

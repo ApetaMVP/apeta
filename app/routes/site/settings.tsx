@@ -6,26 +6,30 @@ import {
   LoadingOverlay,
   rem,
   Stack,
-  Textarea,
 } from "@mantine/core";
-import { useForm, zodResolver } from "@mantine/form";
 import {
   ActionArgs,
+  json,
+  LoaderArgs,
   redirect,
   unstable_parseMultipartFormData,
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { IconUpload } from "@tabler/icons";
 import { useState } from "react";
-import { z } from "zod";
-import LinkButton from "~/components/ui/LinkButton";
+import { requireAuth } from "~/server/auth.server";
 import { getUserId } from "~/server/cookie.server";
-import { createPost } from "~/server/post.server";
 import { uploadHandler } from "~/server/s3.server";
+import { getUser, updateUserPfp } from "~/server/user.server";
 
-const schema = z.object({
-  caption: z.string().nonempty(),
-});
+export const loader = async ({ request }: LoaderArgs) => {
+  if (!(await requireAuth(request)).userId) {
+    return redirect("/");
+  }
+  const userId = await getUserId(request);
+  const user = await getUser(userId!);
+  return json({ user });
+};
 
 export const action = async ({ request }: ActionArgs) => {
   const userId = await getUserId(request);
@@ -33,23 +37,14 @@ export const action = async ({ request }: ActionArgs) => {
     request,
     uploadHandler,
   );
-  const filename = formData.get("video");
-  const caption = formData.get("caption");
-  const post = await createPost(userId!, filename as string, caption as string);
-  return redirect(`/site/post/${post.id}`);
+  const filename = formData.get("image");
+  await updateUserPfp(userId!, filename as string);
+  return null;
 };
 
-export default function Upload() {
+export default function Settings() {
   const fetcher = useFetcher();
   const [file, setFile] = useState<File | null>(null);
-
-  const form = useForm({
-    validate: zodResolver(schema),
-    validateInputOnBlur: true,
-    initialValues: {
-      caption: "",
-    },
-  });
 
   return (
     <Card>
@@ -60,9 +55,9 @@ export default function Upload() {
       <fetcher.Form method="post" encType="multipart/form-data">
         <Stack>
           <FileInput
-            label="Video"
-            name="video"
-            accept="video/*"
+            label="Profile Photo"
+            name="image"
+            accept="image/*"
             icon={<IconUpload size={rem(14)} />}
             onChange={(e) => {
               if (e!.size < 52_428_800) {
@@ -72,17 +67,9 @@ export default function Upload() {
               }
             }}
           />
-          <Textarea
-            label="Caption"
-            name="caption"
-            {...form.getInputProps("caption")}
-          />
           <Group>
-            <LinkButton link="/site" variant="default">
-              Discard
-            </LinkButton>
-            <Button type="submit" disabled={!form.isValid() || !file}>
-              Post
+            <Button type="submit" disabled={!file}>
+              Submit
             </Button>
           </Group>
         </Stack>

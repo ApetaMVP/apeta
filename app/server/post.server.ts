@@ -109,6 +109,7 @@ export async function feedbackOnPost(
       content,
       timestamp,
       mediaUrl,
+      commentCount: 0,
       user: {
         connect: {
           id: userId,
@@ -122,7 +123,9 @@ export async function feedbackOnPost(
     },
   });
   await prisma.post.update({
-    where: { id: postId },
+    where: {
+      id: postId,
+    },
     data: {
       feedbackCount: {
         increment: 1,
@@ -149,6 +152,16 @@ export async function commentOnFeedback(
         connect: {
           id: feedbackId,
         },
+      },
+    },
+  });
+  await prisma.feedback.update({
+    where: {
+      id: feedbackId,
+    },
+    data: {
+      commentCount: {
+        increment: 1,
       },
     },
   });

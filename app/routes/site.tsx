@@ -1,21 +1,28 @@
 import { AppShell, Box, useMantineTheme } from "@mantine/core";
-import { LoaderArgs } from "@remix-run/node";
+import { User } from "@prisma/client";
+import { json, LoaderArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import LeftNav from "~/components/LeftNav";
 import TopHeader from "~/components/TopHeader";
 import { getUserId } from "~/server/cookie.server";
+import { getUser } from "~/server/user.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
-  return { loggedIn: userId ? true : false };
+  let user;
+  if (userId) {
+    user = await getUser(userId);
+  }
+  return json({ loggedIn: userId ? true : false, user });
 };
 
 export default function Site() {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-
-  const { loggedIn } = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
+  const loggedIn = data.loggedIn;
+  const user = data.user as unknown as User;
 
   return (
     <AppShell
@@ -35,6 +42,7 @@ export default function Site() {
           setOpened={setOpened}
           theme={theme}
           loggedIn={loggedIn}
+          user={user}
         />
       }
     >

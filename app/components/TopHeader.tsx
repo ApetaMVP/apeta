@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Burger,
   Group,
@@ -6,7 +7,10 @@ import {
   Image,
   MantineTheme,
   MediaQuery,
+  Menu,
 } from "@mantine/core";
+import { User } from "@prisma/client";
+import { IconLogout, IconSettings } from "@tabler/icons";
 import LinkButton from "./ui/LinkButton";
 
 interface TopHeaderProps {
@@ -14,6 +18,7 @@ interface TopHeaderProps {
   setOpened: React.Dispatch<any>;
   theme: MantineTheme;
   loggedIn: boolean;
+  user?: User;
 }
 
 export default function TopHeader(props: TopHeaderProps) {
@@ -35,17 +40,33 @@ export default function TopHeader(props: TopHeaderProps) {
               <Image src="/logo.png" />
             </a>
           </Box>
-          {/* <TextInput placeholder="Search" icon={<IconSearch />} w="33%" /> */}
-          <Box>
+          <Group>
             <LinkButton variant="default" link="/site/upload">
               + Upload
             </LinkButton>
-            {!props.loggedIn && (
+            {!props.loggedIn ? (
               <LinkButton link="/auth/login" ml="xs">
                 Log In
               </LinkButton>
+            ) : (
+              <Menu width={200}>
+                <Menu.Target>
+                  <Avatar src={props.user?.avatarUrl} radius="xl" />
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    component="a"
+                    href="/site/settings"
+                    icon={<IconSettings />}
+                  >
+                    Settings
+                  </Menu.Item>
+                  <Menu.Divider />
+                  <Menu.Item icon={<IconLogout />}>Log Out</Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             )}
-          </Box>
+          </Group>
         </Group>
       </div>
     </Header>

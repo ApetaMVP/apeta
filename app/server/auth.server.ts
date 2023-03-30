@@ -26,7 +26,7 @@ async function validateUser(request: Request) {
 }
 
 export async function requireAuth(request: Request) {
-  const userId = getUserId(request);
+  const userId = await getUserId(request);
   return { userId };
 }
 

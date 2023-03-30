@@ -20,7 +20,6 @@ export default function Video(props: VideoProps) {
     if (timestamp !== null) {
       videoRef!.current!.currentTime = timestamp;
     }
-    handlePause();
   }, [timestamp]);
 
   const handlePause = () => {
@@ -53,7 +52,10 @@ export default function Video(props: VideoProps) {
         controls
         ref={videoRef}
         src={src}
-        onLoadedData={onLoaded}
+        onCanPlayThrough={(_e) => {
+          handlePause();
+          onLoaded();
+        }}
         onPause={handlePause}
         onPlay={onPlay}
         crossOrigin="anonymous"

@@ -1,6 +1,5 @@
 import {
   AspectRatio,
-  Box,
   Button,
   Card,
   Group,
@@ -76,7 +75,6 @@ export default function Post() {
   };
 
   const onLoaded = () => {
-    console.log(img);
     setVideoLoaded(true);
   };
 
@@ -101,7 +99,7 @@ export default function Post() {
         />
         <Text>{post.content}</Text>
         {!writingFeedback && (
-          <Card.Section>
+          <Card.Section mt="xs">
             <AspectRatio ratio={16 / 9}>
               <Video
                 src={post.mediaUrl}
@@ -116,42 +114,42 @@ export default function Post() {
           </Card.Section>
         )}
         {writingFeedback && (
-          <Card.Section>
-            <PhotoEditor frame={frame} onImg={onImg} />
+          <>
+            <Card.Section>
+              <PhotoEditor frame={frame} onImg={onImg} />
+            </Card.Section>
             <Form method="post" onSubmit={optimisticClear}>
-              <Box mx="md">
-                <Textarea
-                  name="feedback"
-                  label="Feedback"
-                  {...feedbackForm.getInputProps("msg")}
-                />
-                <TextInput name="timestamp" value={timestamp} type="hidden" />
-                <TextInput name="img" value={img} type="hidden" />
-                <Group mt="sm" grow>
-                  <Button
-                    variant="default"
-                    onClick={(e) => setWritingFeedback(false)}
-                  >
-                    Discard
-                  </Button>
-                  <Button type="submit" disabled={!feedbackForm.isValid()}>
-                    Submit Feedback
-                  </Button>
-                </Group>
-              </Box>
+              <Textarea
+                name="feedback"
+                label="Feedback"
+                {...feedbackForm.getInputProps("msg")}
+              />
+              <TextInput name="timestamp" value={timestamp} type="hidden" />
+              <TextInput name="img" value={img} type="hidden" />
+              <Group mt="sm" grow>
+                <Button
+                  variant="default"
+                  onClick={(e) => setWritingFeedback(false)}
+                >
+                  Discard
+                </Button>
+                <Button type="submit" disabled={!feedbackForm.isValid()}>
+                  Submit Feedback
+                </Button>
+              </Group>
             </Form>
-          </Card.Section>
+          </>
         )}
-        <Stack mt="xs">
-          {loggedIn && !writingFeedback && (
+        {loggedIn && !writingFeedback && (
+          <Stack mt="xs">
             <Button
               onClick={(_e) => setWritingFeedback(!writingFeedback)}
               disabled={!videoLoaded}
             >
               Draw Feedback
             </Button>
-          )}
-        </Stack>
+          </Stack>
+        )}
       </Card>
       <SimpleGrid cols={3} spacing="xs">
         {post.feedback?.map((f) => (

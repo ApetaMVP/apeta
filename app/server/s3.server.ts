@@ -41,8 +41,10 @@ async function convertToBuffer(arr: AsyncIterable<Uint8Array>) {
 
 export const uploadHandler = unstable_composeUploadHandlers(
   async (formField) => {
-    if (formField.name === "video") {
-      const filename = `videos/${short.generate()}/${formField.filename}`;
+    if (formField.name === "video" || formField.name === "image") {
+      const filename = `${formField.name}s/${short.generate()}/${
+        formField.filename
+      }`;
       return await uploadStreamToS3(
         formField.data,
         filename,
