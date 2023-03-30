@@ -25,17 +25,17 @@ model User {
 }
 
 model Post {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  author       User       @relation(fields: [authorId], references: [id])
-  authorId     String     @db.ObjectId
-  mediaUrl     String
-  content      String
-  likes        Like[]
-  feedback     Feedback[]
-  likeCount    Int
-  commentCount Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  author        User       @relation(fields: [authorId], references: [id])
+  authorId      String     @db.ObjectId
+  mediaUrl      String
+  content       String
+  likes         Like[]
+  feedback      Feedback[]
+  likeCount     Int
+  feedbackCount Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   @@map("posts")
 }
@@ -65,7 +65,7 @@ model Feedback {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  @@map("feedback")
+  @@map("feedbacks")
 }
 
 model Comment {
@@ -79,5 +79,5 @@ model Comment {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@map("comment")
+  @@map("comments")
 }

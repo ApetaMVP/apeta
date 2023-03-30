@@ -44,7 +44,7 @@ export default function FypPostCard(props: FypPostCardProps) {
             name={post.author.username}
             avatarUrl={post.author.avatarUrl}
           />
-          <Text>{post.caption}</Text>
+          <Text>{post.content}</Text>
         </Group>
       </Card>
       <Stack align="end">
@@ -64,17 +64,13 @@ export default function FypPostCard(props: FypPostCardProps) {
                 {post.likeCount}
               </Text>
             </Center>
-            <Form
-              method="get"
-              action={`/site/post/${post.id}`}
-              onClick={optimisticUpdate}
-            >
+            <Form method="get" action={`/site/post/${post.id}`}>
               <ActionIcon type="submit">
                 <IconMessage color="black" />
               </ActionIcon>
               <Center>
                 <Text fz="sm" c="gray">
-                  {post.commentCount}
+                  {post.feedbackCount}
                 </Text>
               </Center>
             </Form>
@@ -90,17 +86,13 @@ export default function FypPostCard(props: FypPostCardProps) {
                 {post.likeCount}
               </Text>
             </Center>
-            <Form
-              method="get"
-              action={`/site/post/${post.id}`}
-              onClick={optimisticUpdate}
-            >
+            <Form method="get" action={`/site/post/${post.id}`}>
               <ActionIcon type="submit">
                 <IconMessage color="black" />
               </ActionIcon>
               <Center>
                 <Text fz="sm" c="gray">
-                  {post.commentCount}
+                  {post.feedbackCount}
                 </Text>
               </Center>
             </Form>

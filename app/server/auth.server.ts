@@ -1,4 +1,5 @@
 import { json, redirect } from "@remix-run/node";
+import bcrypt from "bcryptjs";
 import {
   createUserSession,
   destroySession,

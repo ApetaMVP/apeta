@@ -6,15 +6,15 @@ import { getUserWithLikes } from "./user.server";
 export async function createPost(
   userId: string,
   mediaUrl: string,
-  caption: string,
+  content: string,
 ) {
   return await prisma.post.create({
     data: {
       authorId: userId,
       mediaUrl,
-      caption,
+      content,
       likeCount: 0,
-      commentCount: 0,
+      feedbackCount: 0,
     },
   });
 }
@@ -52,7 +52,6 @@ export async function getFullPost(postId: string) {
     where: { id: postId },
     include: {
       author: true,
-      comments: { include: { user: true } },
       feedback: { include: { user: true }, orderBy: { timestamp: "asc" } },
     },
   });
@@ -98,14 +97,18 @@ export async function likePost(userId: string, postId: string) {
   return json({ success: true });
 }
 
-export async function commentOnPost(
+export async function feedbackOnPost(
   userId: string,
   postId: string,
   content: string,
+  timestamp: number,
+  mediaUrl: string,
 ) {
-  await prisma.comment.create({
+  await prisma.feedback.create({
     data: {
       content,
+      timestamp,
+      mediaUrl,
       user: {
         connect: {
           id: userId,
@@ -121,7 +124,7 @@ export async function commentOnPost(
   await prisma.post.update({
     where: { id: postId },
     data: {
-      commentCount: {
+      feedbackCount: {
         increment: 1,
       },
     },
@@ -129,26 +132,22 @@ export async function commentOnPost(
   return json({ success: true });
 }
 
-export async function leaveFeedbackOnPost(
+export async function commentOnFeedback(
   userId: string,
-  postId: string,
-  msg: string,
-  timestamp: number,
-  img: string,
+  feedbackId: string,
+  content: string,
 ) {
-  await prisma.feedback.create({
+  await prisma.comment.create({
     data: {
-      msg,
-      timestamp,
-      img,
+      content,
       user: {
         connect: {
           id: userId,
         },
       },
-      post: {
+      feedback: {
         connect: {
-          id: postId,
+          id: feedbackId,
         },
       },
     },
