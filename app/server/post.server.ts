@@ -38,10 +38,11 @@ export async function createPost(
   return post;
 }
 
-export async function getFypPosts(
+export async function getPosts(
   userId: string,
   start: number,
   limit: number,
+  tag?: string,
 ) {
   const dbPosts = await prisma.post.findMany({
     orderBy: {
@@ -51,6 +52,9 @@ export async function getFypPosts(
     take: limit,
     include: {
       author: true,
+    },
+    where: {
+      ...(tag ? { tags: { hasSome: `#${tag}` } } : {}),
     },
   });
   if (!userId) {

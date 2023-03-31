@@ -10,6 +10,7 @@ import {
 import { Tag } from "@prisma/client";
 import { IconHome, IconUser } from "@tabler/icons";
 import { useEffect, useState } from "react";
+import sanitizedSearch from "~/utils/helpers";
 
 interface LeftNavProps {
   opened: boolean;
@@ -71,7 +72,13 @@ export default function LeftNav(props: LeftNavProps) {
       <Stack mx="lg" spacing="xs">
         <Text fz="lg">Discover</Text>
         {tags.map((t) => (
-          <Badge key={t.id} color="gray">
+          <Badge
+            key={t.id}
+            color="gray"
+            component="a"
+            href={`/site/for-you?searchTerm=${sanitizedSearch(t.name)}`}
+            style={{ cursor: "pointer" }}
+          >
             {t.name}
           </Badge>
         ))}

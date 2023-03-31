@@ -99,6 +99,13 @@ export default function Post() {
             avatarUrl={post.author.avatarUrl}
           />
           <Text>{post.content}</Text>
+          <Group>
+            {post.tags.map((t) => (
+              <Text key={t} fw={700} style={{ cursor: "default" }}>
+                <Text truncate>{t}</Text>
+              </Text>
+            ))}
+          </Group>
         </Stack>
         {!writingFeedback && (
           <Card.Section mt="xs">

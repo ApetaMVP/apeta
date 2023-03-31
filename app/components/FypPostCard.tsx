@@ -33,7 +33,7 @@ export default function FypPostCard(props: FypPostCardProps) {
 
   return (
     <Group w="100%" noWrap position="center">
-      <Card w="80%">
+      <Card w="80%" shadow="none">
         <Card.Section>
           <AspectRatio ratio={16 / 9}>
             <video controls src={post.mediaUrl} />
