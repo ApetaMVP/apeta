@@ -50,6 +50,7 @@ export default function Video(props: VideoProps) {
     <>
       <video
         controls
+        autoPlay
         ref={videoRef}
         src={src}
         onCanPlayThrough={(_e) => {
