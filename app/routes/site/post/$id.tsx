@@ -93,7 +93,7 @@ export default function Post() {
   return (
     <Stack align="center" spacing="xl">
       <Card w="75%">
-        <Stack>
+        <Stack mb="xs">
           <AvatarName
             name={post.author.username}
             avatarUrl={post.author.avatarUrl}
@@ -108,7 +108,7 @@ export default function Post() {
           </Group>
         </Stack>
         {!writingFeedback && (
-          <Card.Section mt="xs">
+          <Card.Section>
             <AspectRatio ratio={16 / 9}>
               <Video
                 src={post.mediaUrl}
