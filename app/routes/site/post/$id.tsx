@@ -93,11 +93,13 @@ export default function Post() {
   return (
     <Stack align="center" spacing="xl">
       <Card w="75%">
-        <AvatarName
-          name={post.author.username}
-          avatarUrl={post.author.avatarUrl}
-        />
-        <Text>{post.content}</Text>
+        <Stack>
+          <AvatarName
+            name={post.author.username}
+            avatarUrl={post.author.avatarUrl}
+          />
+          <Text>{post.content}</Text>
+        </Stack>
         {!writingFeedback && (
           <Card.Section mt="xs">
             <AspectRatio ratio={16 / 9}>

@@ -7,16 +7,35 @@ export async function createPost(
   userId: string,
   mediaUrl: string,
   content: string,
+  tags: string[],
 ) {
-  return await prisma.post.create({
+  const post = await prisma.post.create({
     data: {
       authorId: userId,
       mediaUrl,
       content,
       likeCount: 0,
       feedbackCount: 0,
+      tags,
     },
   });
+  tags.forEach(async (t) => {
+    await prisma.tag.upsert({
+      where: {
+        name: t,
+      },
+      create: {
+        name: t,
+        count: 1,
+      },
+      update: {
+        count: {
+          increment: 1,
+        },
+      },
+    });
+  });
+  return post;
 }
 
 export async function getFypPosts(
@@ -25,10 +44,14 @@ export async function getFypPosts(
   limit: number,
 ) {
   const dbPosts = await prisma.post.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: {
+      createdAt: "desc",
+    },
     skip: start,
     take: limit,
-    include: { author: true },
+    include: {
+      author: true,
+    },
   });
   if (!userId) {
     return dbPosts;
@@ -49,10 +72,19 @@ export async function getFypPosts(
 
 export async function getFullPost(postId: string) {
   return await prisma.post.findUnique({
-    where: { id: postId },
+    where: {
+      id: postId,
+    },
     include: {
       author: true,
-      feedback: { include: { user: true }, orderBy: { timestamp: "asc" } },
+      feedback: {
+        include: {
+          user: true,
+        },
+        orderBy: {
+          timestamp: "asc",
+        },
+      },
     },
   });
 }
@@ -82,7 +114,12 @@ export async function likePost(userId: string, postId: string) {
       },
     });
   } else {
-    await prisma.like.deleteMany({ where: { userId, postId } });
+    await prisma.like.deleteMany({
+      where: {
+        userId,
+        postId,
+      },
+    });
     await prisma.post.update({
       where: {
         id: postId,

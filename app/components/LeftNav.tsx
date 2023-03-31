@@ -7,16 +7,18 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
+import { Tag } from "@prisma/client";
 import { IconHome, IconUser } from "@tabler/icons";
 import { useEffect, useState } from "react";
 
 interface LeftNavProps {
   opened: boolean;
-  setOpened: React.Dispatch<any>;
   loggedIn: boolean;
+  tags: Tag[];
 }
 
 export default function LeftNav(props: LeftNavProps) {
+  const { opened, loggedIn, tags } = props;
   const [activeLink, setActiveLink] = useState("");
 
   useEffect(() => {
@@ -26,11 +28,7 @@ export default function LeftNav(props: LeftNavProps) {
   }, [activeLink]);
 
   return (
-    <Navbar
-      hiddenBreakpoint="sm"
-      hidden={!props.opened}
-      width={{ sm: 200, lg: 250 }}
-    >
+    <Navbar hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 250 }}>
       <Navbar.Section>
         <NavLink
           label="For You"
@@ -49,7 +47,7 @@ export default function LeftNav(props: LeftNavProps) {
           p="md"
         />
       </Navbar.Section>
-      {!props.loggedIn && (
+      {!loggedIn && (
         <>
           <Divider my="sm" />
           <Navbar.Section>
@@ -72,9 +70,11 @@ export default function LeftNav(props: LeftNavProps) {
       <Divider my="sm" />
       <Stack mx="lg" spacing="xs">
         <Text fz="lg">Discover</Text>
-        <Badge color="gray">#skimoguls</Badge>
-        <Badge color="gray">#tennisbackhand</Badge>
-        <Badge color="gray">#weightliftingcrossfit</Badge>
+        {tags.map((t) => (
+          <Badge key={t.id} color="gray">
+            {t.name}
+          </Badge>
+        ))}
       </Stack>
     </Navbar>
   );

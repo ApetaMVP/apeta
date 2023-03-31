@@ -22,15 +22,17 @@ interface TopHeaderProps {
 }
 
 export default function TopHeader(props: TopHeaderProps) {
+  const { opened, setOpened, theme, loggedIn, user } = props;
+
   return (
     <Header height={{ base: 50, md: 70 }} p="md">
       <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
         <MediaQuery largerThan="sm" styles={{ display: "none" }}>
           <Burger
-            opened={props.opened}
-            onClick={() => props.setOpened((o: boolean) => !o)}
+            opened={opened}
+            onClick={() => setOpened((o: boolean) => !o)}
             size="sm"
-            color={props.theme.colors.gray[6]}
+            color={theme.colors.gray[6]}
             mr="xl"
           />
         </MediaQuery>
@@ -44,14 +46,14 @@ export default function TopHeader(props: TopHeaderProps) {
             <LinkButton variant="default" link="/site/upload">
               + Upload
             </LinkButton>
-            {!props.loggedIn ? (
+            {!loggedIn ? (
               <LinkButton link="/auth/login" ml="xs">
                 Log In
               </LinkButton>
             ) : (
               <Menu width={200}>
                 <Menu.Target>
-                  <Avatar src={props.user?.avatarUrl} radius="xl" />
+                  <Avatar src={user?.avatarUrl} radius="xl" />
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item

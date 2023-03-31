@@ -1,11 +1,12 @@
 import { AppShell, Box, useMantineTheme } from "@mantine/core";
-import { User } from "@prisma/client";
-import { json, LoaderArgs } from "@remix-run/node";
+import { Tag, User } from "@prisma/client";
+import { LoaderArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import LeftNav from "~/components/LeftNav";
 import TopHeader from "~/components/TopHeader";
 import { getUserId } from "~/server/cookie.server";
+import { getTags } from "~/server/tags.server";
 import { getUser } from "~/server/user.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -14,7 +15,8 @@ export const loader = async ({ request }: LoaderArgs) => {
   if (userId) {
     user = await getUser(userId);
   }
-  return json({ loggedIn: userId ? true : false, user });
+  const tags = await getTags(5);
+  return { loggedIn: userId ? true : false, user, tags };
 };
 
 export default function Site() {
@@ -23,6 +25,7 @@ export default function Site() {
   const data = useLoaderData<typeof loader>();
   const loggedIn = data.loggedIn;
   const user = data.user as unknown as User;
+  const tags = data.tags as unknown as Tag[];
 
   return (
     <AppShell
@@ -33,9 +36,7 @@ export default function Site() {
       }}
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
-      navbar={
-        <LeftNav opened={opened} setOpened={setOpened} loggedIn={loggedIn} />
-      }
+      navbar={<LeftNav opened={opened} loggedIn={loggedIn} tags={tags} />}
       header={
         <TopHeader
           opened={opened}

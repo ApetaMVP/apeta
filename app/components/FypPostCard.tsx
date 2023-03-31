@@ -39,13 +39,20 @@ export default function FypPostCard(props: FypPostCardProps) {
             <video controls src={post.mediaUrl} />
           </AspectRatio>
         </Card.Section>
-        <Group mt="xs">
+        <Stack mt="xs">
           <AvatarName
             name={post.author.username}
             avatarUrl={post.author.avatarUrl}
           />
           <Text>{post.content}</Text>
-        </Group>
+          <Group>
+            {post.tags.map((t) => (
+              <Text key={t} fw={700} style={{ cursor: "default" }}>
+                <Text truncate>{t}</Text>
+              </Text>
+            ))}
+          </Group>
+        </Stack>
       </Card>
       <Stack align="end">
         {loggedIn && (

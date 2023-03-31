@@ -14,7 +14,7 @@ const ToolButton = (props: ToolButtonProps) => {
       variant={active ? "filled" : "outline"}
       onClick={(e) => handleClick(e, name)}
     >
-      {props.icon}
+      {icon}
     </ActionIcon>
   );
 };
