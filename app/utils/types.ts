@@ -7,10 +7,7 @@ import {
 
 export type Post = PrismaPost & { author: User };
 export type FypPost = Post & { iLiked?: boolean };
-export type FullPost = FypPost & {
-  comments?: Comment[];
-  feedback?: Feedback[];
-};
+export type FullPost = FypPost & { feedback?: Feedback[] };
 
 export type Comment = PrismaComment & { user: User };
-export type Feedback = PrismaFeedback & { user: User };
+export type Feedback = PrismaFeedback & { user: User; comments: Comment[] };

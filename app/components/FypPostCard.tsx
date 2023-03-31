@@ -4,14 +4,15 @@ import {
   Box,
   Card,
   Center,
-  Grid,
+  Group,
   Stack,
   Text,
-  Title,
 } from "@mantine/core";
 import { Form } from "@remix-run/react";
 import { IconHeart, IconMessage } from "@tabler/icons";
+import sanitizedSearch from "~/utils/helpers";
 import { FypPost } from "~/utils/types";
+import AvatarName from "./AvatarName";
 
 interface FypPostCardProps {
   post: FypPost;
@@ -20,6 +21,7 @@ interface FypPostCardProps {
 
 export default function FypPostCard(props: FypPostCardProps) {
   const { post, loggedIn } = props;
+
   const optimisticUpdate = async () => {
     if (!post.iLiked) {
       post.iLiked = true;
@@ -31,83 +33,90 @@ export default function FypPostCard(props: FypPostCardProps) {
   };
 
   return (
-    <Card w="50%">
-      <Card.Section>
-        <AspectRatio ratio={16 / 9}>
-          <video controls src={post.mediaUrl}></video>
-        </AspectRatio>
-      </Card.Section>
-      <Grid p="md">
-        <Grid.Col span={9}>
-          <Title order={3}>{post.author.username}</Title>
-          <Text>{post.caption}</Text>
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <Stack align="end">
-            {loggedIn && (
-              <Box>
-                <Form
-                  method="post"
-                  action="/site/for-you"
-                  onClick={optimisticUpdate}
-                >
-                  <ActionIcon type="submit" name="postId" value={post.id}>
-                    <IconHeart
-                      color="red"
-                      fill={post.iLiked ? "red" : "white"}
-                    />
-                  </ActionIcon>
-                </Form>
-                <Center>
-                  <Text fz="sm" c="gray">
-                    {post.likeCount}
-                  </Text>
-                </Center>
-                <Form
-                  method="get"
-                  action={`/site/post/${post.id}`}
-                  onClick={optimisticUpdate}
-                >
-                  <ActionIcon type="submit">
-                    <IconMessage color="black" />
-                  </ActionIcon>
-                  <Center>
-                    <Text fz="sm" c="gray">
-                      {post.commentCount}
-                    </Text>
-                  </Center>
-                </Form>
-              </Box>
-            )}
-            {!loggedIn && (
-              <Box>
-                <ActionIcon disabled>
-                  <IconHeart />
-                </ActionIcon>
-                <Center>
-                  <Text fz="sm" c="gray">
-                    {post.likeCount}
-                  </Text>
-                </Center>
-                <Form
-                  method="get"
-                  action={`/site/post/${post.id}`}
-                  onClick={optimisticUpdate}
-                >
-                  <ActionIcon type="submit">
-                    <IconMessage color="black" />
-                  </ActionIcon>
-                  <Center>
-                    <Text fz="sm" c="gray">
-                      {post.commentCount}
-                    </Text>
-                  </Center>
-                </Form>
-              </Box>
-            )}
-          </Stack>
-        </Grid.Col>
-      </Grid>
-    </Card>
+    <Group w="100%" noWrap position="center">
+      <Card w="80%" shadow="none">
+        <Card.Section>
+          <AspectRatio ratio={16 / 9}>
+            <video controls src={post.mediaUrl} />
+          </AspectRatio>
+        </Card.Section>
+        <Stack mt="xs">
+          <AvatarName
+            name={post.author.username}
+            avatarUrl={post.author.avatarUrl}
+          />
+          <Text>{post.content}</Text>
+          <Group>
+            {post.tags.map((t) => (
+              <Text
+                key={t}
+                truncate
+                fw={700}
+                style={{ cursor: "pointer" }}
+                onClick={(_e) =>
+                  (window.location.href = `/site/for-you?searchTerm=${sanitizedSearch(
+                    t,
+                  )}`)
+                }
+              >
+                {t}
+              </Text>
+            ))}
+          </Group>
+        </Stack>
+      </Card>
+      <Stack align="end">
+        {loggedIn && (
+          <Box>
+            <Form
+              method="post"
+              action="/site/for-you"
+              onClick={optimisticUpdate}
+            >
+              <ActionIcon type="submit" name="postId" value={post.id}>
+                <IconHeart color="red" fill={post.iLiked ? "red" : "white"} />
+              </ActionIcon>
+            </Form>
+            <Center>
+              <Text fz="sm" c="gray">
+                {post.likeCount}
+              </Text>
+            </Center>
+            <Form method="get" action={`/site/post/${post.id}`}>
+              <ActionIcon type="submit">
+                <IconMessage color="black" />
+              </ActionIcon>
+              <Center>
+                <Text fz="sm" c="gray">
+                  {post.feedbackCount}
+                </Text>
+              </Center>
+            </Form>
+          </Box>
+        )}
+        {!loggedIn && (
+          <Box>
+            <ActionIcon disabled>
+              <IconHeart />
+            </ActionIcon>
+            <Center>
+              <Text fz="sm" c="gray">
+                {post.likeCount}
+              </Text>
+            </Center>
+            <Form method="get" action={`/site/post/${post.id}`}>
+              <ActionIcon type="submit">
+                <IconMessage color="black" />
+              </ActionIcon>
+              <Center>
+                <Text fz="sm" c="gray">
+                  {post.feedbackCount}
+                </Text>
+              </Center>
+            </Form>
+          </Box>
+        )}
+      </Stack>
+    </Group>
   );
 }

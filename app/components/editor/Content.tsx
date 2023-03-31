@@ -29,13 +29,14 @@ export default function Content(props: ContentProps) {
   useEffect(() => {
     const { ctx } = getCtxs();
     const localCanvasRef = getCanvas();
-    let canvasRect = localCanvasRef.getBoundingClientRect();
+    const canvasRect = localCanvasRef.getBoundingClientRect();
     setOffsetX(canvasRect.left);
     setOffsetY(canvasRect.top);
-    var background = new Image();
+    const background = new Image();
     background.onload = () => {
       const canvasAspectRatio = localCanvasRef.width / localCanvasRef.height;
       const imageAspectRatio = background.width / background.height;
+      /* tslint:disable:one-variable-per-declaration */
       let drawWidth, drawHeight, x, y;
       if (imageAspectRatio > canvasAspectRatio) {
         drawWidth = localCanvasRef.width;
@@ -106,8 +107,8 @@ export default function Content(props: ContentProps) {
       }
       if (activeItem === "rectangle") {
         ctxOverlay!.clearRect(0, 0, 600, 480);
-        let width = e.clientX - offsetX - startX;
-        let height = e.clientY - offsetY - startY;
+        const width = e.clientX - offsetX - startX;
+        const height = e.clientY - offsetY - startY;
         ctxOverlay!.strokeRect(startX, startY, width, height);
       }
     }
@@ -122,8 +123,8 @@ export default function Content(props: ContentProps) {
       ctx!.stroke();
     }
     if (activeItem === "rectangle") {
-      let width = e.clientX - offsetX - startX;
-      let height = e.clientY - offsetY - startY;
+      const width = e.clientX - offsetX - startX;
+      const height = e.clientY - offsetY - startY;
       ctxOverlay!.clearRect(0, 0, 600, 480);
       ctx!.strokeRect(startX, startY, width, height);
     }

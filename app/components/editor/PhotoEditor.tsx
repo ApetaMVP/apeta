@@ -4,7 +4,7 @@ import {
   IconPencil,
   IconRectangle,
 } from "@tabler/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Content from "./Content";
 
 interface PhotoEditorProps {
@@ -31,6 +31,10 @@ export default function PhotoEditor(props: PhotoEditorProps) {
   const changeTool = (e: any, t: any) => {
     setTool(t);
   };
+
+  useEffect(() => {
+    onImg(frame);
+  }, [frame]);
 
   return (
     <Content

@@ -5,8 +5,9 @@ import {
   destroySession,
   getUserId,
   getUserSession,
-} from "./cookie";
-import { prisma } from "./prisma";
+} from "./cookie.server";
+import { prisma } from "./prisma.server";
+import { createUser } from "./user.server";
 
 async function validateUser(request: Request) {
   const userId = await getUserId(request);
@@ -25,7 +26,7 @@ async function validateUser(request: Request) {
 }
 
 export async function requireAuth(request: Request) {
-  const userId = getUserId(request);
+  const userId = await getUserId(request);
   return { userId };
 }
 
@@ -41,7 +42,7 @@ export async function register(
   email: string,
   password: string,
   name: string,
-  username: string
+  username: string,
 ) {
   try {
     const existingUser = await prisma.user.findFirst({
@@ -50,22 +51,15 @@ export async function register(
     if (existingUser) {
       return json(
         { error: `Email or username already in use` },
-        { status: 406 }
+        { status: 406 },
       );
     }
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: await bcrypt.hash(password, 10),
-        name,
-        username,
-      },
-    });
+    const user = await createUser(email, password, name, username);
     return await createUserSession(user.id, "/site");
   } catch (err) {
     return json(
       { error: `Error occurred creating user: ${err}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

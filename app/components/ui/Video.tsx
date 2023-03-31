@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 interface VideoProps {
   src: string;
   timestamp: number;
+  onLoaded: () => void;
   onTimestamp: (timestamp: number) => void;
   onFrame: (frame: string) => void;
   onPlay: () => void;
@@ -10,7 +11,8 @@ interface VideoProps {
 }
 
 export default function Video(props: VideoProps) {
-  const { src, timestamp, onTimestamp, onFrame, onPause, onPlay } = props;
+  const { src, timestamp, onLoaded, onTimestamp, onFrame, onPause, onPlay } =
+    props;
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -18,7 +20,6 @@ export default function Video(props: VideoProps) {
     if (timestamp !== null) {
       videoRef!.current!.currentTime = timestamp;
     }
-    handlePause();
   }, [timestamp]);
 
   const handlePause = () => {
@@ -26,9 +27,10 @@ export default function Video(props: VideoProps) {
     if (frame) {
       onFrame(frame);
     }
-    const timestamp = Number(videoRef?.current?.["currentTime"]);
+    /* tslint:disable:no-string-literal */
+    const t = Number(videoRef?.current?.["currentTime"]);
     if (onTimestamp) {
-      onTimestamp(timestamp);
+      onTimestamp(t);
     }
     onPause();
   };
@@ -48,8 +50,13 @@ export default function Video(props: VideoProps) {
     <>
       <video
         controls
+        autoPlay
         ref={videoRef}
         src={src}
+        onCanPlayThrough={(_e) => {
+          handlePause();
+          onLoaded();
+        }}
         onPause={handlePause}
         onPlay={onPlay}
         crossOrigin="anonymous"

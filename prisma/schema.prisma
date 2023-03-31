@@ -13,6 +13,7 @@ model User {
   password  String
   name      String
   username  String     @unique
+  avatarUrl String
   posts     Post[]
   likes     Like[]
   comments  Comment[]
@@ -24,18 +25,18 @@ model User {
 }
 
 model Post {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  author       User       @relation(fields: [authorId], references: [id])
-  authorId     String     @db.ObjectId
-  mediaUrl     String
-  caption      String
-  likes        Like[]
-  comments     Comment[]
-  feedback     Feedback[]
-  likeCount    Int
-  commentCount Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  author        User       @relation(fields: [authorId], references: [id])
+  authorId      String     @db.ObjectId
+  mediaUrl      String
+  content       String
+  likes         Like[]
+  likeCount     Int
+  feedback      Feedback[]
+  feedbackCount Int
+  tags          String[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   @@map("posts")
 }
@@ -45,37 +46,50 @@ model Like {
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
   postId    String   @db.ObjectId
-  Post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("likes")
 }
 
-model Comment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  postId    String   @db.ObjectId
-  post      Post     @relation(fields: [postId], references: [id])
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Feedback {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  content      String
+  mediaUrl     String
+  timestamp    Float
+  postId       String    @db.ObjectId
+  post         Post      @relation(fields: [postId], references: [id])
+  userId       String    @db.ObjectId
+  user         User      @relation(fields: [userId], references: [id])
+  comments     Comment[]
+  commentCount Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  @@map("comment")
+  @@map("feedbacks")
 }
 
-model Feedback {
+model Comment {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  mediaUrl   String?
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  feedbackId String   @db.ObjectId
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("comments")
+}
+
+model Tag {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  msg       String
-  img       String
-  timestamp Float
-  postId    String   @db.ObjectId
-  post      Post     @relation(fields: [postId], references: [id])
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
+  name      String   @unique
+  count     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("feedback")
+  @@map("tags")
 }

@@ -1,42 +1,85 @@
 import { json } from "@remix-run/node";
 import { FypPost } from "~/utils/types";
-import { prisma } from "./prisma";
-import { getUserWithLikes } from "./user";
+import { prisma } from "./prisma.server";
+import { getUserWithLikes } from "./user.server";
 
 export async function createPost(
   userId: string,
   mediaUrl: string,
-  caption: string
+  content: string,
+  tags: string[],
 ) {
-  return await prisma.post.create({
+  const post = await prisma.post.create({
     data: {
       authorId: userId,
       mediaUrl,
-      caption,
+      content,
       likeCount: 0,
-      commentCount: 0,
+      feedbackCount: 0,
+      tags,
     },
   });
+  tags.forEach(async (t) => {
+    await prisma.tag.upsert({
+      where: {
+        name: t,
+      },
+      create: {
+        name: t,
+        count: 1,
+      },
+      update: {
+        count: {
+          increment: 1,
+        },
+      },
+    });
+  });
+  return post;
 }
 
-export async function getFypPosts(
+export async function getPosts(
   userId: string,
   start: number,
-  limit: number
+  limit: number,
+  tag?: string,
 ) {
   const dbPosts = await prisma.post.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: {
+      createdAt: "desc",
+    },
     skip: start,
     take: limit,
-    include: { author: true },
+    include: {
+      author: true,
+    },
+    where: {
+      ...(tag
+        ? {
+            OR: [
+              {
+                tags: {
+                  hasSome: `#${tag}`,
+                },
+              },
+              {
+                content: {
+                  contains: tag,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {}),
+    },
   });
   if (!userId) {
     return dbPosts;
   }
   const user = await getUserWithLikes(userId);
-  let posts: FypPost[] = [];
+  const posts: FypPost[] = [];
   for (const dbp of dbPosts) {
-    let post: FypPost = dbp;
+    const post: FypPost = dbp;
     if (user?.likes?.some((l) => l.postId === dbp.id)) {
       post.iLiked = true;
     } else {
@@ -49,11 +92,19 @@ export async function getFypPosts(
 
 export async function getFullPost(postId: string) {
   return await prisma.post.findUnique({
-    where: { id: postId },
+    where: {
+      id: postId,
+    },
     include: {
       author: true,
-      comments: { include: { user: true } },
-      feedback: { include: { user: true }, orderBy: { timestamp: "asc" } },
+      feedback: {
+        include: {
+          user: true,
+        },
+        orderBy: {
+          timestamp: "asc",
+        },
+      },
     },
   });
 }
@@ -83,7 +134,12 @@ export async function likePost(userId: string, postId: string) {
       },
     });
   } else {
-    await prisma.like.deleteMany({ where: { userId, postId } });
+    await prisma.like.deleteMany({
+      where: {
+        userId,
+        postId,
+      },
+    });
     await prisma.post.update({
       where: {
         id: postId,
@@ -98,14 +154,19 @@ export async function likePost(userId: string, postId: string) {
   return json({ success: true });
 }
 
-export async function commentOnPost(
+export async function feedbackOnPost(
   userId: string,
   postId: string,
-  content: string
+  content: string,
+  timestamp: number,
+  mediaUrl: string,
 ) {
-  await prisma.comment.create({
+  await prisma.feedback.create({
     data: {
       content,
+      timestamp,
+      mediaUrl,
+      commentCount: 0,
       user: {
         connect: {
           id: userId,
@@ -119,9 +180,11 @@ export async function commentOnPost(
     },
   });
   await prisma.post.update({
-    where: { id: postId },
+    where: {
+      id: postId,
+    },
     data: {
-      commentCount: {
+      feedbackCount: {
         increment: 1,
       },
     },
@@ -129,27 +192,33 @@ export async function commentOnPost(
   return json({ success: true });
 }
 
-export async function leaveFeedbackOnPost(
+export async function commentOnFeedback(
   userId: string,
-  postId: string,
-  msg: string,
-  timestamp: number,
-  img: string
+  feedbackId: string,
+  content: string,
 ) {
-  await prisma.feedback.create({
+  await prisma.comment.create({
     data: {
-      msg,
-      timestamp,
-      img,
+      content,
       user: {
         connect: {
           id: userId,
         },
       },
-      post: {
+      feedback: {
         connect: {
-          id: postId,
+          id: feedbackId,
         },
+      },
+    },
+  });
+  await prisma.feedback.update({
+    where: {
+      id: feedbackId,
+    },
+    data: {
+      commentCount: {
+        increment: 1,
       },
     },
   });
