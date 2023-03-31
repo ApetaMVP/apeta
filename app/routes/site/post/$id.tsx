@@ -160,7 +160,7 @@ export default function Post() {
           </Stack>
         )}
       </Card>
-      <SimpleGrid cols={3} spacing="xs">
+      <SimpleGrid cols={3} spacing="xl">
         {post.feedback?.map((f) => (
           <FeedbackCard
             key={f.id}
