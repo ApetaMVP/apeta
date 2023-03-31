@@ -54,7 +54,23 @@ export async function getPosts(
       author: true,
     },
     where: {
-      ...(tag ? { tags: { hasSome: `#${tag}` } } : {}),
+      ...(tag
+        ? {
+            OR: [
+              {
+                tags: {
+                  hasSome: `#${tag}`,
+                },
+              },
+              {
+                content: {
+                  contains: tag,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {}),
     },
   });
   if (!userId) {
