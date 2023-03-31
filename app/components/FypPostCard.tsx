@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { Form } from "@remix-run/react";
 import { IconHeart, IconMessage } from "@tabler/icons";
+import sanitizedSearch from "~/utils/helpers";
 import { FypPost } from "~/utils/types";
 import AvatarName from "./AvatarName";
 
@@ -47,8 +48,18 @@ export default function FypPostCard(props: FypPostCardProps) {
           <Text>{post.content}</Text>
           <Group>
             {post.tags.map((t) => (
-              <Text key={t} fw={700} style={{ cursor: "default" }}>
-                <Text truncate>{t}</Text>
+              <Text
+                key={t}
+                truncate
+                fw={700}
+                style={{ cursor: "pointer" }}
+                onClick={(_e) =>
+                  (window.location.href = `/site/for-you?searchTerm=${sanitizedSearch(
+                    t,
+                  )}`)
+                }
+              >
+                {t}
               </Text>
             ))}
           </Group>

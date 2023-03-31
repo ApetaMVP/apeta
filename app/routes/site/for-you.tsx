@@ -75,7 +75,6 @@ export default function ForYou() {
         onChange={(e) => onSearchChange(e.target.value)}
         onKeyDown={onSearchEnter}
         autoFocus={searchTerm ? true : false}
-        mx="xl"
       />
       <InfiniteScroll
         dataLength={page * 3}
