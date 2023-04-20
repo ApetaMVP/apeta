@@ -6,7 +6,11 @@ import {
   LoadingOverlay,
   rem,
   Stack,
+  Notification
 } from "@mantine/core";
+import { 
+  IconCheck
+} from '@tabler/icons-react';
 import {
   ActionArgs,
   json,
@@ -32,48 +36,62 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  const userId = await getUserId(request);
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler,
-  );
-  const filename = formData.get("image");
-  await updateUserPfp(userId!, filename as string);
-  return null;
+  try {
+    const userId = await getUserId(request);
+    const formData = await unstable_parseMultipartFormData(
+      request,
+      uploadHandler,
+      );
+      const filename = formData.get("image");
+      await updateUserPfp(userId!, filename as string);
+      return {success: true};
+    } catch (e) {
+      return {success: false}
+    }
 };
+
 
 export default function Settings() {
   const fetcher = useFetcher();
   const [file, setFile] = useState<File | null>(null);
+  const { success } = fetcher?.data || {}
+
 
   return (
-    <Card>
-      <LoadingOverlay
-        visible={fetcher.state === "loading" || fetcher.state === "submitting"}
-        overlayBlur={2}
-      />
-      <fetcher.Form method="post" encType="multipart/form-data">
-        <Stack>
-          <FileInput
-            label="Profile Photo"
-            name="image"
-            accept="image/*"
-            icon={<IconUpload size={rem(14)} />}
-            onChange={(e) => {
-              if (e!.size < 52_428_800) {
-                setFile(e);
-              } else {
-                alert("File too big");
-              }
-            }}
-          />
-          <Group>
-            <Button type="submit" disabled={!file}>
-              Submit
-            </Button>
-          </Group>
-        </Stack>
-      </fetcher.Form>
-    </Card>
+    <>
+        { success && 
+        <Notification title="Success!" color="green" icon={<IconCheck />} closeButtonProps={{ iconSize: 20 }}  >
+        Profile photo updated successfully.
+        </Notification>
+        } 
+      <Card>
+        <LoadingOverlay
+          visible={fetcher.state === "loading" || fetcher.state === "submitting"}
+          overlayBlur={2}
+        />
+        <fetcher.Form method="post" encType="multipart/form-data">
+          <Stack>
+            <FileInput
+              label="Profile Photo"
+              name="image"
+              accept="image/*"
+              icon={<IconUpload size={rem(14)} />}
+              onChange={(e) => {
+                if (e!.size < 52_428_800) {
+                  setFile(e);
+                } else {
+                  alert("File too big");
+                }
+              }}
+            />
+            <Group>
+              <Button type="submit" disabled={!file}>
+                Submit
+              </Button>
+            </Group>
+          </Stack>
+        </fetcher.Form>
+      </Card>
+    </>
   );
 }
