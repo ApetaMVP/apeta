@@ -60,7 +60,7 @@ export default function Settings() {
   return (
     <>
         { success && 
-        <Notification title="Success!" color="green" icon={<IconCheck />} closeButtonProps={{ iconSize: 20 }}  >
+        <Notification title="Success!" color="green" icon={<IconCheck />} withCloseButton={false}>
         Profile photo updated successfully.
         </Notification>
         } 
