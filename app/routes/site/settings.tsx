@@ -8,9 +8,7 @@ import {
   Stack,
   Notification
 } from "@mantine/core";
-import { 
-  IconCheck
-} from '@tabler/icons-react';
+import { IconCheck } from '@tabler/icons-react';
 import {
   ActionArgs,
   json,
@@ -41,29 +39,36 @@ export const action = async ({ request }: ActionArgs) => {
     const formData = await unstable_parseMultipartFormData(
       request,
       uploadHandler,
-      );
-      const filename = formData.get("image");
-      await updateUserPfp(userId!, filename as string);
-      return {success: true};
-    } catch (e) {
-      return {success: false}
-    }
-};
+    );
 
+    const fileUrl = formData.get("image") as string;
+
+    const splitUrl = fileUrl.split('/')
+    const fileName = splitUrl[splitUrl.length-1]
+
+    await updateUserPfp(userId!, fileUrl);
+    return { success: true, fileName };
+  } catch (e) {
+    return { success: false, fileName: null }
+  }
+};
 
 export default function Settings() {
   const fetcher = useFetcher();
   const [file, setFile] = useState<File | null>(null);
-  const { success } = fetcher?.data || {}
+  const { success, fileName } = fetcher?.data || {}
 
+  const handleCloseNotification = () => {
+    setFile(null)
+  }
 
   return (
     <>
-        { success && 
-        <Notification title="Success!" color="green" icon={<IconCheck />} withCloseButton={false}>
-        Profile photo updated successfully.
+      {success && file && (file?.name === fileName) &&
+        <Notification title="Success!" color="green" icon={<IconCheck />} onClose={handleCloseNotification}>
+          Profile photo updated successfully.
         </Notification>
-        } 
+      }
       <Card>
         <LoadingOverlay
           visible={fetcher.state === "loading" || fetcher.state === "submitting"}
@@ -75,6 +80,7 @@ export default function Settings() {
               label="Profile Photo"
               name="image"
               accept="image/*"
+              value={file}
               icon={<IconUpload size={rem(14)} />}
               onChange={(e) => {
                 if (e!.size < 52_428_800) {
