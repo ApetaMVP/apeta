@@ -65,12 +65,20 @@ export async function register(
 }
 
 export async function logout(request: Request) {
-  const session = await getUserSession(request);
-  return redirect("/auth/login", {
-    headers: {
-      "Set-Cookie": await destroySession(session),
-    },
-  });
+  try {
+
+    const session = await getUserSession(request);
+    return redirect("/auth/login", {
+      headers: {
+        "Set-Cookie": await destroySession(session),
+      },
+    });
+  } catch(err: any) {
+    return json(
+      {error: `Error occurred signing out: ${err}` },
+      { status: err["status"]}
+    )
+  }
 }
 
 export async function redirectAuthUser(request: Request) {
