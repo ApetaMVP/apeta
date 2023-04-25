@@ -1,5 +1,6 @@
 import { createEmotionCache, MantineProvider } from "@mantine/core";
 import { StylesPlaceholder } from "@mantine/remix";
+import { Notifications } from '@mantine/notifications'
 import type { MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -54,6 +55,7 @@ export default function App() {
       withGlobalStyles
       withNormalizeCSS
     >
+      <Notifications />
       <html lang="en">
         <head>
           <StylesPlaceholder />
