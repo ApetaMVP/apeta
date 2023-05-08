@@ -1,12 +1,26 @@
 import { useState } from 'react';
 import { Button, TextInput } from '@mantine/core';
 import { useRouteData } from '@remix-run/react';
+import prisma from '@prisma/client'
+import { json, Response } from "@remix-run/node";
+
+
 
 interface ResetPasswordData {
   email: string;
 }
 
-export default function ResetPassword() {
+export default function ResetPassword(req: Request, res: Response) {
+
+  if (!data.email) {
+    return json({ error: 'Email is required' }, { status: 400 });
+  }
+
+  const user = await prisma.user.findUnique({ where: { email: data.email } });
+
+  if (!user) {
+    return json({ error: 'User not found' }, { status: 400 });
+  }
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { data } = useRouteData<ResetPasswordData>();
@@ -19,6 +33,7 @@ export default function ResetPassword() {
 
     setIsLoading(false);
   }
+  
 
   return (
     <>
