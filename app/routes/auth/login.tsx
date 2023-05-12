@@ -56,7 +56,7 @@ export default function Login() {
             <img src="/logo.png" alt="Apeta Logo" width={100} />
             <Title order={2}>Log In</Title>
             <TextInput
-              label="Email"
+              label="Email/User Name"
               name="email"
               {...form.getInputProps("email")}
             />
