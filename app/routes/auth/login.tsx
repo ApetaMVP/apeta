@@ -29,7 +29,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export async function action({ request }: ActionArgs) {
-  const { email, password } = Object.fromEntries(
+  const { email, username, password } = Object.fromEntries(
     (await request.formData()).entries()
   );
   return await login(email as string, password as string);
