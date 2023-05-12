@@ -1,12 +1,14 @@
 import {
   ActionIcon,
   AspectRatio,
+  Button,
   Box,
   Card,
   Center,
   Group,
   Stack,
   Text,
+  CardSection,
 } from "@mantine/core";
 import { Form } from "@remix-run/react";
 import { IconHeart, IconMessage } from "@tabler/icons";
@@ -35,17 +37,106 @@ export default function FypPostCard(props: FypPostCardProps) {
   return (
     <Group w="100%" noWrap position="center">
       <Card w="80%" shadow="none">
+        <CardSection>
+          <Group  position="center" mt="sm" mb="xs">
+        <AvatarName
+            name={post.author.username}
+            avatarUrl={post.author.avatarUrl}
+          />
+          </Group>
+        </CardSection>
         <Card.Section>
           <AspectRatio ratio={16 / 9}>
             <video controls src={post.mediaUrl} />
           </AspectRatio>
         </Card.Section>
+        <Card.Section>
+        <Group position="center">
+        <Stack mt="xs" align= "center" >
+       
+      {!loggedIn && (
+          <Box >
+            
+            <ActionIcon disabled>
+              <IconHeart />
+            </ActionIcon>
+            
+              <Text fz="sm" c="gray" align="center">
+                {post.likeCount}
+              </Text>
+           
+            <Form method="get" action={`/site/post/${post.id}`}>
+              <ActionIcon type="submit">
+                <IconMessage color="black" />
+              </ActionIcon>
+              
+                <Text fz="sm" c="gray">
+                  {post.feedbackCount}
+                </Text>
+             
+            </Form>
+            <Form
+              method="post"
+              action="/site/for-you"
+              onClick={optimisticUpdate}
+            >
+              <ActionIcon type="submit" name="postId" value={post.id}>
+                <IconHeart color="red" fill={post.iLiked ? "red" : "white"} />
+              </ActionIcon>
+            </Form>
+            
+              <Text fz="sm" c="gray">
+                {post.likeCount}
+              </Text>
+           
+            <Form method="get" action={`/site/post/${post.id}`}>
+              <ActionIcon type="submit">
+                <IconMessage color="black" />
+              </ActionIcon>
+              
+                <Text fz="sm" c="gray">
+                  {post.feedbackCount}
+                </Text>
+             
+            </Form>
+          </Box>
+        )}
+        {loggedIn && (
+          <Box>
+            <Form
+              method="post"
+              action="/site/for-you"
+              onClick={optimisticUpdate}
+            >
+              <ActionIcon type="submit" name="postId" value={post.id}>
+                <IconHeart color="red" fill={post.iLiked ? "red" : "white"} />
+              </ActionIcon>
+            </Form>
+            
+              <Text fz="sm" c="gray">
+                {post.likeCount}
+              </Text>
+           
+            <Form method="get" action={`/site/post/${post.id}`}>
+              <ActionIcon type="submit">
+                <IconMessage color="black" />
+              </ActionIcon>
+              
+                <Text fz="sm" c="gray">
+                  {post.feedbackCount}
+                </Text>
+             
+            </Form>
+          </Box>
+        )}
+        
+        
+      </Stack>
+      </Group>
+      </Card.Section>
         <Stack mt="xs">
-          <AvatarName
-            name={post.author.username}
-            avatarUrl={post.author.avatarUrl}
-          />
-          <Text>{post.content}</Text>
+        
+          <Text align="center">{post.content}</Text>
           <Group>
             {post.tags.map((t) => (
               <Text
@@ -65,58 +156,7 @@ export default function FypPostCard(props: FypPostCardProps) {
           </Group>
         </Stack>
       </Card>
-      <Stack align="end">
-        {loggedIn && (
-          <Box>
-            <Form
-              method="post"
-              action="/site/for-you"
-              onClick={optimisticUpdate}
-            >
-              <ActionIcon type="submit" name="postId" value={post.id}>
-                <IconHeart color="red" fill={post.iLiked ? "red" : "white"} />
-              </ActionIcon>
-            </Form>
-            <Center>
-              <Text fz="sm" c="gray">
-                {post.likeCount}
-              </Text>
-            </Center>
-            <Form method="get" action={`/site/post/${post.id}`}>
-              <ActionIcon type="submit">
-                <IconMessage color="black" />
-              </ActionIcon>
-              <Center>
-                <Text fz="sm" c="gray">
-                  {post.feedbackCount}
-                </Text>
-              </Center>
-            </Form>
-          </Box>
-        )}
-        {!loggedIn && (
-          <Box>
-            <ActionIcon disabled>
-              <IconHeart />
-            </ActionIcon>
-            <Center>
-              <Text fz="sm" c="gray">
-                {post.likeCount}
-              </Text>
-            </Center>
-            <Form method="get" action={`/site/post/${post.id}`}>
-              <ActionIcon type="submit">
-                <IconMessage color="black" />
-              </ActionIcon>
-              <Center>
-                <Text fz="sm" c="gray">
-                  {post.feedbackCount}
-                </Text>
-              </Center>
-            </Form>
-          </Box>
-        )}
-      </Stack>
+     
     </Group>
   );
 }
