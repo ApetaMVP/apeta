@@ -77,7 +77,7 @@ export default function ForYou() {
         autoFocus={searchTerm ? true : false}
       />
       <InfiniteScroll
-        dataLength={page * 3}
+        dataLength={page * 1}
         next={getPosts}
         hasMore={!end}
         loader={""}
@@ -96,7 +96,7 @@ export default function ForYou() {
         //   <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
         // }
       >
-        <SimpleGrid cols={2} spacing={0}>
+        <SimpleGrid cols={1} spacing={0}>
           {posts.map((p) => (
             <FypPostCard key={p.id} post={p} loggedIn={data.loggedIn} />
           ))}
