@@ -9,6 +9,8 @@ import {
   Stack,
   Text,
   CardSection,
+  Container,
+  Grid
 } from "@mantine/core";
 import { Form } from "@remix-run/react";
 import { IconHeart, IconMessage } from "@tabler/icons";
@@ -56,7 +58,9 @@ export default function FypPostCard(props: FypPostCardProps) {
        
       {!loggedIn && (
           <Box >
+            <Grid>
             
+            <Grid.Col span={6}>
             <ActionIcon disabled>
               <IconHeart />
             </ActionIcon>
@@ -64,7 +68,8 @@ export default function FypPostCard(props: FypPostCardProps) {
               <Text fz="sm" c="gray" align="center">
                 {post.likeCount}
               </Text>
-           
+              </Grid.Col>
+              <Grid.Col span={6}>
             <Form method="get" action={`/site/post/${post.id}`}>
               <ActionIcon type="submit">
                 <IconMessage color="black" />
@@ -75,34 +80,16 @@ export default function FypPostCard(props: FypPostCardProps) {
                 </Text>
              
             </Form>
-            <Form
-              method="post"
-              action="/site/for-you"
-              onClick={optimisticUpdate}
-            >
-              <ActionIcon type="submit" name="postId" value={post.id}>
-                <IconHeart color="red" fill={post.iLiked ? "red" : "white"} />
-              </ActionIcon>
-            </Form>
+            </Grid.Col>
             
-              <Text fz="sm" c="gray">
-                {post.likeCount}
-              </Text>
-           
-            <Form method="get" action={`/site/post/${post.id}`}>
-              <ActionIcon type="submit">
-                <IconMessage color="black" />
-              </ActionIcon>
-              
-                <Text fz="sm" c="gray">
-                  {post.feedbackCount}
-                </Text>
-             
-            </Form>
+            </Grid>
           </Box>
         )}
         {loggedIn && (
           <Box>
+            <Grid >
+            
+            <Grid.Col span={6}>
             <Form
               method="post"
               action="/site/for-you"
@@ -116,7 +103,8 @@ export default function FypPostCard(props: FypPostCardProps) {
               <Text fz="sm" c="gray">
                 {post.likeCount}
               </Text>
-           
+              </Grid.Col>
+              <Grid.Col span={6}>
             <Form method="get" action={`/site/post/${post.id}`}>
               <ActionIcon type="submit">
                 <IconMessage color="black" />
@@ -127,6 +115,8 @@ export default function FypPostCard(props: FypPostCardProps) {
                 </Text>
              
             </Form>
+            </Grid.Col>
+            </Grid>
           </Box>
         )}
         
