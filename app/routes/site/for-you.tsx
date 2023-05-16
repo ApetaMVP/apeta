@@ -1,4 +1,4 @@
-import { SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { SimpleGrid, Stack, TextInput, Group, Flex, Container } from "@mantine/core";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { IconSearch } from "@tabler/icons";
@@ -67,7 +67,17 @@ export default function ForYou() {
   };
 
   return (
-    <Stack>
+    <Group>
+      <Stack>
+
+      </Stack>
+      <Container size="xs" px="sm">
+      <Flex justify="center"
+      align="center"
+      wrap="wrap-reverse">
+      
+
+
       <TextInput
         label="Search"
         value={searchTerm}
@@ -76,6 +86,11 @@ export default function ForYou() {
         onKeyDown={onSearchEnter}
         autoFocus={searchTerm ? true : false}
       />
+      
+      </Flex>
+      </Container>
+    <Stack>
+      
       <InfiniteScroll
         dataLength={page * 1}
         next={getPosts}
@@ -102,6 +117,15 @@ export default function ForYou() {
           ))}
         </SimpleGrid>
       </InfiniteScroll>
+      <TextInput
+        label="Search"
+        value={searchTerm}
+        icon={<IconSearch />}
+        onChange={(e) => onSearchChange(e.target.value)}
+        onKeyDown={onSearchEnter}
+        autoFocus={searchTerm ? true : false}
+      />
     </Stack>
+    </Group>
   );
 }
