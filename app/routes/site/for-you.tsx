@@ -68,10 +68,11 @@ export default function ForYou() {
 
   return (
     <Group>
-      <Stack>
+      {/* <Group align="center">
+      <Stack align="center">
 
-      </Stack>
-      <Container size="xs" px="sm">
+      
+      <Container size="sm" px="sm">
       <Flex justify="center"
       align="center"
       wrap="wrap-reverse">
@@ -89,6 +90,8 @@ export default function ForYou() {
       
       </Flex>
       </Container>
+      </Stack>
+      </Group> */}
     <Stack>
       
       <InfiniteScroll
@@ -111,7 +114,12 @@ export default function ForYou() {
         //   <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
         // }
       >
-        <SimpleGrid cols={1} spacing={0}>
+        <SimpleGrid  breakpoints={[
+        { maxWidth: 'xl', cols: 3, spacing: 'md' },
+        { maxWidth: 'lg', cols: 3, spacing: 'sm'},
+        { maxWidth: 'md', cols: 2, spacing: 'sm' },
+        { maxWidth: 'sm', cols: 1, spacing: 'sm' },
+      ]}>
           {posts.map((p) => (
             <FypPostCard key={p.id} post={p} loggedIn={data.loggedIn} />
           ))}
