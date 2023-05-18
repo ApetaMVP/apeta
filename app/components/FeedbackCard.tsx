@@ -23,7 +23,7 @@ export default function FeedbackCard(props: FeedbackCardProps) {
   const { feedback, handleTimestamp } = props;
   return (
     <Card>
-      <Stack mt="xs">
+      <Stack mt="xs" align="center">
         <AvatarName
           name={feedback.user.username}
           avatarUrl={feedback.user.avatarUrl}
