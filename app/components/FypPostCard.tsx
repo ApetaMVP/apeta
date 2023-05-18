@@ -145,8 +145,19 @@ export default function FypPostCard(props: FypPostCardProps) {
             ))}
           </Group>
         </Stack>
+        <Group position="center" mt="sm" mb="xs">
+        <Card  w="80%" shadow="none">
+      <Card.Section>
+          <Text align="center" fw={700}>Promoted Filler</Text>
+        </Card.Section>
+
       </Card>
+      </Group>
+        
+      </Card>
+      
      
     </Group>
+    
   );
 }
