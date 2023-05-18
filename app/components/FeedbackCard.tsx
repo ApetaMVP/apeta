@@ -23,14 +23,16 @@ export default function FeedbackCard(props: FeedbackCardProps) {
   const { feedback, handleTimestamp } = props;
   return (
     <Card>
-      <Card.Section>
-        <Image src={feedback.mediaUrl} />
-      </Card.Section>
       <Stack mt="xs">
         <AvatarName
           name={feedback.user.username}
           avatarUrl={feedback.user.avatarUrl}
         />
+        <Text align="center" lineClamp={3}>{feedback.content}</Text>
+      <Card.Section>
+        <Image src={feedback.mediaUrl} />
+      </Card.Section>
+      
         <Group position="apart">
           <Anchor
             onClick={(e) => {
@@ -55,7 +57,7 @@ export default function FeedbackCard(props: FeedbackCardProps) {
             </Center>
           </Box>
         </Group>
-        <Text lineClamp={3}>{feedback.content}</Text>
+        
       </Stack>
     </Card>
   );
