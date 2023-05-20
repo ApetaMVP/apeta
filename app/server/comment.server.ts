@@ -60,36 +60,42 @@ async function updateVote({
   const updateCount: any = {};
 
   if (existingVote.direction === newDirection) {
-    updateCount[newDirection === "UP" ? "upvoteCount" : "downvoteCount"] = {
-      decrement: 1,
-    };
+    await prisma.comment.update({
+      where: {
+        id: commentId,
+      },
+      data: {
+        [newDirection === "UP" ? "upvoteCount" : "downvoteCount"]: {
+          decrement: 1,
+        },
+      },
+    });
+    await prisma.vote.delete({
+      where: {
+        id: existingVote.id,
+      },
+    });
   } else {
-    updateCount[
-      existingVote.direction === "UP" ? "upvoteCount" : "downvoteCount"
-    ] = {
-      decrement: 1,
-    };
-    updateCount[newDirection === "UP" ? "upvoteCount" : "downvoteCount"] = {
-      increment: 1,
-    };
+    const res = await prisma.comment.update({
+      where: {
+        id: commentId,
+      },
+      data: {
+        [existingVote.direction === "UP" ? "upvoteCount" : "downvoteCount"]: {
+          decrement: 1,
+        },
+        [newDirection === "UP" ? "upvoteCount" : "downvoteCount"]: {
+          increment: 1,
+        },
+      },
+    });
+    await prisma.vote.update({
+      where: {
+        id: existingVote.id,
+      },
+      data: {
+        direction: newDirection,
+      },
+    });
   }
-
-  console.log({ commentId, updateCount });
-
-  await prisma.comment.update({
-    where: {
-      id: commentId,
-    },
-    data: {
-      upvoteCount: { increment: 1 },
-    },
-  });
-  await prisma.vote.update({
-    where: {
-      id: existingVote.id,
-    },
-    data: {
-      direction: newDirection,
-    },
-  });
 }
