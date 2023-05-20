@@ -60,7 +60,7 @@ async function updateVote({
   const updateCount: any = {};
 
   if (existingVote.direction === newDirection) {
-    await prisma.comment.update({
+    const updateComment = prisma.comment.update({
       where: {
         id: commentId,
       },
@@ -70,13 +70,14 @@ async function updateVote({
         },
       },
     });
-    await prisma.vote.delete({
+    const deleteVote = prisma.vote.delete({
       where: {
         id: existingVote.id,
       },
     });
+    await prisma.$transaction([updateComment, deleteVote]);
   } else {
-    const res = await prisma.comment.update({
+    const updateComment = prisma.comment.update({
       where: {
         id: commentId,
       },
@@ -89,7 +90,7 @@ async function updateVote({
         },
       },
     });
-    await prisma.vote.update({
+    const updateVote = prisma.vote.update({
       where: {
         id: existingVote.id,
       },
@@ -97,5 +98,6 @@ async function updateVote({
         direction: newDirection,
       },
     });
+    await prisma.$transaction([updateComment, updateVote]);
   }
 }
