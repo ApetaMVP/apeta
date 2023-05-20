@@ -43,7 +43,6 @@ export async function action({ request, params }: ActionArgs) {
   const userId = await getUserId(request);
   const feedbackId = params.feedbackId;
 
-  console.log({ comment, upVote, downVote });
   if (upVote) {
     return await voteOnComment(upVote as string, userId!, "UP");
   }
