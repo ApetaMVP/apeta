@@ -4,6 +4,7 @@ import {
   Card,
   Divider,
   Image,
+  SimpleGrid,
   Stack,
   Text,
   TextInput,
@@ -72,7 +73,14 @@ export default function PostFeedback() {
 
   return (
     <Stack align="center" spacing="xl">
+       <SimpleGrid  breakpoints={[
+        { maxWidth: 'xl', cols: 3, spacing: 'md' },
+        { maxWidth: 'lg', cols: 3, spacing: 'sm'},
+        { maxWidth: 'md', cols: 2, spacing: 'sm' },
+        { maxWidth: 'sm', cols: 1, spacing: 'sm' },
+      ]}>
       <Card w="75%">
+        
         <Card.Section>
           <Image src={feedback.mediaUrl} />
         </Card.Section>
@@ -112,6 +120,7 @@ export default function PostFeedback() {
           )}
         </Stack>
       </Card>
+      </SimpleGrid>
     </Stack>
   );
 }
