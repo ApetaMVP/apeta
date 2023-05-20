@@ -16,6 +16,7 @@ model User {
   avatarUrl String
   posts     Post[]
   likes     Like[]
+  votes     Vote[]
   comments  Comment[]
   feedback  Feedback[]
   createdAt DateTime   @default(now())
@@ -78,10 +79,26 @@ model Comment {
   user       User     @relation(fields: [userId], references: [id])
   feedbackId String   @db.ObjectId
   feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  votes      Vote[]
+  upvoteCount    Int @default(0)
+  downvoteCount  Int @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   @@map("comments")
+}
+
+model Vote {
+  id         String          @id @default(auto()) @map("_id") @db.ObjectId
+  direction  VoteDirection
+  userId     String          @db.ObjectId
+  user       User            @relation(fields: [userId], references: [id])
+  commentId  String          @db.ObjectId
+  comment    Comment         @relation(fields: [commentId], references: [id])
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@map("votes")
 }
 
 model Tag {
@@ -92,4 +109,9 @@ model Tag {
   updatedAt DateTime @updatedAt
 
   @@map("tags")
+}
+
+enum VoteDirection {
+  UP
+  DOWN
 }

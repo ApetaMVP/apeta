@@ -19,6 +19,7 @@ import AvatarName from "~/components/AvatarName";
 import CommentBubble from "~/components/CommentBubble";
 import { formatDuration } from "~/components/FeedbackCard";
 import TextEditor from "~/components/ui/TextEditor";
+import { voteOnComment } from "~/server/comment.server";
 import { getUserId } from "~/server/cookie.server";
 import { getFeedback } from "~/server/feedback.server";
 import { commentOnFeedback } from "~/server/post.server";
@@ -31,14 +32,26 @@ const commentSchema = z.object({
 export const loader = async ({ request, params }: LoaderArgs) => {
   const userId = await getUserId(request);
   const feedbackId = params.feedbackId;
-  const feedback = await getFeedback(feedbackId!);
+  const feedback = await getFeedback(feedbackId!, userId!);
   return json({ feedback, loggedIn: userId ? true : false });
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { comment } = Object.fromEntries((await request.formData()).entries());
+  const { comment, upVote, downVote } = Object.fromEntries(
+    (await request.formData()).entries(),
+  );
   const userId = await getUserId(request);
   const feedbackId = params.feedbackId;
+
+  console.log({ comment, upVote, downVote });
+  if (upVote) {
+    return await voteOnComment(upVote as string, userId!, "UP");
+  }
+
+  if (downVote) {
+    return await voteOnComment(downVote as string, userId!, "DOWN");
+  }
+
   return await commentOnFeedback(userId!, feedbackId!, comment as string);
 }
 
@@ -73,53 +86,59 @@ export default function PostFeedback() {
 
   return (
     <Stack align="center" spacing="xl">
-       <SimpleGrid  breakpoints={[
-        { maxWidth: 'xl', cols: 3, spacing: 'md' },
-        { maxWidth: 'lg', cols: 3, spacing: 'sm'},
-        { maxWidth: 'md', cols: 2, spacing: 'sm' },
-        { maxWidth: 'sm', cols: 1, spacing: 'sm' },
-      ]}>
-      <Card w="75%">
-        
-        <Card.Section>
-          <Image src={feedback.mediaUrl} />
-        </Card.Section>
-        <Stack mt="xs">
-          <AvatarName
-            name={feedback.user.username}
-            avatarUrl={feedback.user.avatarUrl}
-          />
-          <Anchor>{formatDuration(feedback.timestamp)}</Anchor>
-          <Text lineClamp={3}>{feedback.content}</Text>
-          <Divider />
-          <Title order={5}>Comments</Title>
-          {feedback.comments?.map((c) => (
-            <CommentBubble comment={c} key={c.id} />
-          ))}
-          {loggedIn && (
-            <Form method="post" onSubmit={optimisticClear}>
-              <TextEditor
-                comment={comment}
-                handleChange={handleCommentChange}
+      <SimpleGrid
+        breakpoints={[
+          { maxWidth: "xl", cols: 3, spacing: "md" },
+          { maxWidth: "lg", cols: 3, spacing: "sm" },
+          { maxWidth: "md", cols: 2, spacing: "sm" },
+          { maxWidth: "sm", cols: 1, spacing: "sm" },
+        ]}
+      >
+        <Card w="75%">
+          <Card.Section>
+            <Image src={feedback.mediaUrl} />
+          </Card.Section>
+          <Stack mt="xs">
+            <AvatarName
+              name={feedback.user.username}
+              avatarUrl={feedback.user.avatarUrl}
+            />
+            <Anchor>{formatDuration(feedback.timestamp)}</Anchor>
+            <Text lineClamp={3}>{feedback.content}</Text>
+            <Divider />
+            <Title order={5}>Comments</Title>
+            {feedback.comments?.map((c) => (
+              <CommentBubble
+                comment={c}
+                postId={feedback.postId}
+                feedbackId={feedback.id}
+                key={c.id}
               />
-              <TextInput
-                name="comment"
-                {...commentForm.getInputProps("comment")}
-                type="hidden"
-              />
-              <TextInput name="target" value="comment" type="hidden" />
-              <Button
-                type="submit"
-                disabled={!commentForm.isValid()}
-                fullWidth
-                mt="md"
-              >
-                Submit Comment
-              </Button>
-            </Form>
-          )}
-        </Stack>
-      </Card>
+            ))}
+            {loggedIn && (
+              <Form method="post" onSubmit={optimisticClear}>
+                <TextEditor
+                  comment={comment}
+                  handleChange={handleCommentChange}
+                />
+                <TextInput
+                  name="comment"
+                  {...commentForm.getInputProps("comment")}
+                  type="hidden"
+                />
+                <TextInput name="target" value="comment" type="hidden" />
+                <Button
+                  type="submit"
+                  disabled={!commentForm.isValid()}
+                  fullWidth
+                  mt="md"
+                >
+                  Submit Comment
+                </Button>
+              </Form>
+            )}
+          </Stack>
+        </Card>
       </SimpleGrid>
     </Stack>
   );
