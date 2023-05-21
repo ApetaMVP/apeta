@@ -30,7 +30,7 @@ async function newVote(
   commentId: string,
   direction: VoteDirection,
 ) {
-  await prisma.vote.create({
+  const createVote = prisma.vote.create({
     data: {
       userId,
       commentId,
@@ -38,7 +38,7 @@ async function newVote(
     },
   });
 
-  await prisma.comment.update({
+  const updateComment = prisma.comment.update({
     where: {
       id: commentId,
     },
@@ -46,6 +46,7 @@ async function newVote(
       [direction === "UP" ? "upvoteCount" : "downvoteCount"]: { increment: 1 },
     },
   });
+  await prisma.$transaction([createVote, updateComment]);
 }
 
 async function updateVote({
