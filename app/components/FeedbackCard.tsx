@@ -22,9 +22,14 @@ interface FeedbackCardProps {
 }
 
 export default function FeedbackCard(props: FeedbackCardProps) {
-  const { feedback, handleTimestamp } = props;
+  const { feedback, handleTimestamp, loggedIn } = props;
   return (
     <Card>
+      {feedback.mostHelpful && (
+        <Text c="purple" fw="bold" fz="sm">
+          Voted Most Helpful
+        </Text>
+      )}
       <Stack mt="xs" align="center">
         <AvatarName
           name={feedback.user.username}
@@ -38,11 +43,6 @@ export default function FeedbackCard(props: FeedbackCardProps) {
         </Card.Section>
 
         <Group position="apart">
-          {feedback.mostHelpful && (
-            <Text c="purple" fw="bold" fz="sm">
-              Voted Most Helpful
-            </Text>
-          )}
           <Anchor
             onClick={(e) => {
               e.stopPropagation();
@@ -64,7 +64,7 @@ export default function FeedbackCard(props: FeedbackCardProps) {
                 {feedback.commentCount}
               </Text>
               <Form method="post" action={`/site/post/${feedback.postId}`}>
-                <VoteButtons votable={feedback} />
+                <VoteButtons votable={feedback} disabled={!loggedIn} />
               </Form>
             </Center>
           </Box>

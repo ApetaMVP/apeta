@@ -10,10 +10,11 @@ interface CommentBubbleProps {
   comment: Comment;
   postId: string;
   feedbackId: string;
+  loggedIn: boolean;
 }
 
 export default function CommentBubble(props: CommentBubbleProps) {
-  const { comment, postId, feedbackId } = props;
+  const { comment, postId, feedbackId, loggedIn } = props;
 
   return (
     <Paper bg={useMantineTheme().colors.gray[0]} radius="md" p="sm">
@@ -28,7 +29,7 @@ export default function CommentBubble(props: CommentBubbleProps) {
       </Group>
       <Text>{parse(comment.content)}</Text>
       <Form method="post" action={`/site/post/${postId}/${feedbackId}`}>
-        <VoteButtons votable={comment} />
+        <VoteButtons votable={comment} disabled={!loggedIn} />
       </Form>
     </Paper>
   );

@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { FypPost } from "~/utils/types";
+import { Feedback, FypPost } from "~/utils/types";
 import { prisma } from "./prisma.server";
 import { getUserWithLikes } from "./user.server";
 
@@ -102,32 +102,34 @@ export async function getFullPost(postId: string, userId: string) {
           votes: true,
           user: true,
         },
-        orderBy: {
-          timestamp: "asc",
-        },
       },
     },
   });
+
   if (!dbPost || !userId) {
     return dbPost;
   }
 
-  const topFeedback = await prisma.feedback.findFirst({
-    where: {
-      postId,
-    },
-    orderBy: {
-      upvoteCount: "desc",
-    },
-  });
+  dbPost.feedback = dbPost.feedback
+    // sort on upvoteCount and downvoteCount
+    .sort((a, b) =>
+      a.upvoteCount - a.downvoteCount < b.upvoteCount - b.downvoteCount
+        ? 1
+        : -1,
+    )
+    .map((f, index) => {
+      return {
+        ...f,
+        myVote: f.votes.find((v) => v.userId === dbPost.authorId)?.direction,
+        mostHelpful: index === 0,
+      };
+    });
 
-  dbPost.feedback = dbPost.feedback.map((f) => {
-    return {
-      ...f,
-      myVote: f.votes.find((v) => v.userId === dbPost.authorId)?.direction,
-      mostHelpful: f.id === topFeedback?.id,
-    };
-  });
+  if (dbPost.feedback.length > 0) {
+    // @ts-ignore
+    dbPost.feedback[0].mostHelpful = true;
+  }
+
   return dbPost;
 }
 

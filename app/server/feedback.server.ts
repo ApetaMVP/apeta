@@ -20,12 +20,20 @@ export async function getFeedback(feedbackId: string, userId?: string) {
     return dbFeedback;
   }
 
-  dbFeedback.comments = dbFeedback.comments.map((comment) => {
-    return {
-      ...comment,
-      myVote: comment.votes.find((vote) => vote.userId === userId)?.direction,
-    };
-  });
+  dbFeedback.comments = dbFeedback.comments
+    // sort on upvoteCount and downvoteCount
+    .sort((a, b) =>
+      a.upvoteCount - a.downvoteCount < b.upvoteCount - b.downvoteCount
+        ? 1
+        : -1,
+    )
+    .map((comment, index) => {
+      return {
+        ...comment,
+        myVote: comment.votes.find((vote) => vote.userId === userId)?.direction,
+        mostHelpful: index === 0,
+      };
+    });
   return dbFeedback;
 }
 

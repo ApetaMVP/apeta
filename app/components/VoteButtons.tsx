@@ -4,7 +4,13 @@ import { IconArrowUpCircle, IconArrowDownCircle } from "@tabler/icons";
 import { Text } from "@mantine/core";
 import { Votable } from "~/utils/types";
 
-export default function VoteButtons({ votable }: { votable: Votable }) {
+export default function VoteButtons({
+  votable,
+  disabled,
+}: {
+  votable: Votable;
+  disabled?: boolean;
+}) {
   const styleForArrow = (direction: VoteDirection) => {
     if (!votable.myVote || votable.myVote !== direction) {
       return "gray";
@@ -47,6 +53,7 @@ export default function VoteButtons({ votable }: { votable: Votable }) {
       <ActionIcon
         type="submit"
         name="upVote"
+        disabled={disabled}
         value={votable.id}
         onClick={optimisticUpdate("UP")}
       >
@@ -63,6 +70,7 @@ export default function VoteButtons({ votable }: { votable: Votable }) {
       <ActionIcon
         type="submit"
         name="downVote"
+        disabled={disabled}
         value={votable.id}
         onClick={optimisticUpdate("DOWN")}
       >
@@ -73,7 +81,7 @@ export default function VoteButtons({ votable }: { votable: Votable }) {
         />
       </ActionIcon>
       <Text fz="sm" c="gray" align="center">
-        {votable.downvoteCount}
+        {votable.downvoteCount * -1}
       </Text>
     </Group>
   );

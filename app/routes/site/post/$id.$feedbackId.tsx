@@ -111,6 +111,7 @@ export default function PostFeedback() {
                 comment={c}
                 postId={feedback.postId}
                 feedbackId={feedback.id}
+                loggedIn={loggedIn}
                 key={c.id}
               />
             ))}
