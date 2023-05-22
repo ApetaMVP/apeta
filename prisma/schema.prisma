@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  email     String     @unique
-  password  String
-  name      String
-  username  String     @unique
-  avatarUrl String
-  posts     Post[]
-  likes     Like[]
-  votes     Vote[]
-  comments  Comment[]
-  feedback  Feedback[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  email         String         @unique
+  password      String
+  name          String
+  username      String         @unique
+  avatarUrl     String
+  posts         Post[]
+  likes         Like[]
+  commentVotes  CommentVote[]
+  feedbackVotes FeedbackVote[]
+  comments      Comment[]
+  feedback      Feedback[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@map("users")
 }
@@ -55,50 +56,66 @@ model Like {
 }
 
 model Feedback {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  content      String
-  mediaUrl     String
-  timestamp    Float
-  postId       String    @db.ObjectId
-  post         Post      @relation(fields: [postId], references: [id])
-  userId       String    @db.ObjectId
-  user         User      @relation(fields: [userId], references: [id])
-  comments     Comment[]
-  commentCount Int
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  content       String
+  mediaUrl      String
+  timestamp     Float
+  postId        String         @db.ObjectId
+  post          Post           @relation(fields: [postId], references: [id])
+  userId        String         @db.ObjectId
+  user          User           @relation(fields: [userId], references: [id])
+  comments      Comment[]
+  votes         FeedbackVote[]
+  upvoteCount   Int            @default(0)
+  downvoteCount Int            @default(0)
+  commentCount  Int
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@map("feedbacks")
 }
 
 model Comment {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  content    String
-  mediaUrl   String?
-  userId     String   @db.ObjectId
-  user       User     @relation(fields: [userId], references: [id])
-  feedbackId String   @db.ObjectId
-  feedback   Feedback @relation(fields: [feedbackId], references: [id])
-  votes      Vote[]
-  upvoteCount    Int @default(0)
-  downvoteCount  Int @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  content       String
+  mediaUrl      String?
+  userId        String        @db.ObjectId
+  user          User          @relation(fields: [userId], references: [id])
+  feedbackId    String        @db.ObjectId
+  feedback      Feedback      @relation(fields: [feedbackId], references: [id])
+  votes         CommentVote[]
+  upvoteCount   Int           @default(0)
+  downvoteCount Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@map("comments")
 }
 
-model Vote {
-  id         String          @id @default(auto()) @map("_id") @db.ObjectId
-  direction  VoteDirection
-  userId     String          @db.ObjectId
-  user       User            @relation(fields: [userId], references: [id])
-  commentId  String          @db.ObjectId
-  comment    Comment         @relation(fields: [commentId], references: [id])
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+model CommentVote {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  direction VoteDirection
+  userId    String        @db.ObjectId
+  user      User          @relation(fields: [userId], references: [id])
+  commentId String        @db.ObjectId
+  comment   Comment       @relation(fields: [commentId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  @@map("votes")
+  @@map("commentVotes")
+}
+
+model FeedbackVote {
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  direction  VoteDirection
+  userId     String        @db.ObjectId
+  user       User          @relation(fields: [userId], references: [id])
+  feedbackId String        @db.ObjectId
+  feedback   Feedback      @relation(fields: [feedbackId], references: [id])
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@map("feedbackVotes")
 }
 
 model Tag {

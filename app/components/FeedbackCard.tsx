@@ -9,9 +9,11 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
+import { Form } from "@remix-run/react";
 import { IconMessage } from "@tabler/icons";
 import { Feedback } from "~/utils/types";
 import AvatarName from "./AvatarName";
+import VoteButtons from "./VoteButtons";
 
 interface FeedbackCardProps {
   feedback: Feedback;
@@ -21,6 +23,7 @@ interface FeedbackCardProps {
 
 export default function FeedbackCard(props: FeedbackCardProps) {
   const { feedback, handleTimestamp } = props;
+  console.log({ feedback });
   return (
     <Card>
       <Stack mt="xs" align="center">
@@ -28,11 +31,13 @@ export default function FeedbackCard(props: FeedbackCardProps) {
           name={feedback.user.username}
           avatarUrl={feedback.user.avatarUrl}
         />
-        <Text align="center" lineClamp={3}>{feedback.content}</Text>
-      <Card.Section>
-        <Image src={feedback.mediaUrl} />
-      </Card.Section>
-      
+        <Text align="center" lineClamp={3}>
+          {feedback.content}
+        </Text>
+        <Card.Section>
+          <Image src={feedback.mediaUrl} />
+        </Card.Section>
+
         <Group position="apart">
           <Anchor
             onClick={(e) => {
@@ -54,10 +59,12 @@ export default function FeedbackCard(props: FeedbackCardProps) {
               <Text fz="sm" c="gray">
                 {feedback.commentCount}
               </Text>
+              <Form method="post" action={`/site/post/${feedback.postId}`}>
+                <VoteButtons votable={feedback} />
+              </Form>
             </Center>
           </Box>
         </Group>
-        
       </Stack>
     </Card>
   );

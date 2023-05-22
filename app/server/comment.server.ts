@@ -1,4 +1,4 @@
-import { Vote, VoteDirection } from "@prisma/client";
+import { CommentVote, VoteDirection } from "@prisma/client";
 import { json } from "@remix-run/node";
 import { prisma } from "./prisma.server";
 
@@ -7,7 +7,7 @@ export async function voteOnComment(
   userId: string,
   direction: VoteDirection,
 ) {
-  const alreadyVoted = await prisma.vote.findFirst({
+  const alreadyVoted = await prisma.commentVote.findFirst({
     where: {
       userId,
       commentId,
@@ -30,7 +30,7 @@ async function newVote(
   commentId: string,
   direction: VoteDirection,
 ) {
-  const createVote = prisma.vote.create({
+  const createVote = prisma.commentVote.create({
     data: {
       userId,
       commentId,
@@ -55,7 +55,7 @@ async function updateVote({
   newDirection,
 }: {
   commentId: string;
-  existingVote: Vote;
+  existingVote: CommentVote;
   newDirection: VoteDirection;
 }) {
   const updateCount: any = {};
@@ -71,7 +71,7 @@ async function updateVote({
         },
       },
     });
-    const deleteVote = prisma.vote.delete({
+    const deleteVote = prisma.commentVote.delete({
       where: {
         id: existingVote.id,
       },
@@ -91,7 +91,7 @@ async function updateVote({
         },
       },
     });
-    const updateVote = prisma.vote.update({
+    const updateVote = prisma.commentVote.update({
       where: {
         id: existingVote.id,
       },

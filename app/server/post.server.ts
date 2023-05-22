@@ -90,8 +90,8 @@ export async function getPosts(
   return posts;
 }
 
-export async function getFullPost(postId: string) {
-  return await prisma.post.findUnique({
+export async function getFullPost(postId: string, userId: string) {
+  const dbPost = await prisma.post.findUnique({
     where: {
       id: postId,
     },
@@ -99,6 +99,7 @@ export async function getFullPost(postId: string) {
       author: true,
       feedback: {
         include: {
+          votes: true,
           user: true,
         },
         orderBy: {
@@ -107,6 +108,17 @@ export async function getFullPost(postId: string) {
       },
     },
   });
+  if (!dbPost || !userId) {
+    return dbPost;
+  }
+
+  dbPost.feedback = dbPost.feedback.map((f) => {
+    return {
+      ...f,
+      myVote: f.votes.find((v) => v.userId === dbPost.authorId)?.direction,
+    };
+  });
+  return dbPost;
 }
 
 export async function likePost(userId: string, postId: string) {

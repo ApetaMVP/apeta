@@ -20,6 +20,7 @@ import PhotoEditor from "~/components/editor/PhotoEditor";
 import FeedbackCard from "~/components/FeedbackCard";
 import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie.server";
+import { voteOnFeedback } from "~/server/feedback.server";
 import { feedbackOnPost, getFullPost } from "~/server/post.server";
 import { FullPost } from "~/utils/types";
 
@@ -30,16 +31,27 @@ const feedbackSchema = z.object({
 export const loader = async ({ request, params }: LoaderArgs) => {
   const userId = await getUserId(request);
   const postId = params.id;
-  const post = await getFullPost(postId!);
+  const post = await getFullPost(postId!, userId!);
   return json({ post, loggedIn: userId ? true : false });
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { feedback, img, timestamp } = Object.fromEntries(
+  const { feedback, img, timestamp, upVote, downVote } = Object.fromEntries(
     (await request.formData()).entries(),
   );
   const userId = await getUserId(request);
   const postId = params.id;
+
+  console.log({ feedback, img, timestamp, upVote, downVote });
+
+  if (upVote) {
+    return await voteOnFeedback(upVote as string, userId!, "UP");
+  }
+
+  if (downVote) {
+    return await voteOnFeedback(downVote as string, userId!, "DOWN");
+  }
+
   return await feedbackOnPost(
     userId!,
     postId!,

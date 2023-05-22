@@ -34,7 +34,7 @@ export async function getUserWithLikes(userId: string) {
 export async function getUserWithVotes(userId: string) {
   return await prisma.user.findUnique({
     where: { id: userId },
-    include: { votes: true },
+    include: { commentVotes: true },
   });
 }
 
