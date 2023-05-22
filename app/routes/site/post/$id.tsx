@@ -18,6 +18,8 @@ import { z } from "zod";
 import AvatarName from "~/components/AvatarName";
 import PhotoEditor from "~/components/editor/PhotoEditor";
 import FeedbackCard from "~/components/FeedbackCard";
+import TimestampedFeedback from "~/components/TimestampedComments";
+import TimestampedComments from "~/components/TimestampedComments";
 import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie.server";
 import { voteOnFeedback } from "~/server/feedback.server";
@@ -68,6 +70,7 @@ export default function Post() {
 
   const [writingFeedback, setWritingFeedback] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoDuration, setVideoDuration] = useState(0.0);
   const [paused, setPaused] = useState(true);
   const [timestamp, setTimestamp] = useState(0.0);
   const [frame, setFrame] = useState("");
@@ -86,8 +89,9 @@ export default function Post() {
     setWritingFeedback(false);
   };
 
-  const onLoaded = () => {
+  const onLoaded = (duration: number) => {
     setVideoLoaded(true);
+    setVideoDuration(duration);
   };
 
   const onTimestamp = (t: number) => {
@@ -103,85 +107,88 @@ export default function Post() {
   };
 
   return (
-    <Stack align="center" spacing="xl">
-      <Card w="75%">
-        <Stack mb="xs">
-          <AvatarName
-            name={post.author.username}
-            avatarUrl={post.author.avatarUrl}
-          />
-          <Text>{post.content}</Text>
-          <Group>
-            {post.tags.map((t) => (
-              <Text key={t} fw={700} style={{ cursor: "default" }}>
-                <Text truncate>{t}</Text>
-              </Text>
-            ))}
-          </Group>
-        </Stack>
-        {!writingFeedback && (
-          <Card.Section>
-            <AspectRatio ratio={16 / 9}>
-              <Video
-                src={post.mediaUrl}
-                timestamp={timestamp}
-                onLoaded={onLoaded}
-                onTimestamp={onTimestamp}
-                onFrame={onFrame}
-                onPause={() => setPaused(true)}
-                onPlay={() => setPaused(false)}
-              />
-            </AspectRatio>
-          </Card.Section>
-        )}
-        {writingFeedback && (
-          <>
-            <Card.Section>
-              <PhotoEditor frame={frame} onImg={onImg} />
-            </Card.Section>
-            <Form method="post" onSubmit={optimisticClear}>
-              <Textarea
-                name="feedback"
-                label="Feedback"
-                {...feedbackForm.getInputProps("msg")}
-              />
-              <TextInput name="timestamp" value={timestamp} type="hidden" />
-              <TextInput name="img" value={img} type="hidden" />
-              <Group mt="sm" grow>
-                <Button
-                  variant="default"
-                  onClick={(e) => setWritingFeedback(false)}
-                >
-                  Discard
-                </Button>
-                <Button type="submit" disabled={!feedbackForm.isValid()}>
-                  Submit Feedback
-                </Button>
-              </Group>
-            </Form>
-          </>
-        )}
-        {loggedIn && !writingFeedback && (
-          <Stack mt="xs">
-            <Button
-              onClick={(_e) => setWritingFeedback(!writingFeedback)}
-              disabled={!videoLoaded}
-            >
-              Draw Feedback
-            </Button>
+    <Group align="flex-start">
+      <TimestampedFeedback post={post} duration={videoDuration} />
+      <Stack align="center" spacing="xl">
+        <Card w="100%">
+          <Stack mb="xs">
+            <AvatarName
+              name={post.author.username}
+              avatarUrl={post.author.avatarUrl}
+            />
+            <Text>{post.content}</Text>
+            <Group>
+              {post.tags.map((t) => (
+                <Text key={t} fw={700} style={{ cursor: "default" }}>
+                  <Text truncate>{t}</Text>
+                </Text>
+              ))}
+            </Group>
           </Stack>
-        )}
-      </Card>
-      <SimpleGrid cols={1} spacing="xl">
-        {post.feedback?.map((f) => (
-          <FeedbackCard
-            key={f.id}
-            feedback={f}
-            loggedIn={loggedIn}
-            handleTimestamp={onTimestamp}
-          />
-        ))}
-      </SimpleGrid>
-    </Stack>
+          {!writingFeedback && (
+            <Card.Section>
+              <AspectRatio ratio={16 / 9}>
+                <Video
+                  src={post.mediaUrl}
+                  timestamp={timestamp}
+                  onLoaded={onLoaded}
+                  onTimestamp={onTimestamp}
+                  onFrame={onFrame}
+                  onPause={() => setPaused(true)}
+                  onPlay={() => setPaused(false)}
+                />
+              </AspectRatio>
+            </Card.Section>
+          )}
+          {writingFeedback && (
+            <>
+              <Card.Section>
+                <PhotoEditor frame={frame} onImg={onImg} />
+              </Card.Section>
+              <Form method="post" onSubmit={optimisticClear}>
+                <Textarea
+                  name="feedback"
+                  label="Feedback"
+                  {...feedbackForm.getInputProps("msg")}
+                />
+                <TextInput name="timestamp" value={timestamp} type="hidden" />
+                <TextInput name="img" value={img} type="hidden" />
+                <Group mt="sm" grow>
+                  <Button
+                    variant="default"
+                    onClick={(e) => setWritingFeedback(false)}
+                  >
+                    Discard
+                  </Button>
+                  <Button type="submit" disabled={!feedbackForm.isValid()}>
+                    Submit Feedback
+                  </Button>
+                </Group>
+              </Form>
+            </>
+          )}
+          {loggedIn && !writingFeedback && (
+            <Stack mt="xs">
+              <Button
+                onClick={(_e) => setWritingFeedback(!writingFeedback)}
+                disabled={!videoLoaded}
+              >
+                Draw Feedback
+              </Button>
+            </Stack>
+          )}
+        </Card>
+        <SimpleGrid cols={1} spacing="xl">
+          {post.feedback?.map((f) => (
+            <FeedbackCard
+              key={f.id}
+              feedback={f}
+              loggedIn={loggedIn}
+              handleTimestamp={onTimestamp}
+            />
+          ))}
+        </SimpleGrid>
+      </Stack>
+    </Group>
   );
 }
