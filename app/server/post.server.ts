@@ -112,10 +112,20 @@ export async function getFullPost(postId: string, userId: string) {
     return dbPost;
   }
 
+  const topFeedback = await prisma.feedback.findFirst({
+    where: {
+      postId,
+    },
+    orderBy: {
+      upvoteCount: "desc",
+    },
+  });
+
   dbPost.feedback = dbPost.feedback.map((f) => {
     return {
       ...f,
       myVote: f.votes.find((v) => v.userId === dbPost.authorId)?.direction,
+      mostHelpful: f.id === topFeedback?.id,
     };
   });
   return dbPost;

@@ -23,7 +23,6 @@ interface FeedbackCardProps {
 
 export default function FeedbackCard(props: FeedbackCardProps) {
   const { feedback, handleTimestamp } = props;
-  console.log({ feedback });
   return (
     <Card>
       <Stack mt="xs" align="center">
@@ -39,6 +38,11 @@ export default function FeedbackCard(props: FeedbackCardProps) {
         </Card.Section>
 
         <Group position="apart">
+          {feedback.mostHelpful && (
+            <Text c="purple" fw="bold" fz="sm">
+              Voted Most Helpful
+            </Text>
+          )}
           <Anchor
             onClick={(e) => {
               e.stopPropagation();

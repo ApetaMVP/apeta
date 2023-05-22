@@ -40,7 +40,6 @@ export async function voteOnFeedback(
       feedbackId,
     },
   });
-  console.log({ alreadyVoted });
   if (!alreadyVoted) {
     await newVote(userId, feedbackId, direction);
   } else {
