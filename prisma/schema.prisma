@@ -68,6 +68,7 @@ model Feedback {
   votes         FeedbackVote[]
   upvoteCount   Int            @default(0)
   downvoteCount Int            @default(0)
+  voteSum       Int            @default(0)
   commentCount  Int
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -86,6 +87,7 @@ model Comment {
   votes         CommentVote[]
   upvoteCount   Int           @default(0)
   downvoteCount Int           @default(0)
+  voteSum       Int           @default(0)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 

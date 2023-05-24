@@ -19,7 +19,6 @@ import AvatarName from "~/components/AvatarName";
 import PhotoEditor from "~/components/editor/PhotoEditor";
 import FeedbackCard from "~/components/FeedbackCard";
 import TimestampedFeedback from "~/components/TimestampedComments";
-import TimestampedComments from "~/components/TimestampedComments";
 import Video from "~/components/ui/Video";
 import { getUserId } from "~/server/cookie.server";
 import { voteOnFeedback } from "~/server/feedback.server";
@@ -43,8 +42,6 @@ export async function action({ request, params }: ActionArgs) {
   );
   const userId = await getUserId(request);
   const postId = params.id;
-
-  console.log({ feedback, img, timestamp, upVote, downVote });
 
   if (upVote) {
     return await voteOnFeedback(upVote as string, userId!, "UP");

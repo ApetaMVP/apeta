@@ -44,6 +44,7 @@ async function newVote(
     },
     data: {
       [direction === "UP" ? "upvoteCount" : "downvoteCount"]: { increment: 1 },
+      voteSum: { increment: direction === "UP" ? 1 : -1 },
     },
   });
   await prisma.$transaction([createVote, updateComment]);
@@ -58,8 +59,6 @@ async function updateVote({
   existingVote: CommentVote;
   newDirection: VoteDirection;
 }) {
-  const updateCount: any = {};
-
   if (existingVote.direction === newDirection) {
     const updateComment = prisma.comment.update({
       where: {
@@ -69,6 +68,7 @@ async function updateVote({
         [newDirection === "UP" ? "upvoteCount" : "downvoteCount"]: {
           decrement: 1,
         },
+        voteSum: { decrement: newDirection === "UP" ? 1 : -1 },
       },
     });
     const deleteVote = prisma.commentVote.delete({
@@ -88,6 +88,9 @@ async function updateVote({
         },
         [newDirection === "UP" ? "upvoteCount" : "downvoteCount"]: {
           increment: 1,
+        },
+        voteSum: {
+          increment: newDirection === "UP" ? 2 : -2,
         },
       },
     });

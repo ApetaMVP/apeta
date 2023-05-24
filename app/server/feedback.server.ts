@@ -2,6 +2,7 @@ import { VoteDirection, FeedbackVote } from "@prisma/client";
 import { json } from "@remix-run/node";
 import { Feedback } from "~/utils/types";
 import { prisma } from "./prisma.server";
+import { addField } from "./script";
 
 export async function getFeedback(feedbackId: string, userId?: string) {
   const dbFeedback = await prisma.feedback.findUnique({
@@ -20,20 +21,13 @@ export async function getFeedback(feedbackId: string, userId?: string) {
     return dbFeedback;
   }
 
-  dbFeedback.comments = dbFeedback.comments
-    // sort on upvoteCount and downvoteCount
-    .sort((a, b) =>
-      a.upvoteCount - a.downvoteCount < b.upvoteCount - b.downvoteCount
-        ? 1
-        : -1,
-    )
-    .map((comment, index) => {
-      return {
-        ...comment,
-        myVote: comment.votes.find((vote) => vote.userId === userId)?.direction,
-        mostHelpful: index === 0,
-      };
-    });
+  dbFeedback.comments = dbFeedback.comments.map((comment, index) => {
+    return {
+      ...comment,
+      myVote: comment.votes.find((vote) => vote.userId === userId)?.direction,
+      mostHelpful: index === 0,
+    };
+  });
   return dbFeedback;
 }
 
@@ -79,6 +73,7 @@ async function newVote(
     },
     data: {
       [direction === "UP" ? "upvoteCount" : "downvoteCount"]: { increment: 1 },
+      voteSum: { increment: direction === "UP" ? 1 : -1 },
     },
   });
   await prisma.$transaction([createVote, updateFeedback]);
@@ -93,8 +88,6 @@ async function updateVote({
   existingVote: FeedbackVote;
   newDirection: VoteDirection;
 }) {
-  const updateCount: any = {};
-
   if (existingVote.direction === newDirection) {
     const updateFeedback = prisma.feedback.update({
       where: {
@@ -103,6 +96,9 @@ async function updateVote({
       data: {
         [newDirection === "UP" ? "upvoteCount" : "downvoteCount"]: {
           decrement: 1,
+        },
+        voteSum: {
+          decrement: newDirection === "UP" ? 1 : -1,
         },
       },
     });
@@ -123,6 +119,9 @@ async function updateVote({
         },
         [newDirection === "UP" ? "upvoteCount" : "downvoteCount"]: {
           increment: 1,
+        },
+        voteSum: {
+          increment: newDirection === "UP" ? 2 : -2,
         },
       },
     });

@@ -98,6 +98,9 @@ export async function getFullPost(postId: string, userId: string) {
     include: {
       author: true,
       feedback: {
+        orderBy: {
+          voteSum: "desc",
+        },
         include: {
           votes: true,
           user: true,
@@ -110,20 +113,13 @@ export async function getFullPost(postId: string, userId: string) {
     return dbPost;
   }
 
-  dbPost.feedback = dbPost.feedback
-    // sort on upvoteCount and downvoteCount
-    .sort((a, b) =>
-      a.upvoteCount - a.downvoteCount < b.upvoteCount - b.downvoteCount
-        ? 1
-        : -1,
-    )
-    .map((f, index) => {
-      return {
-        ...f,
-        myVote: f.votes.find((v) => v.userId === dbPost.authorId)?.direction,
-        mostHelpful: index === 0,
-      };
-    });
+  dbPost.feedback = dbPost.feedback.map((f, index) => {
+    return {
+      ...f,
+      myVote: f.votes.find((v) => v.userId === dbPost.authorId)?.direction,
+      mostHelpful: index === 0,
+    };
+  });
 
   if (dbPost.feedback.length > 0) {
     // @ts-ignore
