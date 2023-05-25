@@ -38,7 +38,7 @@ export async function action({ request }: ActionArgs) {
     const [searchTerm, setSearchTerm] = useState(data.searchTerm);
     // const [posts, setPosts] = useState<Post[]>(data.posts as unknown as Post[]);
     const [page, setPage] = useState(0);
-    const [user, setUser] = useState<User[]>(data.users as unknown as User[]);
+    const [user, setUser] = useState<User[]>(data.user as unknown as User[]);
     const [end, setEnd] = useState(false);
   
     const getPosts = async () => {
@@ -57,4 +57,5 @@ export async function action({ request }: ActionArgs) {
           setEnd(false);
         }
       }
-    };
+    }
+};
