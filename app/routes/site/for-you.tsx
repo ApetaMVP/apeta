@@ -92,9 +92,10 @@ export default function ForYou() {
       </Container>
       </Stack>
       </Group> */}
-    <Stack>
+    <Stack px="md">
       
       <InfiniteScroll
+      
         dataLength={page * 1}
         next={getPosts}
         hasMore={!end}
