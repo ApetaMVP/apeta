@@ -116,7 +116,7 @@ export async function getFullPost(postId: string, userId: string) {
   dbPost.feedback = dbPost.feedback.map((f, index) => {
     return {
       ...f,
-      myVote: f.votes.find((v) => v.userId === dbPost.authorId)?.direction,
+      myVote: f.votes.find((v) => v.userId === userId)?.direction,
       mostHelpful: index === 0,
     };
   });

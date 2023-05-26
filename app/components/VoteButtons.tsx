@@ -49,7 +49,7 @@ export default function VoteButtons({
   };
 
   return (
-    <Group>
+    <Group spacing={5}>
       <ActionIcon
         type="submit"
         name="upVote"

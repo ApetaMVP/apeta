@@ -52,21 +52,25 @@ export default function FeedbackCard(props: FeedbackCardProps) {
             {formatDuration(feedback.timestamp)}
           </Anchor>
           <Box>
-            <ActionIcon
-              onClick={(_e) => {
-                window.location.href = `/site/post/${feedback.postId}/${feedback.id}`;
-              }}
-            >
-              <IconMessage color="black" />
-            </ActionIcon>
-            <Center>
-              <Text fz="sm" c="gray">
-                {feedback.commentCount}
-              </Text>
+            <Group>
+              <Group spacing={5}>
+                <ActionIcon
+                  onClick={(_e) => {
+                    window.location.href = `/site/post/${feedback.postId}/${feedback.id}`;
+                  }}
+                >
+                  <IconMessage color="black" />
+                </ActionIcon>
+                <Center>
+                  <Text fz="sm" c="gray">
+                    {feedback.commentCount}
+                  </Text>
+                </Center>
+              </Group>
               <Form method="post" action={`/site/post/${feedback.postId}`}>
                 <VoteButtons votable={feedback} disabled={!loggedIn} />
               </Form>
-            </Center>
+            </Group>
           </Box>
         </Group>
       </Stack>
