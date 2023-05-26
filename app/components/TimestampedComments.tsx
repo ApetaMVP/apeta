@@ -1,27 +1,29 @@
-import { Badge, Card, Group, Stack, Text } from "@mantine/core";
-import { FullPost } from "~/utils/types";
+import { Badge, Card, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Feedback, FullPost } from "~/utils/types";
 
 export default function TimestampedFeedback({
-  post,
+  feedback,
   duration,
 }: {
-  post: FullPost;
+  feedback: Feedback[];
   duration: number;
 }) {
   return (
     <Stack spacing="md">
       <Card>
         <Text>Timestamped Comments</Text>
-        <Stack spacing="xs">
-          {post.feedback?.map((f) => (
-            <Badge key={f.id}>
-              <Group spacing={"xs"}>
-                <Text>{formatSeconds(f.timestamp)}</Text>/
-                <Text>{formatSeconds(duration)}</Text>
-              </Group>
-            </Badge>
-          ))}
-        </Stack>
+        <ScrollArea h={100}>
+          <Stack spacing="xs">
+            {feedback?.map((f) => (
+              <Badge key={f.id}>
+                <Group spacing={"xs"}>
+                  <Text>{formatSeconds(f.timestamp)}</Text>/
+                  <Text>{formatSeconds(duration)}</Text>
+                </Group>
+              </Badge>
+            ))}
+          </Stack>
+        </ScrollArea>
       </Card>
     </Stack>
   );

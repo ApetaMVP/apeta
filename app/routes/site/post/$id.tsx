@@ -103,9 +103,12 @@ export default function Post() {
     setImg(i);
   };
 
+  const sortedFeedback =
+    post.feedback?.sort((a, b) => a.timestamp - b.timestamp) || [];
+
   return (
     <Group align="flex-start">
-      <TimestampedFeedback post={post} duration={videoDuration} />
+      <TimestampedFeedback feedback={sortedFeedback} duration={videoDuration} />
       <Stack align="center" spacing="xl">
         <Card w="100%">
           <Stack mb="xs">
