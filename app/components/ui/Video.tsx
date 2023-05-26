@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 interface VideoProps {
   src: string;
   timestamp: number;
-  onLoaded: () => void;
+  onLoaded: (duration: number) => void;
   onTimestamp: (timestamp: number) => void;
   onFrame: (frame: string) => void;
   onPlay: () => void;
@@ -18,6 +18,7 @@ export default function Video(props: VideoProps) {
 
   useEffect(() => {
     if (timestamp !== null) {
+      // @ts-ignore
       videoRef!.current!.currentTime = timestamp;
     }
   }, [timestamp]);
@@ -39,11 +40,33 @@ export default function Video(props: VideoProps) {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (video && canvas) {
+      // @ts-ignore
       const ctx = canvas.getContext("2d");
+      // @ts-ignore
       ctx!.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // @ts-ignore
       const imageSrc = canvas.toDataURL();
       return imageSrc;
     }
+  };
+
+  const handleLoadedMetaData = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    // @ts-ignore
+    const roundedDuration = Math.round(video!.duration);
+    console.log({ roundedDuration });
+    return roundedDuration;
+  };
+
+  const handleOnCanPlayThrough = () => {
+    handlePause();
+
+    const video = videoRef.current;
+    if (!video) return;
+    // @ts-ignore
+    const roundedDuration = Math.round(video!.duration);
+    onLoaded(roundedDuration);
   };
 
   return (
@@ -53,10 +76,7 @@ export default function Video(props: VideoProps) {
         autoPlay
         ref={videoRef}
         src={src}
-        onCanPlayThrough={(_e) => {
-          handlePause();
-          onLoaded();
-        }}
+        onCanPlayThrough={handleOnCanPlayThrough}
         onPause={handlePause}
         onPlay={onPlay}
         crossOrigin="anonymous"
