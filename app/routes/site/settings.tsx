@@ -5,8 +5,9 @@ import {
   Group,
   LoadingOverlay,
   rem,
-  Stack,
+  Stack
 } from "@mantine/core";
+import { notifications } from '@mantine/notifications';
 import {
   ActionArgs,
   json,
@@ -16,7 +17,7 @@ import {
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { IconUpload } from "@tabler/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { requireAuth } from "~/server/auth.server";
 import { getUserId } from "~/server/cookie.server";
 import { uploadHandler } from "~/server/s3.server";
@@ -32,19 +33,41 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  const userId = await getUserId(request);
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler,
-  );
-  const filename = formData.get("image");
-  await updateUserPfp(userId!, filename as string);
-  return null;
+  try {
+    const userId = await getUserId(request);
+    const formData = await unstable_parseMultipartFormData(
+      request,
+      uploadHandler,
+    );
+
+    const fileUrl = formData.get("image") as string;
+
+    await updateUserPfp(userId!, fileUrl);
+    return { success: true };
+
+  } catch (e) {
+    return { success: false }
+  }
 };
 
 export default function Settings() {
   const fetcher = useFetcher();
   const [file, setFile] = useState<File | null>(null);
+  const { success } = fetcher?.data || {}
+
+
+  const notify = () => {
+    notifications.show({
+      message: 'Profile photo updated successfully',
+      color: 'green'
+    })
+  }
+
+  useEffect(() => {
+    if (success) {
+      notify()
+    }
+  }, [success])
 
   return (
     <Card>
@@ -58,6 +81,7 @@ export default function Settings() {
             label="Profile Photo"
             name="image"
             accept="image/*"
+            value={file}
             icon={<IconUpload size={rem(14)} />}
             onChange={(e) => {
               if (e!.size < 52_428_800) {

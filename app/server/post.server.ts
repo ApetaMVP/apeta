@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { FypPost } from "~/utils/types";
+import { Feedback, FypPost } from "~/utils/types";
 import { prisma } from "./prisma.server";
 import { getUserWithLikes } from "./user.server";
 
@@ -90,23 +90,43 @@ export async function getPosts(
   return posts;
 }
 
-export async function getFullPost(postId: string) {
-  return await prisma.post.findUnique({
+export async function getFullPost(postId: string, userId: string) {
+  const dbPost = await prisma.post.findUnique({
     where: {
       id: postId,
     },
     include: {
       author: true,
       feedback: {
-        include: {
-          user: true,
-        },
         orderBy: {
-          timestamp: "asc",
+          voteSum: "desc",
+        },
+        include: {
+          votes: true,
+          user: true,
         },
       },
     },
   });
+
+  if (!dbPost || !userId) {
+    return dbPost;
+  }
+
+  dbPost.feedback = dbPost.feedback.map((f, index) => {
+    return {
+      ...f,
+      myVote: f.votes.find((v) => v.userId === userId)?.direction,
+      mostHelpful: index === 0,
+    };
+  });
+
+  if (dbPost.feedback.length > 0) {
+    // @ts-ignore
+    dbPost.feedback[0].mostHelpful = true;
+  }
+
+  return dbPost;
 }
 
 export async function likePost(userId: string, postId: string) {

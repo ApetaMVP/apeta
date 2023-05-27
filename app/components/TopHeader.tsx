@@ -64,7 +64,12 @@ export default function TopHeader(props: TopHeaderProps) {
                     Settings
                   </Menu.Item>
                   <Menu.Divider />
-                  <Menu.Item icon={<IconLogout />}>Log Out</Menu.Item>
+                    <Menu.Item
+                      component="a"
+                      href="/auth/logout"
+                      icon={<IconLogout />}>
+                      Log Out
+                    </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
             )}

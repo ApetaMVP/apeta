@@ -9,9 +9,11 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
+import { Form } from "@remix-run/react";
 import { IconMessage } from "@tabler/icons";
 import { Feedback } from "~/utils/types";
 import AvatarName from "./AvatarName";
+import VoteButtons from "./VoteButtons";
 
 interface FeedbackCardProps {
   feedback: Feedback;
@@ -20,17 +22,26 @@ interface FeedbackCardProps {
 }
 
 export default function FeedbackCard(props: FeedbackCardProps) {
-  const { feedback, handleTimestamp } = props;
+  const { feedback, handleTimestamp, loggedIn } = props;
   return (
     <Card>
-      <Card.Section>
-        <Image src={feedback.mediaUrl} />
-      </Card.Section>
-      <Stack mt="xs">
+      {feedback.mostHelpful && (
+        <Text c="purple" fw="bold" fz="sm">
+          Voted Most Helpful
+        </Text>
+      )}
+      <Stack mt="xs" align="center">
         <AvatarName
           name={feedback.user.username}
           avatarUrl={feedback.user.avatarUrl}
         />
+        <Text align="center" lineClamp={3}>
+          {feedback.content}
+        </Text>
+        <Card.Section>
+          <Image src={feedback.mediaUrl} />
+        </Card.Section>
+
         <Group position="apart">
           <Anchor
             onClick={(e) => {
@@ -41,21 +52,27 @@ export default function FeedbackCard(props: FeedbackCardProps) {
             {formatDuration(feedback.timestamp)}
           </Anchor>
           <Box>
-            <ActionIcon
-              onClick={(_e) => {
-                window.location.href = `/site/post/${feedback.postId}/${feedback.id}`;
-              }}
-            >
-              <IconMessage color="black" />
-            </ActionIcon>
-            <Center>
-              <Text fz="sm" c="gray">
-                {feedback.commentCount}
-              </Text>
-            </Center>
+            <Group>
+              <Group spacing={5}>
+                <ActionIcon
+                  onClick={(_e) => {
+                    window.location.href = `/site/post/${feedback.postId}/${feedback.id}`;
+                  }}
+                >
+                  <IconMessage color="black" />
+                </ActionIcon>
+                <Center>
+                  <Text fz="sm" c="gray">
+                    {feedback.commentCount}
+                  </Text>
+                </Center>
+              </Group>
+              <Form method="post" action={`/site/post/${feedback.postId}`}>
+                <VoteButtons votable={feedback} disabled={!loggedIn} />
+              </Form>
+            </Group>
           </Box>
         </Group>
-        <Text lineClamp={3}>{feedback.content}</Text>
       </Stack>
     </Card>
   );

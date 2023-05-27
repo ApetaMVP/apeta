@@ -31,6 +31,13 @@ export async function getUserWithLikes(userId: string) {
   });
 }
 
+export async function getUserWithVotes(userId: string) {
+  return await prisma.user.findUnique({
+    where: { id: userId },
+    include: { commentVotes: true },
+  });
+}
+
 export async function updateUserPfp(userId: string, pfp: string) {
   return await prisma.user.update({
     where: {
