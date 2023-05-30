@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   Group,
+  rem,
   SimpleGrid,
   Stack,
   Text,
@@ -108,7 +109,7 @@ export default function Post() {
 
   return (
     <Group align="flex-start">
-      <TimestampedFeedback feedback={sortedFeedback} duration={videoDuration} />
+      
       <Stack align="center" spacing="xl">
         <Card w="100%">
           <Stack mb="xs">
@@ -117,6 +118,7 @@ export default function Post() {
               avatarUrl={post.author.avatarUrl}
             />
             <Text>{post.content}</Text>
+            
             <Group>
               {post.tags.map((t) => (
                 <Text key={t} fw={700} style={{ cursor: "default" }}>
@@ -154,7 +156,7 @@ export default function Post() {
                 <TextInput name="timestamp" value={timestamp} type="hidden" />
                 <TextInput name="img" value={img} type="hidden" />
                 <Group mt="sm" grow>
-                  <Button
+                  <Button   
                     variant="default"
                     onClick={(e) => setWritingFeedback(false)}
                   >
@@ -165,7 +167,9 @@ export default function Post() {
                   </Button>
                 </Group>
               </Form>
+              
             </>
+            
           )}
           {loggedIn && !writingFeedback && (
             <Stack mt="xs">
@@ -177,6 +181,12 @@ export default function Post() {
               </Button>
             </Stack>
           )}
+          
+        </Card>
+        <Card w="90%">
+        <SimpleGrid cols={1} spacing="xl" >
+        <TimestampedFeedback feedback={sortedFeedback} duration={videoDuration} />
+        </SimpleGrid>
         </Card>
         <SimpleGrid cols={1} spacing="xl">
           {post.feedback?.map((f) => (
