@@ -4,10 +4,14 @@ import { Feedback, FullPost } from "~/utils/types";
 export default function TimestampedFeedback({
   feedback,
   duration,
+  setTimestamp,
 }: {
   feedback: Feedback[];
   duration: number;
+  setTimestamp: (timestamp: number) => void;
 }) {
+  const handleClick = (timestamp: number) => () => setTimestamp(timestamp);
+
   return (
     <Stack spacing="md">
       <Card>
@@ -15,7 +19,11 @@ export default function TimestampedFeedback({
         <ScrollArea h={100}>
           <Stack spacing="xs">
             {feedback?.map((f) => (
-              <Badge key={f.id}>
+              <Badge
+                key={f.id}
+                style={{ cursor: "pointer" }}
+                onClick={handleClick(f.timestamp)}
+              >
                 <Group spacing={"xs"}>
                   <Text>{formatSeconds(f.timestamp)}</Text>/
                   <Text>{formatSeconds(duration)}</Text>

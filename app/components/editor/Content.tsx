@@ -27,11 +27,30 @@ export default function Content(props: ContentProps) {
   const canvasOverlayRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (sectionRef.current) {
+      const width = sectionRef.current.clientWidth;
+      const height =
+        Math.floor(sectionRef.current.clientWidth * 0.5625) -
+        Math.floor(sectionRef.current.clientWidth * 0.062);
+      setCanvasSize(width, height);
+
+      const localCanvasRef = getCanvas();
+      const canvasRect = localCanvasRef.getBoundingClientRect();
+      setOffsetX(canvasRect.left);
+      setOffsetY(canvasRect.top);
+    }
+  }, [sectionRef.current]);
+
+  const setCanvasSize = (width: number, height: number) => {
+    if (canvasRef.current) {
+      canvasRef.current.width = width;
+      canvasRef.current.height = height;
+    }
+  };
+
+  useEffect(() => {
     const { ctx } = getCtxs();
     const localCanvasRef = getCanvas();
-    const canvasRect = localCanvasRef.getBoundingClientRect();
-    setOffsetX(canvasRect.left);
-    setOffsetY(canvasRect.top);
     const background = new Image();
     background.onload = () => {
       const canvasAspectRatio = localCanvasRef.width / localCanvasRef.height;
@@ -134,6 +153,13 @@ export default function Content(props: ContentProps) {
     onImg(localCanvasRef.toDataURL());
   };
 
+  console.log({ sectionRef });
+
+  console.log(
+    Math.floor(sectionRef.current?.clientWidth! * 0.5625) -
+      Math.floor(sectionRef.current?.clientWidth! * 0.062),
+  );
+
   return (
     <Stack>
       <div className="canvas">
@@ -142,11 +168,13 @@ export default function Content(props: ContentProps) {
             <Card.Section ref={sectionRef}>
               <canvas
                 className="canvas-actual"
-                width={sectionRef.current?.clientWidth!}
-                height={
-                  Math.floor(sectionRef.current?.clientWidth! * 0.5625) -
-                  Math.floor(sectionRef.current?.clientWidth! * 0.062)
-                }
+                width={0}
+                height={0}
+                // width={sectionRef.current?.clientWidth!}
+                // height={
+                //   Math.floor(sectionRef.current?.clientWidth! * 0.5625) -
+                //   Math.floor(sectionRef.current?.clientWidth! * 0.062)
+                // }
                 ref={canvasRef}
                 id="canvas"
                 onMouseDown={handleMouseDown}
@@ -155,6 +183,7 @@ export default function Content(props: ContentProps) {
                 style={{ cursor: "crosshair" }}
               />
             </Card.Section>
+
             <Center>
               <Stack>
                 <Toolbox
