@@ -1,5 +1,6 @@
 import { Avatar, Card, Stack } from "@mantine/core";
 import { Feedback } from "~/utils/types";
+import { IconStar } from "@tabler/icons";
 
 export default function VideoProgress({
   percentage,
@@ -32,6 +33,7 @@ export default function VideoProgress({
               justify="center"
               align="center"
             >
+              {f.mostHelpful && <MostHelpFul />}
               <div
                 style={{
                   position: "absolute",
@@ -77,5 +79,21 @@ export default function VideoProgress({
         />
       </Stack>
     </Card>
+  );
+}
+
+function MostHelpFul() {
+  return (
+    <IconStar
+      size={20}
+      strokeWidth={4}
+      fill={"purple"}
+      color={"purple"}
+      style={{
+        position: "absolute",
+        zIndex: 4,
+        top: -13,
+      }}
+    />
   );
 }

@@ -117,6 +117,9 @@ export default function Post() {
   const sortedFeedback =
     [...post.feedback!].sort((a, b) => a.timestamp - b.timestamp) || [];
 
+  const filteredFeedback =
+    post.feedback?.filter((f) => f.id !== highlightedFeedback?.id) || [];
+
   return (
     <Group align="flex-start">
       <TimestampedFeedback
@@ -125,8 +128,16 @@ export default function Post() {
         duration={videoDuration}
       />
       <Stack align="center" spacing="xl">
-        <Grid grow={true}>
-          <Grid.Col md={2}>
+        <Grid grow={true} w="100%">
+          <Grid.Col span={12} lg={12} order={2} orderLg={3}>
+            <VideoProgress
+              percentage={progress}
+              duration={videoDuration}
+              feedback={sortedFeedback}
+              onClickTimeline={onClickTimeline}
+            />
+          </Grid.Col>
+          <Grid.Col span={6} lg={6} order={1} orderLg={1}>
             <Card>
               <Stack mb="xs">
                 <AvatarName
@@ -201,7 +212,7 @@ export default function Post() {
               )}
             </Card>
           </Grid.Col>
-          <Grid.Col md={2}>
+          <Grid.Col span={6} lg={6} order={3} orderLg={2}>
             {highlightedFeedback && (
               <FeedbackCard
                 customStyles={{ height: "100%" }}
@@ -212,14 +223,9 @@ export default function Post() {
             )}
           </Grid.Col>
         </Grid>
-        <VideoProgress
-          percentage={progress}
-          duration={videoDuration}
-          feedback={sortedFeedback}
-          onClickTimeline={onClickTimeline}
-        />
+
         <SimpleGrid cols={1} spacing="xl">
-          {post.feedback?.map((f) => (
+          {filteredFeedback.map((f) => (
             <FeedbackCard
               key={f.id}
               feedback={f}
