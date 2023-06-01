@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { BaseSyntheticEvent, useEffect, useRef } from "react";
 
 interface VideoProps {
   src: string;
@@ -8,11 +8,20 @@ interface VideoProps {
   onFrame: (frame: string) => void;
   onPlay: () => void;
   onPause: () => void;
+  onProgress: (percentage: number) => void;
 }
 
 export default function Video(props: VideoProps) {
-  const { src, timestamp, onLoaded, onTimestamp, onFrame, onPause, onPlay } =
-    props;
+  const {
+    src,
+    timestamp,
+    onLoaded,
+    onTimestamp,
+    onFrame,
+    onPause,
+    onPlay,
+    onProgress,
+  } = props;
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -50,15 +59,6 @@ export default function Video(props: VideoProps) {
     }
   };
 
-  const handleLoadedMetaData = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    // @ts-ignore
-    const roundedDuration = Math.round(video!.duration);
-    console.log({ roundedDuration });
-    return roundedDuration;
-  };
-
   const handleOnCanPlayThrough = () => {
     handlePause();
 
@@ -67,6 +67,11 @@ export default function Video(props: VideoProps) {
     // @ts-ignore
     const roundedDuration = Math.round(video!.duration);
     onLoaded(roundedDuration);
+  };
+
+  const handleProgress = (e: BaseSyntheticEvent) => {
+    const percentage = (e.target.currentTime / e.target.duration) * 100;
+    onProgress(percentage);
   };
 
   return (
@@ -79,6 +84,7 @@ export default function Video(props: VideoProps) {
         onCanPlayThrough={handleOnCanPlayThrough}
         onPause={handlePause}
         onPlay={onPlay}
+        onTimeUpdate={handleProgress}
         crossOrigin="anonymous"
         onSeeked={handlePause}
       />
