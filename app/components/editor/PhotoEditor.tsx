@@ -10,10 +10,11 @@ import Content from "./Content";
 interface PhotoEditorProps {
   frame: string;
   onImg: (image: string) => void;
+  setHasMarkedImg: (hasMarkedImg: boolean) => void;
 }
 
 export default function PhotoEditor(props: PhotoEditorProps) {
-  const { frame, onImg } = props;
+  const { frame, onImg, setHasMarkedImg } = props;
   const [color, setColor] = useState("#d40b0b");
   const [tool, setTool] = useState("brush");
 
@@ -45,6 +46,7 @@ export default function PhotoEditor(props: PhotoEditorProps) {
       color={color}
       frame={frame}
       onImg={onImg}
+      setHasMarkedImg={setHasMarkedImg}
     />
   );
 }

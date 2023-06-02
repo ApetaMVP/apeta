@@ -10,12 +10,21 @@ interface ContentProps {
   color: string;
   handleTool: (e: any, tool: string) => void;
   handleColor: (e: any, color: string) => void;
+  setHasMarkedImg: (hasMarkedImg: boolean) => void;
   onImg: (image: string) => void;
 }
 
 export default function Content(props: ContentProps) {
-  const { frame, items, activeItem, color, handleTool, handleColor, onImg } =
-    props;
+  const {
+    frame,
+    items,
+    activeItem,
+    color,
+    handleTool,
+    handleColor,
+    onImg,
+    setHasMarkedImg,
+  } = props;
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
@@ -167,6 +176,7 @@ export default function Content(props: ContentProps) {
     setIsDrawing(false);
     const localCanvasRef = getCanvas();
     onImg(localCanvasRef.toDataURL());
+    setHasMarkedImg(true);
   };
 
   return (
