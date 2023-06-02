@@ -121,11 +121,6 @@ export async function getFullPost(postId: string, userId: string) {
     };
   });
 
-  if (dbPost.feedback.length > 0) {
-    // @ts-ignore
-    dbPost.feedback[0].mostHelpful = true;
-  }
-
   return dbPost;
 }
 

@@ -18,13 +18,14 @@ import VoteButtons from "./VoteButtons";
 interface FeedbackCardProps {
   feedback: Feedback;
   loggedIn: boolean;
+  customStyles?: React.CSSProperties;
   handleTimestamp: (timestamp: number) => void;
 }
 
 export default function FeedbackCard(props: FeedbackCardProps) {
-  const { feedback, handleTimestamp, loggedIn } = props;
+  const { feedback, handleTimestamp, loggedIn, customStyles } = props;
   return (
-    <Card>
+    <Card style={customStyles}>
       {feedback.mostHelpful && (
         <Text c="purple" fw="bold" fz="sm">
           Voted Most Helpful
