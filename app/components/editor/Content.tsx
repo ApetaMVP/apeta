@@ -27,6 +27,19 @@ export default function Content(props: ContentProps) {
   const canvasOverlayRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    // reset offset to cursor position when scrolling the page
+    const updatePosition = () => {
+      const localCanvasRef = getCanvas();
+      const canvasRect = localCanvasRef.getBoundingClientRect();
+      setOffsetX(canvasRect.left);
+      setOffsetY(canvasRect.top);
+    };
+    window.addEventListener("scroll", updatePosition);
+
+    return () => window.removeEventListener("scroll", updatePosition);
+  }, []);
+
+  useEffect(() => {
     if (sectionRef.current) {
       const width = sectionRef.current.clientWidth;
       const height =
@@ -39,12 +52,15 @@ export default function Content(props: ContentProps) {
       setOffsetX(canvasRect.left);
       setOffsetY(canvasRect.top);
     }
-  }, [sectionRef.current]);
+  }, [sectionRef]);
 
   const setCanvasSize = (width: number, height: number) => {
     if (canvasRef.current) {
       canvasRef.current.width = width;
       canvasRef.current.height = height;
+      const canvasRect = canvasRef!.current!.getBoundingClientRect();
+      setOffsetX(canvasRect.left);
+      setOffsetY(canvasRect.top + window.pageYOffset);
     }
   };
 
@@ -72,7 +88,7 @@ export default function Content(props: ContentProps) {
       onImg(localCanvasRef.toDataURL());
     };
     background.src = frame;
-  }, [canvasRef, canvasOverlayRef, frame]);
+  }, [canvasRef.current, canvasOverlayRef.current, frame]);
 
   const getCtxs = () => {
     const ctx = (
@@ -153,13 +169,6 @@ export default function Content(props: ContentProps) {
     onImg(localCanvasRef.toDataURL());
   };
 
-  console.log({ sectionRef });
-
-  console.log(
-    Math.floor(sectionRef.current?.clientWidth! * 0.5625) -
-      Math.floor(sectionRef.current?.clientWidth! * 0.062),
-  );
-
   return (
     <Stack>
       <div className="canvas">
@@ -170,11 +179,6 @@ export default function Content(props: ContentProps) {
                 className="canvas-actual"
                 width={0}
                 height={0}
-                // width={sectionRef.current?.clientWidth!}
-                // height={
-                //   Math.floor(sectionRef.current?.clientWidth! * 0.5625) -
-                //   Math.floor(sectionRef.current?.clientWidth! * 0.062)
-                // }
                 ref={canvasRef}
                 id="canvas"
                 onMouseDown={handleMouseDown}
