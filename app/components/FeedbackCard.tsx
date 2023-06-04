@@ -92,9 +92,9 @@ export default function FeedbackCard(props: FeedbackCardProps) {
                 <Form method="post" action={`/site/post/${feedback.postId}`}>
                   <VoteButtons votable={feedback} disabled={!loggedIn} />
                 </Form>
+                {replying && <ReplyBox feedback={feedback} />}
               </Group>
               <Anchor onClick={() => setReplying(!replying)}>Reply</Anchor>
-              {replying && <ReplyBox feedback={feedback} />}
             </Stack>
           </Grid.Col>
           <Grid.Col span={6}>
@@ -105,6 +105,7 @@ export default function FeedbackCard(props: FeedbackCardProps) {
           <Stack mt="md" spacing="md">
             {feedback.comments.map((comment) => (
               <CommentBox
+                key={`comment-${comment.id}`}
                 comment={comment}
                 feedback={feedback}
                 loggedIn={loggedIn}
@@ -197,6 +198,7 @@ function CommentBox({
           <Text>{parse(comment.content)}</Text>
           <Form method="post">
             <VoteButtons votable={comment} disabled={!loggedIn} />
+            <input type="hidden" name="_action" value="COMMENT_VOTE" />
           </Form>
         </Box>
       </Grid.Col>

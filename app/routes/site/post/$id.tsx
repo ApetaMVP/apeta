@@ -25,6 +25,7 @@ import FeedbackEntry from "~/components/FeedbackEntry";
 import TimestampedFeedback from "~/components/TimestampedComments";
 import Video from "~/components/ui/Video";
 import VideoProgress from "~/components/ui/VideoProgress";
+import { voteOnComment } from "~/server/comment.server";
 import { getUserId } from "~/server/cookie.server";
 import { voteOnFeedback } from "~/server/feedback.server";
 import { feedbackOnPost, getFullPost } from "~/server/post.server";
@@ -42,11 +43,20 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { feedback, img, timestamp, upVote, downVote } = Object.fromEntries(
-    (await request.formData()).entries(),
-  );
+  const { feedback, img, timestamp, upVote, downVote, _action } =
+    Object.fromEntries((await request.formData()).entries());
   const userId = await getUserId(request);
   const postId = params.id;
+
+  if (_action === "COMMENT_VOTE") {
+    if (upVote) {
+      return await voteOnComment(upVote as string, userId!, "UP");
+    }
+
+    if (downVote) {
+      return await voteOnComment(downVote as string, userId!, "DOWN");
+    }
+  }
 
   if (upVote) {
     return await voteOnFeedback(upVote as string, userId!, "UP");
@@ -115,6 +125,8 @@ export default function Post() {
   const sortedFeedback =
     [...post.feedback!].sort((a, b) => a.timestamp - b.timestamp) || [];
 
+  console.log();
+
   return (
     <Grid grow={true} w="100%">
       {/* timeline */}
@@ -133,37 +145,48 @@ export default function Post() {
       </Grid.Col>
       {/* video */}
       <Grid.Col lg={7} xl={7} order={1} orderLg={1}>
-        <Card h="100%">
-          <Stack mb="xs">
-            <AvatarName
-              name={post.author.username}
-              avatarUrl={post.author.avatarUrl}
+        {drawing && (
+          <div style={{ width: "100%", height: "100%" }}>
+            <PhotoEditor
+              frame={frame}
+              onImg={onImg}
+              setHasMarkedImg={setHasMarkedImg}
             />
-            <Text>{post.content}</Text>
-            <Group>
-              {post.tags.map((t) => (
-                <Text key={t} fw={700} style={{ cursor: "default" }}>
-                  <Text truncate>{t}</Text>
-                </Text>
-              ))}
-            </Group>
-          </Stack>
-
-          <Card.Section>
-            <AspectRatio ratio={16 / 9}>
-              <Video
-                src={post.mediaUrl}
-                timestamp={timestamp}
-                onLoaded={onLoaded}
-                onTimestamp={onTimestamp}
-                onFrame={onFrame}
-                onPause={() => setPaused(true)}
-                onPlay={() => setPaused(false)}
-                onProgress={setProgress}
+          </div>
+        )}
+        {!drawing && (
+          <Card h="100%">
+            <Stack mb="xs">
+              <AvatarName
+                name={post.author.username}
+                avatarUrl={post.author.avatarUrl}
               />
-            </AspectRatio>
-          </Card.Section>
-        </Card>
+              <Text>{post.content}</Text>
+              <Group>
+                {post.tags.map((t) => (
+                  <Text key={t} fw={700} style={{ cursor: "default" }}>
+                    <Text truncate>{t}</Text>
+                  </Text>
+                ))}
+              </Group>
+            </Stack>
+
+            <Card.Section>
+              <AspectRatio ratio={16 / 9}>
+                <Video
+                  src={post.mediaUrl}
+                  timestamp={timestamp}
+                  onLoaded={onLoaded}
+                  onTimestamp={onTimestamp}
+                  onFrame={onFrame}
+                  onPause={() => setPaused(true)}
+                  onPlay={() => setPaused(false)}
+                  onProgress={setProgress}
+                />
+              </AspectRatio>
+            </Card.Section>
+          </Card>
+        )}
       </Grid.Col>
       {/* comments/ new comment */}
       <Grid.Col lg={5} xl={5} order={3} orderLg={2}>
@@ -189,7 +212,7 @@ export default function Post() {
             )}
           </div>
 
-          {post.feedback?.length && !drawing && (
+          {post.feedback?.length && (
             <div style={{ width: "100%", height: "100%" }}>
               <ScrollArea h={500}>
                 <Stack spacing={"md"}>
@@ -204,16 +227,6 @@ export default function Post() {
                   ))}
                 </Stack>
               </ScrollArea>
-            </div>
-          )}
-
-          {drawing && (
-            <div style={{ width: "100%", height: "100%" }}>
-              <PhotoEditor
-                frame={frame}
-                onImg={onImg}
-                setHasMarkedImg={setHasMarkedImg}
-              />
             </div>
           )}
         </Stack>
