@@ -117,7 +117,8 @@ export default function Post() {
 
   return (
     <Grid grow={true} w="100%">
-      <Grid.Col span={12} lg={12} order={2} orderLg={3}>
+      {/* timeline */}
+      <Grid.Col lg={12} xl={12} order={2} orderLg={3}>
         <MediaQuery
           smallerThan={"lg"}
           styles={{ marginBottom: 20, marginTop: 20 }}
@@ -130,7 +131,8 @@ export default function Post() {
           />
         </MediaQuery>
       </Grid.Col>
-      <Grid.Col span={7} lg={7} order={1} orderLg={1}>
+      {/* video */}
+      <Grid.Col lg={7} xl={7} order={1} orderLg={1}>
         <Card h="100%">
           <Stack mb="xs">
             <AvatarName
@@ -163,10 +165,11 @@ export default function Post() {
           </Card.Section>
         </Card>
       </Grid.Col>
-      <Grid.Col span={5} lg={5} order={3} orderLg={2}>
+      {/* comments/ new comment */}
+      <Grid.Col lg={5} xl={5} order={3} orderLg={2}>
         <Stack
           h="100%"
-          w="100%"
+          //w="100%"
           spacing="md"
           align="flex-end"
           justify="space-between"
@@ -186,11 +189,11 @@ export default function Post() {
             )}
           </div>
 
-          {highlightedFeedback.length > 0 && !drawing && (
+          {post.feedback?.length && !drawing && (
             <div style={{ width: "100%", height: "100%" }}>
               <ScrollArea h={500}>
                 <Stack spacing={"md"}>
-                  {highlightedFeedback.map((f) => (
+                  {post.feedback.map((f) => (
                     <FeedbackCard
                       customStyles={{ height: "100%" }}
                       key={f.id}

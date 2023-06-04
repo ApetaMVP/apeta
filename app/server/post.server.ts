@@ -104,6 +104,11 @@ export async function getFullPost(postId: string, userId: string) {
         include: {
           votes: true,
           user: true,
+          comments: {
+            include: {
+              user: true,
+            },
+          },
         },
       },
     },
