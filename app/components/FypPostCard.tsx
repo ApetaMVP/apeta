@@ -126,10 +126,11 @@ export default function FypPostCard(props: FypPostCardProps) {
       </Card.Section>
         <Stack mt="xs">
         
-          <Text align="center">{post.content}</Text>
+          <Text lineClamp={1} align="center">{post.content}</Text>
           <Group>
             {post.tags.map((t) => (
               <Text
+              lineClamp={1}
                 key={t}
                 truncate
                 fw={700}

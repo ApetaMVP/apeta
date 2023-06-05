@@ -115,7 +115,10 @@ export default function ForYou() {
         //   <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
         // }
       >
-        <SimpleGrid  breakpoints={[
+        <SimpleGrid 
+            cols={4}
+            spacing="lg"
+         breakpoints={[
         { maxWidth: 'xl', cols: 3, spacing: 'md' },
         { maxWidth: 'lg', cols: 3, spacing: 'sm'},
         { maxWidth: 'md', cols: 2, spacing: 'sm' },
