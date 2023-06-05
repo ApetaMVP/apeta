@@ -4,6 +4,7 @@ import {
   Card,
   Grid,
   Group,
+  rem,
   SimpleGrid,
   Stack,
   Text,

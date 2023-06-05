@@ -15,7 +15,7 @@ export default function TimestampedFeedback({
   return (
     <Stack spacing="md">
       <Card>
-        <Text>Timestamped Comments</Text>
+        <Text fw="bold" ta="center">Timestamped Comments</Text>
         <ScrollArea h={100}>
           <Stack spacing="xs">
             {feedback?.map((f) => (
