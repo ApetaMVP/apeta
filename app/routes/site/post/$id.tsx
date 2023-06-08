@@ -15,12 +15,14 @@ import {
 import { useForm, zodResolver } from "@mantine/form";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
+import React from "react";
 import { useState } from "react";
 
 import { z } from "zod";
 import AvatarName from "~/components/AvatarName";
 import PhotoEditor from "~/components/editor/PhotoEditor";
 import FeedbackCard from "~/components/FeedbackCard";
+import FeedbackCardList from "~/components/FeedbackCardList";
 import FeedbackEntry from "~/components/FeedbackEntry";
 import TimestampedFeedback from "~/components/TimestampedComments";
 import Video from "~/components/ui/Video";
@@ -28,7 +30,11 @@ import VideoProgress from "~/components/ui/VideoProgress";
 import { voteOnComment } from "~/server/comment.server";
 import { getUserId } from "~/server/cookie.server";
 import { voteOnFeedback } from "~/server/feedback.server";
-import { feedbackOnPost, getFullPost } from "~/server/post.server";
+import {
+  commentOnFeedback,
+  feedbackOnPost,
+  getFullPost,
+} from "~/server/post.server";
 import { Feedback, FullPost } from "~/utils/types";
 
 const feedbackSchema = z.object({
@@ -43,8 +49,16 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 };
 
 export async function action({ request, params }: ActionArgs) {
-  const { feedback, img, timestamp, upVote, downVote, _action } =
-    Object.fromEntries((await request.formData()).entries());
+  const {
+    feedback,
+    feedbackId,
+    img,
+    comment,
+    timestamp,
+    upVote,
+    downVote,
+    _action,
+  } = Object.fromEntries((await request.formData()).entries());
   const userId = await getUserId(request);
   const postId = params.id;
 
@@ -58,12 +72,22 @@ export async function action({ request, params }: ActionArgs) {
     }
   }
 
-  if (upVote) {
-    return await voteOnFeedback(upVote as string, userId!, "UP");
+  if (_action === "FEEDBACK_VOTE") {
+    if (upVote) {
+      return await voteOnFeedback(upVote as string, userId!, "UP");
+    }
+
+    if (downVote) {
+      return await voteOnFeedback(downVote as string, userId!, "DOWN");
+    }
   }
 
-  if (downVote) {
-    return await voteOnFeedback(downVote as string, userId!, "DOWN");
+  if (_action === "COMMENT_REPLY") {
+    return await commentOnFeedback(
+      userId!,
+      feedbackId as string,
+      comment as string,
+    );
   }
 
   return await feedbackOnPost(
@@ -80,21 +104,21 @@ export default function Post() {
   const post = data.post as unknown as FullPost;
   const loggedIn = data.loggedIn;
 
-  const [writingFeedback, setWritingFeedback] = useState(false);
   const [drawing, setIsDrawing] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoDuration, setVideoDuration] = useState(0.0);
-  const [paused, setPaused] = useState(true);
   const [timestamp, setTimestamp] = useState(0.0);
   const [frame, setFrame] = useState("");
   const [img, setImg] = useState("");
   const [progress, setProgress] = useState(0);
+  const [paused, setPaused] = useState(false);
   const [highlightedFeedback, setHighlightedFeedback] = useState<Feedback[]>(
-    post.feedback ? [post.feedback?.[0]] : [],
+    [],
   );
   const [hasMarkedImg, setHasMarkedImg] = useState(false);
 
   const onLoaded = (duration: number) => {
+    console.log("loaded");
     setVideoLoaded(true);
     setVideoDuration(duration);
   };
@@ -118,14 +142,12 @@ export default function Post() {
 
   const onSubmit = () => {
     setIsDrawing(false);
-    const mostHelpful = post.feedback?.filter((f) => f.mostHelpful);
-    setHighlightedFeedback(mostHelpful || []);
+    // const mostHelpful = post.feedback?.filter((f) => f.mostHelpful);
+    // setHighlightedFeedback(mostHelpful || []);
   };
 
   const sortedFeedback =
     [...post.feedback!].sort((a, b) => a.timestamp - b.timestamp) || [];
-
-  console.log();
 
   return (
     <Grid grow={true} w="100%">
@@ -154,45 +176,45 @@ export default function Post() {
             />
           </div>
         )}
-        {!drawing && (
-          <Card h="100%">
-            <Stack mb="xs">
-              <AvatarName
-                name={post.author.username}
-                avatarUrl={post.author.avatarUrl}
-              />
-              <Text>{post.content}</Text>
-              <Group>
-                {post.tags.map((t) => (
-                  <Text key={t} fw={700} style={{ cursor: "default" }}>
-                    <Text truncate>{t}</Text>
-                  </Text>
-                ))}
-              </Group>
-            </Stack>
 
-            <Card.Section>
-              <AspectRatio ratio={16 / 9}>
-                <Video
-                  src={post.mediaUrl}
-                  timestamp={timestamp}
-                  onLoaded={onLoaded}
-                  onTimestamp={onTimestamp}
-                  onFrame={onFrame}
-                  onPause={() => setPaused(true)}
-                  onPlay={() => setPaused(false)}
-                  onProgress={setProgress}
-                />
-              </AspectRatio>
-            </Card.Section>
-          </Card>
-        )}
+        <Card h="100%" style={{ display: drawing ? "none" : "block" }}>
+          <Stack mb="xs">
+            <AvatarName
+              name={post.author.username}
+              avatarUrl={post.author.avatarUrl}
+            />
+            <Text>{post.content}</Text>
+            <Group>
+              {post.tags.map((t) => (
+                <Text key={t} fw={700} style={{ cursor: "default" }}>
+                  <Text truncate>{t}</Text>
+                </Text>
+              ))}
+            </Group>
+          </Stack>
+
+          <Card.Section>
+            <AspectRatio ratio={16 / 9}>
+              <Video
+                src={post.mediaUrl}
+                paused={paused}
+                timestamp={timestamp}
+                onLoaded={onLoaded}
+                onTimestamp={onTimestamp}
+                onFrame={onFrame}
+                onPause={() => setPaused(true)}
+                onPlay={() => setPaused(false)}
+                onProgress={setProgress}
+              />
+            </AspectRatio>
+          </Card.Section>
+        </Card>
       </Grid.Col>
       {/* comments/ new comment */}
       <Grid.Col lg={5} xl={5} order={3} orderLg={2}>
         <Stack
           h="100%"
-          //w="100%"
+          w="100%"
           spacing="md"
           align="flex-end"
           justify="space-between"
@@ -202,11 +224,14 @@ export default function Post() {
               <FeedbackEntry
                 timestamp={timestamp}
                 img={img}
-                onImg={onImg}
-                frame={frame}
                 isDrawing={drawing}
                 hasMarkedImg={hasMarkedImg}
-                onPencilClick={() => setIsDrawing(!drawing)}
+                onPencilClick={() => {
+                  setIsDrawing(!drawing);
+                  if (!drawing) {
+                    setPaused(true);
+                  }
+                }}
                 onSubmit={onSubmit}
               />
             )}
@@ -214,19 +239,12 @@ export default function Post() {
 
           {post.feedback?.length && (
             <div style={{ width: "100%", height: "100%" }}>
-              <ScrollArea h={500}>
-                <Stack spacing={"md"}>
-                  {post.feedback.map((f) => (
-                    <FeedbackCard
-                      customStyles={{ height: "100%" }}
-                      key={f.id}
-                      feedback={f}
-                      loggedIn={loggedIn}
-                      handleTimestamp={onTimestamp}
-                    />
-                  ))}
-                </Stack>
-              </ScrollArea>
+              <FeedbackCardList
+                post={post}
+                onTimestamp={onTimestamp}
+                loggedIn={loggedIn}
+                highlightedFeedback={highlightedFeedback}
+              />
             </div>
           )}
         </Stack>

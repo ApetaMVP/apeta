@@ -79,7 +79,7 @@ export default function FeedbackCard(props: FeedbackCardProps) {
                 {formatDuration(feedback.timestamp)}
               </Anchor>
               <Group>
-                <Group spacing={5}>
+                <Group>
                   <ActionIcon onClick={(_e) => setShowComments(!showComments)}>
                     <IconMessage color="black" />
                   </ActionIcon>
@@ -91,8 +91,11 @@ export default function FeedbackCard(props: FeedbackCardProps) {
                 </Group>
                 <Form method="post" action={`/site/post/${feedback.postId}`}>
                   <VoteButtons votable={feedback} disabled={!loggedIn} />
+                  <input type="hidden" name="_action" value="FEEDBACK_VOTE" />
                 </Form>
-                {replying && <ReplyBox feedback={feedback} />}
+                {replying && (
+                  <ReplyBox feedback={feedback} setReplying={setReplying} />
+                )}
               </Group>
               <Anchor onClick={() => setReplying(!replying)}>Reply</Anchor>
             </Stack>
@@ -118,7 +121,13 @@ export default function FeedbackCard(props: FeedbackCardProps) {
   );
 }
 
-function ReplyBox({ feedback }: { feedback: Feedback }) {
+function ReplyBox({
+  feedback,
+  setReplying,
+}: {
+  feedback: Feedback;
+  setReplying: (replying: boolean) => void;
+}) {
   const [comment, setComment] = useState("");
   const commentSchema = z.object({
     comment: z.string().nonempty({ message: "Comment cannot be empty" }),
@@ -133,6 +142,7 @@ function ReplyBox({ feedback }: { feedback: Feedback }) {
     setComment("");
     commentForm.setValues({ comment: "" });
     commentForm.reset();
+    setReplying(false);
   };
   const handleCommentChange = (c: string) => {
     if (c === "<p></p>") {
@@ -144,11 +154,9 @@ function ReplyBox({ feedback }: { feedback: Feedback }) {
     commentForm.setValues({ comment: c });
   };
   return (
-    <Form
-      method="post"
-      action={`/site/post/${feedback.postId}/${feedback.id}`}
-      onSubmit={optimisticClear}
-    >
+    <Form method="post" onSubmit={optimisticClear}>
+      <input type="hidden" name="_action" value="COMMENT_REPLY" />
+      <input type="hidden" name="feedbackId" value={feedback.id} />
       <TextEditor comment={comment} handleChange={handleCommentChange} />
       <TextInput
         name="comment"

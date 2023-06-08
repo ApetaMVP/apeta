@@ -11,8 +11,6 @@ const feedbackSchema = z.object({
 interface FeedbackEntryProps {
   timestamp: number;
   img: string;
-  frame: string;
-  onImg: (img: string) => void;
   onPencilClick: () => void;
   isDrawing: boolean;
   hasMarkedImg: boolean;
@@ -20,16 +18,8 @@ interface FeedbackEntryProps {
 }
 
 export default function FeedbackEntry(props: FeedbackEntryProps) {
-  const {
-    timestamp,
-    img,
-    frame,
-    onImg,
-    onPencilClick,
-    isDrawing,
-    hasMarkedImg,
-    onSubmit,
-  } = props;
+  const { timestamp, img, onPencilClick, isDrawing, hasMarkedImg, onSubmit } =
+    props;
 
   const feedbackForm = useForm({
     validate: zodResolver(feedbackSchema),

@@ -36,7 +36,7 @@ export default function Content(props: ContentProps) {
   const canvasOverlayRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    // reset offset to cursor position when scrolling the page
+    // reset offset to cursor position when scrolling or resizing the page
     const updatePosition = () => {
       const localCanvasRef = getCanvas();
       const canvasRect = localCanvasRef.getBoundingClientRect();
@@ -44,8 +44,20 @@ export default function Content(props: ContentProps) {
       setOffsetY(canvasRect.top);
     };
     window.addEventListener("scroll", updatePosition);
+    window.addEventListener("resize", () => {
+      updatePosition();
+      const { ctx } = getCtxs();
+      const localCanvasRef = getCanvas();
+      const canvasAspectRatio = localCanvasRef.width / localCanvasRef.height;
 
-    return () => window.removeEventListener("scroll", updatePosition);
+      // update canvas size
+      setCanvasSize(localCanvasRef.width, localCanvasRef.height);
+    });
+
+    return () => {
+      window.removeEventListener("scroll", updatePosition);
+      window.removeEventListener("resize", updatePosition);
+    };
   }, []);
 
   useEffect(() => {

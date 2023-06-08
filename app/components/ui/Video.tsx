@@ -1,8 +1,10 @@
-import { BaseSyntheticEvent, useEffect, useRef } from "react";
+import React, { useCallback } from "react";
+import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
 
 interface VideoProps {
   src: string;
   timestamp: number;
+  paused: boolean;
   onLoaded: (duration: number) => void;
   onTimestamp: (timestamp: number) => void;
   onFrame: (frame: string) => void;
@@ -19,11 +21,23 @@ export default function Video(props: VideoProps) {
     onTimestamp,
     onFrame,
     onPause,
+    paused,
     onPlay,
     onProgress,
   } = props;
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (paused) {
+      // @ts-ignore
+      videoRef!.current!.pause();
+    } else {
+      // @ts-ignore
+      videoRef!.current!.play();
+    }
+  }, [paused]);
 
   useEffect(() => {
     if (timestamp !== null) {
@@ -32,7 +46,8 @@ export default function Video(props: VideoProps) {
     }
   }, [timestamp]);
 
-  const handlePause = () => {
+  const handlePause = useCallback(() => {
+    console.log("handlePause");
     const frame = captureImage();
     if (frame) {
       onFrame(frame);
@@ -43,9 +58,9 @@ export default function Video(props: VideoProps) {
       onTimestamp(t);
     }
     onPause();
-  };
+  }, [onPause, onFrame, onTimestamp]);
 
-  const captureImage = () => {
+  const captureImage = useCallback(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (video && canvas) {
@@ -57,9 +72,10 @@ export default function Video(props: VideoProps) {
       const imageSrc = canvas.toDataURL();
       return imageSrc;
     }
-  };
+  }, [videoRef, canvasRef]);
 
-  const handleOnCanPlayThrough = () => {
+  const handleOnCanPlayThrough = useCallback(() => {
+    console.log("handleOnCanPlayThrough");
     handlePause();
 
     const video = videoRef.current;
@@ -67,12 +83,15 @@ export default function Video(props: VideoProps) {
     // @ts-ignore
     const roundedDuration = Math.round(video!.duration);
     onLoaded(roundedDuration);
-  };
+  }, [handlePause, onLoaded]);
 
-  const handleProgress = (e: BaseSyntheticEvent) => {
-    const percentage = (e.target.currentTime / e.target.duration) * 100;
-    onProgress(percentage);
-  };
+  const handleProgress = useCallback(
+    (e: BaseSyntheticEvent) => {
+      const percentage = (e.target.currentTime / e.target.duration) * 100;
+      onProgress(percentage);
+    },
+    [onProgress],
+  );
 
   return (
     <>

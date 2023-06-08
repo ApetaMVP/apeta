@@ -27,20 +27,6 @@ export default function VideoProgress({
   return (
     <Card w="100%" style={{ overflow: "visible" }} className={className}>
       <Stack w="100%">
-        {/* {feedback.map((f) => {
-          const position = (f.timestamp / duration) * 100;
-          return (
-            <Marker
-              key={`timeline-marker-${f.id}`}
-              position={position}
-              f={f}
-              allFeedback={feedback}
-              duration={duration}
-              onClickTimeline={onClickTimeline}
-            />
-          );
-        })} */}
-
         {Object.keys(groupedByTimestamp).map((timestamp) => {
           const position = (Number(timestamp) / duration) * 100;
           return (
@@ -52,28 +38,8 @@ export default function VideoProgress({
             />
           );
         })}
-
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: `${percentage}%`,
-            height: "100%",
-            backgroundColor: "#868E96",
-            zIndex: 2,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#CED4DA",
-          }}
-        />
+        <Progress percentage={percentage} />
+        <Background />
       </Stack>
     </Card>
   );
@@ -158,6 +124,37 @@ function MostHelpFul() {
         position: "absolute",
         zIndex: 4,
         top: -13,
+      }}
+    />
+  );
+}
+
+function Background() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#CED4DA",
+      }}
+    />
+  );
+}
+
+function Progress({ percentage }: { percentage: number }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        width: `${percentage}%`,
+        height: "100%",
+        backgroundColor: "#868E96",
+        zIndex: 2,
       }}
     />
   );
