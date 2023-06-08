@@ -44,7 +44,7 @@ export default function Content(props: ContentProps) {
       setOffsetY(canvasRect.top);
     };
     window.addEventListener("scroll", updatePosition);
-    window.addEventListener("resize", () => updatePosition);
+    window.addEventListener("resize", updatePosition);
 
     return () => {
       window.removeEventListener("scroll", updatePosition);

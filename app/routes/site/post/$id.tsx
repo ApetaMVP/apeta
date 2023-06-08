@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { z } from "zod";
 import AvatarName from "~/components/AvatarName";
 import PhotoEditor from "~/components/editor/PhotoEditor";
@@ -129,12 +129,11 @@ export default function Post() {
   const onClickTimeline = (f: Feedback[]) => {
     setTimestamp(f[0].timestamp);
     setHighlightedFeedback(f);
+    setPaused(true);
   };
 
   const onSubmit = () => {
     setIsDrawing(false);
-    // const mostHelpful = post.feedback?.filter((f) => f.mostHelpful);
-    // setHighlightedFeedback(mostHelpful || []);
   };
 
   const sortedFeedback =
@@ -190,11 +189,10 @@ export default function Post() {
                 src={post.mediaUrl}
                 paused={paused}
                 timestamp={timestamp}
+                loaded={videoLoaded}
                 onLoaded={onLoaded}
                 onTimestamp={onTimestamp}
                 onFrame={onFrame}
-                onPause={() => setPaused(true)}
-                onPlay={() => setPaused(false)}
                 onProgress={setProgress}
               />
             </AspectRatio>
@@ -219,9 +217,7 @@ export default function Post() {
                 hasMarkedImg={hasMarkedImg}
                 onPencilClick={() => {
                   setIsDrawing(!drawing);
-                  if (!drawing) {
-                    setPaused(true);
-                  }
+                  setPaused(true);
                 }}
                 onSubmit={onSubmit}
               />

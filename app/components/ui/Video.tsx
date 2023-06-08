@@ -4,13 +4,12 @@ import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
 interface VideoProps {
   src: string;
   timestamp: number;
-  paused: boolean;
+  loaded: boolean;
   onLoaded: (duration: number) => void;
   onTimestamp: (timestamp: number) => void;
   onFrame: (frame: string) => void;
-  onPlay: () => void;
-  onPause: () => void;
   onProgress: (percentage: number) => void;
+  paused: boolean;
 }
 
 export default function Video(props: VideoProps) {
@@ -18,24 +17,23 @@ export default function Video(props: VideoProps) {
     src,
     timestamp,
     onLoaded,
+    paused,
     onTimestamp,
     onFrame,
-    onPause,
-    paused,
-    onPlay,
     onProgress,
+    loaded,
   } = props;
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
+  // effect to set video to paused
+
   useEffect(() => {
-    if (paused) {
+    if (videoRef.current && paused) {
       // @ts-ignore
-      videoRef!.current!.pause();
-    } else {
-      // @ts-ignore
-      videoRef!.current!.play();
+      videoRef.current!.pause();
+      handlePause();
     }
   }, [paused]);
 
@@ -54,11 +52,10 @@ export default function Video(props: VideoProps) {
     }
     /* tslint:disable:no-string-literal */
     const t = Number(videoRef?.current?.["currentTime"]);
-    if (onTimestamp) {
-      onTimestamp(t);
-    }
-    onPause();
-  }, [onPause, onFrame, onTimestamp]);
+    // if (onTimestamp) {
+    //   onTimestamp(t);
+    // }
+  }, [onFrame, onTimestamp]);
 
   const captureImage = useCallback(() => {
     const video = videoRef.current;
@@ -102,7 +99,6 @@ export default function Video(props: VideoProps) {
         src={src}
         onCanPlayThrough={handleOnCanPlayThrough}
         onPause={handlePause}
-        onPlay={onPlay}
         onTimeUpdate={handleProgress}
         crossOrigin="anonymous"
         onSeeked={handlePause}
