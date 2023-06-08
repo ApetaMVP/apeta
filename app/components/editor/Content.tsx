@@ -44,15 +44,7 @@ export default function Content(props: ContentProps) {
       setOffsetY(canvasRect.top);
     };
     window.addEventListener("scroll", updatePosition);
-    window.addEventListener("resize", () => {
-      updatePosition();
-      const { ctx } = getCtxs();
-      const localCanvasRef = getCanvas();
-      const canvasAspectRatio = localCanvasRef.width / localCanvasRef.height;
-
-      // update canvas size
-      setCanvasSize(localCanvasRef.width, localCanvasRef.height);
-    });
+    window.addEventListener("resize", () => updatePosition);
 
     return () => {
       window.removeEventListener("scroll", updatePosition);
