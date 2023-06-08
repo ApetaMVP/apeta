@@ -1,30 +1,21 @@
 import {
   AspectRatio,
-  Button,
   Card,
   Grid,
   Group,
   MediaQuery,
-  ScrollArea,
-  SimpleGrid,
   Stack,
   Text,
-  Textarea,
-  TextInput,
 } from "@mantine/core";
-import { useForm, zodResolver } from "@mantine/form";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
-import React from "react";
+import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-
 import { z } from "zod";
 import AvatarName from "~/components/AvatarName";
 import PhotoEditor from "~/components/editor/PhotoEditor";
-import FeedbackCard from "~/components/FeedbackCard";
+
 import FeedbackCardList from "~/components/FeedbackCardList";
 import FeedbackEntry from "~/components/FeedbackEntry";
-import TimestampedFeedback from "~/components/TimestampedComments";
 import Video from "~/components/ui/Video";
 import VideoProgress from "~/components/ui/VideoProgress";
 import { voteOnComment } from "~/server/comment.server";
