@@ -5,19 +5,20 @@ import FeedbackCard from "./FeedbackCard";
 
 interface FeedbackCardListProps {
   post: FullPost;
+  feedback: Feedback[];
   loggedIn: boolean;
   onTimestamp: (timestamp: number) => void;
   highlightedFeedback?: Feedback[];
 }
 
 export default function FeedbackCardList(props: FeedbackCardListProps) {
-  const { post, loggedIn, onTimestamp, highlightedFeedback } = props;
+  const { post, feedback, loggedIn, onTimestamp, highlightedFeedback } = props;
 
   const highlightedId = highlightedFeedback?.[0]?.id;
   return (
     <ScrollArea h={500}>
       <Stack spacing={"md"}>
-        {post!.feedback!.map((f) => (
+        {feedback.map((f) => (
           <ScrollPositionWrapper key={f.id} scrolled={f.id === highlightedId}>
             <FeedbackCard
               customStyles={{ height: "100%" }}
