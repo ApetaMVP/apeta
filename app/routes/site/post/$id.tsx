@@ -228,6 +228,7 @@ export default function Post() {
             <div style={{ width: "100%", height: "100%" }}>
               <FeedbackCardList
                 post={post}
+                feedback={sortedFeedback}
                 onTimestamp={onTimestamp}
                 loggedIn={loggedIn}
                 highlightedFeedback={highlightedFeedback}
