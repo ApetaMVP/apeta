@@ -4,8 +4,6 @@ import {
   Card,
   Grid,
   Group,
-  rem,
-  SimpleGrid,
   Stack,
   Text,
   Textarea,
@@ -20,7 +18,6 @@ import { z } from "zod";
 import AvatarName from "~/components/AvatarName";
 import PhotoEditor from "~/components/editor/PhotoEditor";
 import FeedbackCard from "~/components/FeedbackCard";
-import TimestampedFeedback from "~/components/TimestampedComments";
 import Video from "~/components/ui/Video";
 import VideoProgress from "~/components/ui/VideoProgress";
 import { getUserId } from "~/server/cookie.server";
