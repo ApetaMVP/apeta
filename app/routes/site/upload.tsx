@@ -10,22 +10,22 @@ import {
   Textarea,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { ActionArgs, json, LoaderArgs, redirect } from "@remix-run/node";
 import {
-  ActionArgs,
-  json,
-  LoaderArgs,
-  redirect,
-  unstable_parseMultipartFormData,
-} from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+  Form,
+  useActionData,
+  useFetcher,
+  useLoaderData,
+} from "@remix-run/react";
 import { IconUpload } from "@tabler/icons";
 import { useEffect, useState } from "react";
+import short from "short-uuid";
 import { z } from "zod";
 import LinkButton from "~/components/ui/LinkButton";
 import { requireAuth } from "~/server/auth.server";
 import { getUserId } from "~/server/cookie.server";
 import { createPost } from "~/server/post.server";
-import { uploadHandler } from "~/server/s3.server";
+import { createPresignedUrl } from "~/server/s3.server";
 import { getTags } from "~/server/tags.server";
 
 const schema = z.object({
@@ -43,35 +43,69 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const action = async ({ request }: ActionArgs) => {
   const userId = await getUserId(request);
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler,
+  const { filename, caption, tags } = Object.fromEntries(
+    (await request.formData()).entries(),
   );
-  const filename = formData.get("video");
-  const caption = formData.get("caption");
-  const tags = formData.get("tags");
-  const post = await createPost(
-    userId!,
-    filename as string,
-    caption as string,
-    (tags as string).split(",").map((t) => (t.includes("#") ? t : `#${t}`)),
-  );
-  return redirect(`/site/post/${post.id}`);
+
+  const submitted = new URL(request.url).searchParams.get("video");
+  if (submitted) {
+    const post = await createPost(
+      userId!,
+      filename as string,
+      caption as string,
+      (tags as string).split(",").map((t) => (t.includes("#") ? t : `#${t}`)),
+    );
+    return redirect(`/site/post/${post.id}`);
+  }
+
+  const genFilename = short.generate();
+  const { uploadUrl, path } = await createPresignedUrl(genFilename as string);
+  return json({
+    userId: userId!,
+    filename: path,
+    caption: caption as string,
+    tags: tags as string,
+    uploadUrl,
+  });
 };
 
 export default function Upload() {
   const { tags } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   const fetcher = useFetcher();
   const [file, setFile] = useState<File | null>(null);
   const [sTags, setSTags] = useState([{ value: "", label: "" }]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    let data = [];
-    for (const t of tags) {
-      data.push({ value: t.name, label: t.name });
+    const uploadVideo = async () => {
+      setLoading(true);
+      const resp = await fetch(actionData?.uploadUrl!, {
+        method: "PUT",
+        body: file,
+      });
+      const formData = new FormData();
+      formData.set("userId", actionData?.userId!);
+      formData.set("filename", actionData?.filename!);
+      formData.set("caption", actionData?.caption!);
+      formData.set("tags", actionData?.tags!);
+      fetcher.submit(formData, {
+        method: "post",
+        action: `/site/upload?video=true`,
+      });
+      setLoading(false);
+    };
+
+    if (actionData) {
+      uploadVideo();
+    } else {
+      let data = [];
+      for (const t of tags) {
+        data.push({ value: t.name, label: t.name });
+      }
+      setSTags(data);
     }
-    setSTags(data);
-  }, []);
+  }, [tags]);
 
   const form = useForm({
     validate: zodResolver(schema),
@@ -85,10 +119,14 @@ export default function Upload() {
   return (
     <Card>
       <LoadingOverlay
-        visible={fetcher.state === "loading" || fetcher.state === "submitting"}
+        visible={
+          fetcher.state === "loading" ||
+          fetcher.state === "submitting" ||
+          loading
+        }
         overlayBlur={2}
       />
-      <fetcher.Form method="post" encType="multipart/form-data">
+      <Form method="post" encType="multipart/form-data">
         <Stack>
           <FileInput
             label="Video"
@@ -132,7 +170,7 @@ export default function Upload() {
             </Button>
           </Group>
         </Stack>
-      </fetcher.Form>
+      </Form>
     </Card>
   );
 }
