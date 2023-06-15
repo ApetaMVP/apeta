@@ -108,6 +108,12 @@ export async function getFullPost(postId: string, userId: string) {
         include: {
           votes: true,
           user: true,
+          comments: {
+            include: {
+              user: true,
+              votes: true,
+            },
+          },
         },
       },
     },
@@ -122,6 +128,12 @@ export async function getFullPost(postId: string, userId: string) {
       ...f,
       myVote: f.votes.find((v) => v.userId === userId)?.direction,
       mostHelpful: index === 0,
+      comments: f.comments.map((c) => {
+        return {
+          ...c,
+          myVote: c.votes.find((v) => v.userId === userId)?.direction,
+        };
+      }),
     };
   });
 

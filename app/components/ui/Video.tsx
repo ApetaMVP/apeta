@@ -1,14 +1,15 @@
-import { BaseSyntheticEvent, useEffect, useRef } from "react";
+import React, { useCallback } from "react";
+import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
 
 interface VideoProps {
   src: string;
   timestamp: number;
+  loaded: boolean;
   onLoaded: (duration: number) => void;
   onTimestamp: (timestamp: number) => void;
   onFrame: (frame: string) => void;
-  onPlay: () => void;
-  onPause: () => void;
   onProgress: (percentage: number) => void;
+  paused: boolean;
 }
 
 export default function Video(props: VideoProps) {
@@ -16,14 +17,25 @@ export default function Video(props: VideoProps) {
     src,
     timestamp,
     onLoaded,
+    paused,
     onTimestamp,
     onFrame,
-    onPause,
-    onPlay,
     onProgress,
+    loaded,
   } = props;
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  // effect to set video to paused
+
+  useEffect(() => {
+    if (videoRef.current && paused) {
+      // @ts-ignore
+      videoRef.current!.pause();
+      handlePause();
+    }
+  }, [paused]);
 
   useEffect(() => {
     if (timestamp !== null) {
@@ -32,20 +44,20 @@ export default function Video(props: VideoProps) {
     }
   }, [timestamp]);
 
-  const handlePause = () => {
+  const handlePause = useCallback(() => {
+    console.log("handlePause");
     const frame = captureImage();
     if (frame) {
       onFrame(frame);
     }
     /* tslint:disable:no-string-literal */
     const t = Number(videoRef?.current?.["currentTime"]);
-    if (onTimestamp) {
-      onTimestamp(t);
-    }
-    onPause();
-  };
+    // if (onTimestamp) {
+    //   onTimestamp(t);
+    // }
+  }, [onFrame, onTimestamp]);
 
-  const captureImage = () => {
+  const captureImage = useCallback(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (video && canvas) {
@@ -57,9 +69,10 @@ export default function Video(props: VideoProps) {
       const imageSrc = canvas.toDataURL();
       return imageSrc;
     }
-  };
+  }, [videoRef, canvasRef]);
 
-  const handleOnCanPlayThrough = () => {
+  const handleOnCanPlayThrough = useCallback(() => {
+    console.log("handleOnCanPlayThrough");
     handlePause();
 
     const video = videoRef.current;
@@ -67,12 +80,15 @@ export default function Video(props: VideoProps) {
     // @ts-ignore
     const roundedDuration = Math.round(video!.duration);
     onLoaded(roundedDuration);
-  };
+  }, [handlePause, onLoaded]);
 
-  const handleProgress = (e: BaseSyntheticEvent) => {
-    const percentage = (e.target.currentTime / e.target.duration) * 100;
-    onProgress(percentage);
-  };
+  const handleProgress = useCallback(
+    (e: BaseSyntheticEvent) => {
+      const percentage = (e.target.currentTime / e.target.duration) * 100;
+      onProgress(percentage);
+    },
+    [onProgress],
+  );
 
   return (
     <>
@@ -83,7 +99,6 @@ export default function Video(props: VideoProps) {
         src={src}
         onCanPlayThrough={handleOnCanPlayThrough}
         onPause={handlePause}
-        onPlay={onPlay}
         onTimeUpdate={handleProgress}
         crossOrigin="anonymous"
         onSeeked={handlePause}
