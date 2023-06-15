@@ -16,6 +16,7 @@ import PhotoEditor from "~/components/editor/PhotoEditor";
 
 import FeedbackCardList from "~/components/FeedbackCardList";
 import FeedbackEntry from "~/components/FeedbackEntry";
+import FeedbackCard from "~/components/FeedbackCard";
 import Video from "~/components/ui/Video";
 import VideoProgress from "~/components/ui/VideoProgress";
 import { voteOnComment } from "~/server/comment.server";

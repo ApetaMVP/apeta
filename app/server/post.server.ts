@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { Feedback, FypPost } from "~/utils/types";
+import { FypPost } from "~/utils/types";
 import { prisma } from "./prisma.server";
 import { getUserWithLikes } from "./user.server";
 
@@ -11,7 +11,11 @@ export async function createPost(
 ) {
   const post = await prisma.post.create({
     data: {
-      authorId: userId,
+      author: {
+        connect: {
+          id: userId,
+        },
+      },
       mediaUrl,
       content,
       likeCount: 0,
