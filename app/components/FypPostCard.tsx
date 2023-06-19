@@ -38,7 +38,7 @@ export default function FypPostCard(props: FypPostCardProps) {
 
   return (
     <Group w="100%" noWrap position="center">
-      <Card w="80%" shadow="none" padding="lg" withBorder>
+      <Card w="100%" shadow="none" padding="lg" withBorder>
         <CardSection>
           <Group  position="center" mt="sm" mb="xs">
         <AvatarName
