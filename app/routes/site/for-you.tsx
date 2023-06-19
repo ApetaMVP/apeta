@@ -1,4 +1,4 @@
-import { SimpleGrid, Stack, TextInput, Group, Flex, Container } from "@mantine/core";
+import { SimpleGrid, Grid, Stack, TextInput, Group, Flex, Container, Center, Space } from "@mantine/core";
 import { ActionArgs, json, LoaderArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { IconSearch } from "@tabler/icons";
@@ -67,7 +67,10 @@ export default function ForYou() {
   };
 
   return (
+    <Grid grow justify="center" gutter="lg">
     <Group>
+      
+
       {/* <Group align="center">
       <Stack align="center">
 
@@ -92,8 +95,8 @@ export default function ForYou() {
       </Container>
       </Stack>
       </Group> */}
-    <Stack px="md">
-      
+    {/* <Stack px="md"> */}
+    <Grid.Col span={12}>
       <InfiniteScroll
       
         dataLength={page * 1}
@@ -115,7 +118,7 @@ export default function ForYou() {
         //   <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
         // }
       >
-        <SimpleGrid 
+        {/* <SimpleGrid 
             cols={4}
             spacing="lg"
          breakpoints={[
@@ -123,12 +126,15 @@ export default function ForYou() {
         { maxWidth: 'lg', cols: 3, spacing: 'sm'},
         { maxWidth: 'md', cols: 2, spacing: 'sm' },
         { maxWidth: 'sm', cols: 1, spacing: 'sm' },
-      ]}>
+      ]}> */}
+      
           {posts.map((p) => (
             <FypPostCard key={p.id} post={p} loggedIn={data.loggedIn} />
+            
           ))}
-        </SimpleGrid>
+        {/* </SimpleGrid> */}
       </InfiniteScroll>
+      </Grid.Col>
       <TextInput
         label="Search"
         value={searchTerm}
@@ -137,7 +143,8 @@ export default function ForYou() {
         onKeyDown={onSearchEnter}
         autoFocus={searchTerm ? true : false}
       />
-    </Stack>
+    {/* </Stack> */}
     </Group>
+    </Grid>
   );
 }
