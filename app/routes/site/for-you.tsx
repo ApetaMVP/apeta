@@ -68,7 +68,7 @@ export default function ForYou() {
 
   return (
     <Grid grow justify="center" gutter="lg">
-    <Group>
+    <Group mb="xs">
       
 
       {/* <Group align="center">
@@ -96,7 +96,7 @@ export default function ForYou() {
       </Stack>
       </Group> */}
     {/* <Stack px="md"> */}
-    <Grid.Col span={12}>
+    <Grid.Col span={9}>
       <InfiniteScroll
       
         dataLength={page * 1}
@@ -118,23 +118,16 @@ export default function ForYou() {
         //   <h3 style={{ textAlign: "center" }}>&#8593; Release to refresh</h3>
         // }
       >
-        {/* <SimpleGrid 
-            cols={4}
-            spacing="lg"
-         breakpoints={[
-        { maxWidth: 'xl', cols: 3, spacing: 'md' },
-        { maxWidth: 'lg', cols: 3, spacing: 'sm'},
-        { maxWidth: 'md', cols: 2, spacing: 'sm' },
-        { maxWidth: 'sm', cols: 1, spacing: 'sm' },
-      ]}> */}
+        
       
           {posts.map((p) => (
             <FypPostCard key={p.id} post={p} loggedIn={data.loggedIn} />
             
           ))}
-        {/* </SimpleGrid> */}
+        
       </InfiniteScroll>
       </Grid.Col>
+      <Grid.Col>
       <TextInput
         label="Search"
         value={searchTerm}
@@ -143,6 +136,7 @@ export default function ForYou() {
         onKeyDown={onSearchEnter}
         autoFocus={searchTerm ? true : false}
       />
+      </Grid.Col>
     {/* </Stack> */}
     </Group>
     </Grid>

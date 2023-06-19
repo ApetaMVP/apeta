@@ -7,6 +7,7 @@ import {
   Center,
   Group,
   Stack,
+  Space,
   Text,
   CardSection,
   Container,
@@ -38,7 +39,7 @@ export default function FypPostCard(props: FypPostCardProps) {
 
   return (
     <Group w="100%" noWrap position="center">
-      <Card w="100%" shadow="none" padding="lg" withBorder>
+      <Card w="100%" shadow="sm" padding="xl" withBorder>
         <CardSection>
           <Group  position="center" mt="sm" mb="xs">
         <AvatarName
@@ -157,8 +158,10 @@ export default function FypPostCard(props: FypPostCardProps) {
         
       </Card>
       
+      <Space h="lg" />
      
     </Group>
+    
     
   );
 }
