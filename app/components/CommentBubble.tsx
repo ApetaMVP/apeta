@@ -24,7 +24,7 @@ export default function CommentBubble(props: CommentBubbleProps) {
           avatarUrl={comment.user.avatarUrl}
         />
         <Text c="dimmed" fz="sm">
-          <TimeAgo date={comment.createdAt} />
+          <TimeAgo live={false} date={comment.createdAt} />
         </Text>
       </Group>
       <Text>{parse(comment.content)}</Text>
