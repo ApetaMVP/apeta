@@ -40,6 +40,9 @@ export default function Video(props: VideoProps) {
   useEffect(() => {
     // @ts-ignore
     console.log(Math.abs(timestamp - videoRef.current!.currentTime));
+
+    // @ts-ignore
+    console.log("current time", videoRef.current!.currentTime);
     if (
       timestamp !== null &&
       // this stops an infinte rendering loop where the timestamp updates
