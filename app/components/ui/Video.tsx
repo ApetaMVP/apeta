@@ -53,7 +53,8 @@ export default function Video(props: VideoProps) {
       // @ts-ignore
       videoRef.current!.currentTime = timestamp;
     }
-  }, [timestamp]);
+    // @ts-ignore
+  }, [timestamp, videoRef]);
 
   const handlePause = useCallback(() => {
     console.log("handlePause");
