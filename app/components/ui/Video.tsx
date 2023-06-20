@@ -38,9 +38,15 @@ export default function Video(props: VideoProps) {
   }, [paused]);
 
   useEffect(() => {
-    if (timestamp !== null) {
+    if (
+      timestamp !== null &&
+      // this stops an infinte rendering loop where the timestamp updates
+      // the video, the video updates the timestamp, etc.
       // @ts-ignore
-      videoRef!.current!.currentTime = timestamp;
+      Math.abs(timestamp - videoRef.current!.currentTime) >= 0.1
+    ) {
+      // @ts-ignore
+      videoRef.current!.currentTime = timestamp;
     }
   }, [timestamp]);
 
