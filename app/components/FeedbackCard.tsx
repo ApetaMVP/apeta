@@ -53,6 +53,7 @@ export default function FeedbackCard(props: FeedbackCardProps) {
             avatarUrl={feedback.user.avatarUrl}
           />
           <TimeAgo
+            live={false}
             date={feedback.createdAt}
             style={{ color: "gray", fontSize: "0.8rem" }}
           />
@@ -199,6 +200,7 @@ function CommentBox({
               avatarUrl={comment.user.avatarUrl}
             />
             <TimeAgo
+              live={false}
               date={comment.createdAt}
               style={{ color: "gray", fontSize: "0.8rem" }}
             />

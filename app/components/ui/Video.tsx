@@ -52,9 +52,9 @@ export default function Video(props: VideoProps) {
     }
     /* tslint:disable:no-string-literal */
     const t = Number(videoRef?.current?.["currentTime"]);
-    // if (onTimestamp) {
-    //   onTimestamp(t);
-    // }
+    if (onTimestamp) {
+      onTimestamp(t);
+    }
   }, [onFrame, onTimestamp]);
 
   const captureImage = useCallback(() => {
