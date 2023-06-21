@@ -42,12 +42,12 @@ export default function Video(props: VideoProps) {
 
     console.log({ timestamp });
 
-    console.log({ src });
-
     // @ts-ignore
     console.log("current time", videoRef.current!.currentTime);
     if (
-      timestamp !== null
+      timestamp !== null &&
+      // @ts-ignore
+      Math.abs(timestamp - videoRef.current!.currentTime) > 0
       // this stops an infinte rendering loop where the timestamp updates
       // the video, the video updates the timestamp, etc.
       // @ts-ignore
@@ -56,6 +56,16 @@ export default function Video(props: VideoProps) {
       videoRef.current!.currentTime = timestamp;
     }
     // @ts-ignore
+  }, [timestamp]);
+
+  useEffect(() => {
+    if (
+      timestamp !== null
+      // set intial timestamp
+    ) {
+      // @ts-ignore
+      videoRef.current!.currentTime = timestamp;
+    }
   }, []);
 
   const handlePause = () => {
