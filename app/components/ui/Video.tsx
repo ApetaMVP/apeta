@@ -38,11 +38,23 @@ export default function Video(props: VideoProps) {
   }, [paused]);
 
   useEffect(() => {
-    if (timestamp !== null) {
+    // @ts-ignore
+    console.log(Math.abs(timestamp - videoRef.current!.currentTime));
+
+    // @ts-ignore
+    console.log("current time", videoRef.current!.currentTime);
+    if (
+      timestamp !== null &&
+      // this stops an infinte rendering loop where the timestamp updates
+      // the video, the video updates the timestamp, etc.
       // @ts-ignore
-      videoRef!.current!.currentTime = timestamp;
+      Math.abs(timestamp - videoRef.current!.currentTime) > 0
+    ) {
+      // @ts-ignore
+      videoRef.current!.currentTime = timestamp;
     }
-  }, [timestamp]);
+    // @ts-ignore
+  }, [timestamp, videoRef]);
 
   const handlePause = useCallback(() => {
     console.log("handlePause");
@@ -52,9 +64,9 @@ export default function Video(props: VideoProps) {
     }
     /* tslint:disable:no-string-literal */
     const t = Number(videoRef?.current?.["currentTime"]);
-    // if (onTimestamp) {
-    //   onTimestamp(t);
-    // }
+    if (onTimestamp) {
+      onTimestamp(t);
+    }
   }, [onFrame, onTimestamp]);
 
   const captureImage = useCallback(() => {

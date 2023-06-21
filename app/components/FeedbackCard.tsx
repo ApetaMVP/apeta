@@ -23,6 +23,7 @@ import parse from "html-react-parser";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 import TextEditor from "./ui/TextEditor";
+import { formatTimeAgo } from "~/utils/helpers";
 
 interface FeedbackCardProps {
   feedback: Feedback;
@@ -53,7 +54,9 @@ export default function FeedbackCard(props: FeedbackCardProps) {
             avatarUrl={feedback.user.avatarUrl}
           />
           <TimeAgo
+            live={false}
             date={feedback.createdAt}
+            formatter={formatTimeAgo}
             style={{ color: "gray", fontSize: "0.8rem" }}
           />
         </Group>
@@ -199,6 +202,8 @@ function CommentBox({
               avatarUrl={comment.user.avatarUrl}
             />
             <TimeAgo
+              live={false}
+              formatter={formatTimeAgo}
               date={comment.createdAt}
               style={{ color: "gray", fontSize: "0.8rem" }}
             />

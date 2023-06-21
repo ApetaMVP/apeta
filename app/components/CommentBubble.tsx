@@ -2,6 +2,7 @@ import { Group, Paper, Text, useMantineTheme } from "@mantine/core";
 import { Form } from "@remix-run/react";
 import parse from "html-react-parser";
 import TimeAgo from "react-timeago";
+import { formatTimeAgo } from "~/utils/helpers";
 import { Comment } from "~/utils/types";
 import AvatarName from "./AvatarName";
 import VoteButtons from "./VoteButtons";
@@ -24,7 +25,11 @@ export default function CommentBubble(props: CommentBubbleProps) {
           avatarUrl={comment.user.avatarUrl}
         />
         <Text c="dimmed" fz="sm">
-          <TimeAgo date={comment.createdAt} />
+          <TimeAgo
+            formatter={formatTimeAgo}
+            live={false}
+            date={comment.createdAt}
+          />
         </Text>
       </Group>
       <Text>{parse(comment.content)}</Text>
