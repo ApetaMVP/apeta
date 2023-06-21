@@ -28,7 +28,6 @@ export default function Video(props: VideoProps) {
   const canvasRef = useRef(null);
 
   // effect to set video to paused
-
   useEffect(() => {
     if (videoRef.current && paused) {
       // @ts-ignore
@@ -41,22 +40,25 @@ export default function Video(props: VideoProps) {
     // @ts-ignore
     console.log(Math.abs(timestamp - videoRef.current!.currentTime));
 
+    console.log({ timestamp });
+
+    console.log({ src });
+
     // @ts-ignore
     console.log("current time", videoRef.current!.currentTime);
     if (
-      timestamp !== null &&
+      timestamp !== null
       // this stops an infinte rendering loop where the timestamp updates
       // the video, the video updates the timestamp, etc.
       // @ts-ignore
-      Math.abs(timestamp - videoRef.current!.currentTime) > 0
     ) {
       // @ts-ignore
       videoRef.current!.currentTime = timestamp;
     }
     // @ts-ignore
-  }, [timestamp, videoRef]);
+  }, []);
 
-  const handlePause = useCallback(() => {
+  const handlePause = () => {
     console.log("handlePause");
     const frame = captureImage();
     if (frame) {
@@ -67,9 +69,9 @@ export default function Video(props: VideoProps) {
     if (onTimestamp) {
       onTimestamp(t);
     }
-  }, [onFrame, onTimestamp]);
+  };
 
-  const captureImage = useCallback(() => {
+  const captureImage = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (video && canvas) {
@@ -81,9 +83,9 @@ export default function Video(props: VideoProps) {
       const imageSrc = canvas.toDataURL();
       return imageSrc;
     }
-  }, [videoRef, canvasRef]);
+  };
 
-  const handleOnCanPlayThrough = useCallback(() => {
+  const handleOnCanPlayThrough = () => {
     console.log("handleOnCanPlayThrough");
     handlePause();
 
@@ -92,15 +94,12 @@ export default function Video(props: VideoProps) {
     // @ts-ignore
     const roundedDuration = Math.round(video!.duration);
     onLoaded(roundedDuration);
-  }, [handlePause, onLoaded]);
+  };
 
-  const handleProgress = useCallback(
-    (e: BaseSyntheticEvent) => {
-      const percentage = (e.target.currentTime / e.target.duration) * 100;
-      onProgress(percentage);
-    },
-    [onProgress],
-  );
+  const handleProgress = (e: BaseSyntheticEvent) => {
+    const percentage = (e.target.currentTime / e.target.duration) * 100;
+    onProgress(percentage);
+  };
 
   return (
     <>
@@ -110,6 +109,7 @@ export default function Video(props: VideoProps) {
         ref={videoRef}
         src={src}
         onCanPlayThrough={handleOnCanPlayThrough}
+        onLoadedData={() => console.log("loaded data")}
         onPause={handlePause}
         onTimeUpdate={handleProgress}
         crossOrigin="anonymous"
