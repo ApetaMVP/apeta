@@ -27,6 +27,23 @@ export default function Video(props: VideoProps) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && timestamp !== null) {
+      // @ts-ignore
+      if (initialLoad || Math.abs(timestamp - video.currentTime) > 0) {
+        // @ts-ignore
+        video.currentTime = timestamp;
+      }
+    }
+    // Reset the initialLoad flag after the first render
+    if (initialLoad) {
+      setInitialLoad(false);
+    }
+  }, [timestamp, initialLoad]);
+
   // effect to set video to paused
   useEffect(() => {
     if (videoRef.current && paused) {
@@ -36,39 +53,36 @@ export default function Video(props: VideoProps) {
     }
   }, [paused]);
 
-  useEffect(() => {
-    // @ts-ignore
-    console.log(Math.abs(timestamp - videoRef.current!.currentTime));
+  // useEffect(() => {
+  //   // @ts-ignore
+  //   console.log(Math.abs(timestamp - videoRef.current!.currentTime));
 
-    console.log({ timestamp });
+  //   console.log({ timestamp });
 
-    // @ts-ignore
-    console.log("current time", videoRef.current!.currentTime);
-    if (
-      timestamp !== null &&
-      // @ts-ignore
-      Math.abs(timestamp - videoRef.current!.currentTime) > 0
-      // this stops an infinte rendering loop where the timestamp updates
-      // the video, the video updates the timestamp, etc.
-      // @ts-ignore
-    ) {
-      // @ts-ignore
-      videoRef.current!.currentTime = timestamp;
-    }
-    // @ts-ignore
-  }, [timestamp]);
+  //   // @ts-ignore
+  //   console.log("current time", videoRef.current!.currentTime);
+  //   if (
+  //     timestamp !== null &&
+  //     // @ts-ignore
+  //     Math.abs(timestamp - videoRef.current!.currentTime) > 0
+  //     // this stops an infinte rendering loop where the timestamp updates
+  //     // the video, the video updates the timestamp, etc.
+  //     // @ts-ignore
+  //   ) {
+  //     // @ts-ignore
+  //     videoRef.current!.currentTime = timestamp;
+  //   }
+  //   // @ts-ignore
+  // }, [timestamp]);
 
-  useEffect(() => {
-    if (
-      timestamp !== null
-      // set intial timestamp once
-    ) {
-      // @ts-ignore
-      videoRef.current!.currentTime = timestamp;
-      // @ts-ignore
-      videoRef.current!.play();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (
+  //     timestamp !== null
+  //   ) {
+  //     // @ts-ignore
+  //     videoRef.current!.currentTime = timestamp;
+  //   }
+  // }, []);
 
   const handlePause = () => {
     console.log("handlePause");
