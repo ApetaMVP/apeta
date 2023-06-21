@@ -56,7 +56,19 @@ export default function Video(props: VideoProps) {
       videoRef.current!.currentTime = timestamp;
     }
     // @ts-ignore
-  }, [timestamp, loaded]);
+  }, [timestamp]);
+
+  useEffect(() => {
+    if (
+      timestamp !== null
+      // set intial timestamp once
+    ) {
+      // @ts-ignore
+      videoRef.current!.currentTime = timestamp;
+      // @ts-ignore
+      videoRef.current!.play();
+    }
+  }, []);
 
   const handlePause = () => {
     console.log("handlePause");
