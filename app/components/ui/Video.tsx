@@ -56,17 +56,7 @@ export default function Video(props: VideoProps) {
       videoRef.current!.currentTime = timestamp;
     }
     // @ts-ignore
-  }, [timestamp]);
-
-  useEffect(() => {
-    if (
-      timestamp !== null
-      // set intial timestamp
-    ) {
-      // @ts-ignore
-      videoRef.current!.currentTime = timestamp;
-    }
-  }, []);
+  }, [timestamp, loaded]);
 
   const handlePause = () => {
     console.log("handlePause");
@@ -119,7 +109,6 @@ export default function Video(props: VideoProps) {
         ref={videoRef}
         src={src}
         onCanPlayThrough={handleOnCanPlayThrough}
-        onLoadedData={() => console.log("loaded data")}
         onPause={handlePause}
         onTimeUpdate={handleProgress}
         crossOrigin="anonymous"
