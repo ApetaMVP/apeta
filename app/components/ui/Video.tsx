@@ -41,9 +41,11 @@ export default function Video(props: VideoProps) {
     console.log(Math.abs(timestamp - videoRef.current!.currentTime));
 
     console.log({ timestamp });
+    console.log({ loaded });
 
     // @ts-ignore
     console.log("current time", videoRef.current!.currentTime);
+
     if (
       timestamp !== null &&
       // @ts-ignore
