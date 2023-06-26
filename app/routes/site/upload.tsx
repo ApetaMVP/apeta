@@ -134,11 +134,7 @@ export default function Upload() {
             accept="video/*"
             icon={<IconUpload size={rem(14)} />}
             onChange={(e) => {
-              if (e!.size < 52_428_800) {
-                setFile(e);
-              } else {
-                alert("File too big");
-              }
+              setFile(e);
             }}
           />
           <Textarea
