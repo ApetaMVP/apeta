@@ -29,6 +29,8 @@ export default function Video(props: VideoProps) {
 
   const [initialLoad, setInitialLoad] = useState(true);
 
+  console.log({ loaded, initialLoad });
+
   useEffect(() => {
     const video = videoRef.current;
     if (video && timestamp !== null) {
@@ -37,10 +39,10 @@ export default function Video(props: VideoProps) {
         // @ts-ignore
         video.currentTime = timestamp;
       }
-    }
-    // Reset the initialLoad flag after the first render
-    if (initialLoad) {
-      setInitialLoad(false);
+      // Reset the initialLoad flag after the first render
+      if (initialLoad) {
+        setInitialLoad(false);
+      }
     }
   }, [timestamp, initialLoad]);
 
@@ -76,9 +78,7 @@ export default function Video(props: VideoProps) {
   // }, [timestamp]);
 
   // useEffect(() => {
-  //   if (
-  //     timestamp !== null
-  //   ) {
+  //   if (timestamp !== null) {
   //     // @ts-ignore
   //     videoRef.current!.currentTime = timestamp;
   //   }
@@ -92,7 +92,13 @@ export default function Video(props: VideoProps) {
     }
     /* tslint:disable:no-string-literal */
     const t = Number(videoRef?.current?.["currentTime"]);
-    if (onTimestamp) {
+
+    if (
+      onTimestamp &&
+      // @ts-ignore
+      // stop-gap for infinite rendering loop. TODO: fix this
+      Math.abs(timestamp - videoRef.current!.currentTime) > 0.5
+    ) {
       onTimestamp(t);
     }
   };
@@ -123,6 +129,7 @@ export default function Video(props: VideoProps) {
   };
 
   const handleProgress = (e: BaseSyntheticEvent) => {
+    console.log("handleProgress");
     const percentage = (e.target.currentTime / e.target.duration) * 100;
     onProgress(percentage);
   };
@@ -144,3 +151,5 @@ export default function Video(props: VideoProps) {
     </>
   );
 }
+
+export const MemoizedVideo = React.memo(Video);

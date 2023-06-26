@@ -17,7 +17,7 @@ import PhotoEditor from "~/components/editor/PhotoEditor";
 import FeedbackCardList from "~/components/FeedbackCardList";
 import FeedbackEntry from "~/components/FeedbackEntry";
 import FeedbackCard from "~/components/FeedbackCard";
-import Video from "~/components/ui/Video";
+import Video, { MemoizedVideo } from "~/components/ui/Video";
 import VideoProgress from "~/components/ui/VideoProgress";
 import { voteOnComment } from "~/server/comment.server";
 import { getUserId } from "~/server/cookie.server";
@@ -186,7 +186,7 @@ export default function Post() {
 
           <Card.Section>
             <AspectRatio ratio={16 / 9}>
-              <Video
+              <MemoizedVideo
                 src={post.mediaUrl}
                 paused={paused}
                 timestamp={timestamp}
