@@ -80,6 +80,7 @@ export default function Upload() {
   useEffect(() => {
     const uploadVideo = async () => {
       setLoading(true);
+      console.log({ actionData });
       const resp = await fetch(actionData?.uploadUrl!, {
         method: "PUT",
         body: file,
@@ -130,7 +131,6 @@ export default function Upload() {
         <Stack>
           <FileInput
             label="Video"
-            name="video"
             accept="video/*"
             icon={<IconUpload size={rem(14)} />}
             onChange={(e) => {
