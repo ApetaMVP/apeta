@@ -214,6 +214,7 @@ export default function Post() {
               <FeedbackEntry
                 timestamp={timestamp}
                 img={img}
+                setImg={onImg}
                 isDrawing={drawing}
                 hasMarkedImg={hasMarkedImg}
                 onPencilClick={() => {
