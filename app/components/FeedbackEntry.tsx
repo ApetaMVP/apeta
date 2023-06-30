@@ -11,6 +11,7 @@ const feedbackSchema = z.object({
 interface FeedbackEntryProps {
   timestamp: number;
   img: string;
+  setImg: (img: string) => void;
   onPencilClick: () => void;
   isDrawing: boolean;
   hasMarkedImg: boolean;
@@ -18,8 +19,15 @@ interface FeedbackEntryProps {
 }
 
 export default function FeedbackEntry(props: FeedbackEntryProps) {
-  const { timestamp, img, onPencilClick, isDrawing, hasMarkedImg, onSubmit } =
-    props;
+  const {
+    timestamp,
+    img,
+    setImg,
+    onPencilClick,
+    isDrawing,
+    hasMarkedImg,
+    onSubmit,
+  } = props;
 
   const feedbackForm = useForm({
     validate: zodResolver(feedbackSchema),
@@ -31,6 +39,7 @@ export default function FeedbackEntry(props: FeedbackEntryProps) {
   const optimisticClear = () => {
     feedbackForm.setValues({ msg: "" });
     feedbackForm.reset();
+    setImg("");
   };
 
   const pencilColor = isDrawing ? "red" : "gray";
