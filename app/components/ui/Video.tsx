@@ -122,6 +122,12 @@ export default function Video(props: VideoProps) {
       // @ts-ignore
       const ctx = canvas.getContext("2d");
       // @ts-ignore
+      canvas.width = video.videoWidth;
+      // @ts-ignore
+      canvas.height = video.videoHeight;
+      //  @ts-ignore
+      console.log(canvas.width, canvas.height);
+      // @ts-ignore
       ctx!.drawImage(video, 0, 0, canvas.width, canvas.height);
       // @ts-ignore
       const imageSrc = canvas.toDataURL();
