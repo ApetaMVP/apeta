@@ -1,3 +1,4 @@
+import { AspectRatio } from "@mantine/core";
 import React, { useCallback } from "react";
 import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
 
@@ -28,8 +29,7 @@ export default function Video(props: VideoProps) {
   const canvasRef = useRef(null);
 
   const [initialLoad, setInitialLoad] = useState(true);
-
-  console.log({ loaded, initialLoad });
+  const [aspectRatio, setAspectRatio] = useState(16 / 9);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -54,6 +54,19 @@ export default function Video(props: VideoProps) {
       handlePause();
     }
   }, [paused]);
+
+  // effect to set correct aspet ratio
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      // @ts-ignore
+      const { videoWidth, videoHeight } = video;
+      const aspectRatio = videoWidth / videoHeight;
+
+      console.log({ videoWidth, videoHeight, aspectRatio });
+      setAspectRatio(aspectRatio);
+    }
+  }, [loaded]);
 
   // useEffect(() => {
   //   // @ts-ignore
@@ -85,7 +98,6 @@ export default function Video(props: VideoProps) {
   // }, []);
 
   const handlePause = () => {
-    console.log("handlePause");
     const frame = captureImage();
     if (frame) {
       onFrame(frame);
@@ -129,13 +141,12 @@ export default function Video(props: VideoProps) {
   };
 
   const handleProgress = (e: BaseSyntheticEvent) => {
-    console.log("handleProgress");
     const percentage = (e.target.currentTime / e.target.duration) * 100;
     onProgress(percentage);
   };
 
   return (
-    <>
+    <AspectRatio ratio={aspectRatio}>
       <video
         controls
         autoPlay
@@ -148,7 +159,7 @@ export default function Video(props: VideoProps) {
         onSeeked={handlePause}
       />
       <canvas ref={canvasRef} style={{ display: "none" }} />
-    </>
+    </AspectRatio>
   );
 }
 

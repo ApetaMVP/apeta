@@ -185,18 +185,16 @@ export default function Post() {
           </Stack>
 
           <Card.Section>
-            <AspectRatio ratio={16 / 9}>
-              <MemoizedVideo
-                src={post.mediaUrl}
-                paused={paused}
-                timestamp={timestamp}
-                loaded={videoLoaded}
-                onLoaded={onLoaded}
-                onTimestamp={onTimestamp}
-                onFrame={onFrame}
-                onProgress={setProgress}
-              />
-            </AspectRatio>
+            <MemoizedVideo
+              src={post.mediaUrl}
+              paused={paused}
+              timestamp={timestamp}
+              loaded={videoLoaded}
+              onLoaded={onLoaded}
+              onTimestamp={onTimestamp}
+              onFrame={onFrame}
+              onProgress={setProgress}
+            />
           </Card.Section>
         </Card>
       </Grid.Col>
