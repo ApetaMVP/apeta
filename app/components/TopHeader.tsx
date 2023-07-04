@@ -37,9 +37,9 @@ export default function TopHeader(props: TopHeaderProps) {
           />
         </MediaQuery>
         <Group position="apart" w="100%">
-          <Box w={150}>
+          <Box w={100}>
             <a href="/site/for-you">
-              <Image src="/logo.png" />
+              <Image fit="contain" src="/logo.png" />
             </a>
           </Box>
           <Group>

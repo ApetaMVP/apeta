@@ -5,5 +5,5 @@ interface LinkButtonProps extends ButtonProps {
 }
 
 export default function LinkButton(props: LinkButtonProps) {
-  return <Button component="a" href={props.link} {...props}></Button>;
+  return <Button size="xs" component="a" href={props.link} {...props}></Button>;
 }
