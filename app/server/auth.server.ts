@@ -35,7 +35,7 @@ export async function login(email: string, password: string) {
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return json({ error: `Invalid username or password` }, { status: 401 });
   }
-  return await createUserSession(user.id, "/site");
+  return await createUserSession(user.id, "/site/for-you");
 }
 
 export async function register(
@@ -55,7 +55,7 @@ export async function register(
       );
     }
     const user = await createUser(email, password, name, username);
-    return await createUserSession(user.id, "/site");
+    return await createUserSession(user.id, "/site/for-you");
   } catch (err) {
     return json(
       { error: `Error occurred creating user: ${err}` },
@@ -66,18 +66,17 @@ export async function register(
 
 export async function logout(request: Request) {
   try {
-
     const session = await getUserSession(request);
     return redirect("/auth/login", {
       headers: {
         "Set-Cookie": await destroySession(session),
       },
     });
-  } catch(err: any) {
+  } catch (err: any) {
     return json(
-      {error: `Error occurred signing out: ${err}` },
-      { status: err["status"]}
-    )
+      { error: `Error occurred signing out: ${err}` },
+      { status: err["status"] },
+    );
   }
 }
 

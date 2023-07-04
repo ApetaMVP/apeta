@@ -17,7 +17,7 @@ import PhotoEditor from "~/components/editor/PhotoEditor";
 import FeedbackCardList from "~/components/FeedbackCardList";
 import FeedbackEntry from "~/components/FeedbackEntry";
 import FeedbackCard from "~/components/FeedbackCard";
-import Video from "~/components/ui/Video";
+import Video, { MemoizedVideo } from "~/components/ui/Video";
 import VideoProgress from "~/components/ui/VideoProgress";
 import { voteOnComment } from "~/server/comment.server";
 import { getUserId } from "~/server/cookie.server";
@@ -185,18 +185,16 @@ export default function Post() {
           </Stack>
 
           <Card.Section>
-            <AspectRatio ratio={16 / 9}>
-              <Video
-                src={post.mediaUrl}
-                paused={paused}
-                timestamp={timestamp}
-                loaded={videoLoaded}
-                onLoaded={onLoaded}
-                onTimestamp={onTimestamp}
-                onFrame={onFrame}
-                onProgress={setProgress}
-              />
-            </AspectRatio>
+            <MemoizedVideo
+              src={post.mediaUrl}
+              paused={paused}
+              timestamp={timestamp}
+              loaded={videoLoaded}
+              onLoaded={onLoaded}
+              onTimestamp={onTimestamp}
+              onFrame={onFrame}
+              onProgress={setProgress}
+            />
           </Card.Section>
         </Card>
       </Grid.Col>
@@ -214,6 +212,7 @@ export default function Post() {
               <FeedbackEntry
                 timestamp={timestamp}
                 img={img}
+                setImg={onImg}
                 isDrawing={drawing}
                 hasMarkedImg={hasMarkedImg}
                 onPencilClick={() => {

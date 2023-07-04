@@ -1,3 +1,4 @@
+import { AspectRatio } from "@mantine/core";
 import React, { useCallback } from "react";
 import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
 
@@ -28,6 +29,7 @@ export default function Video(props: VideoProps) {
   const canvasRef = useRef(null);
 
   const [initialLoad, setInitialLoad] = useState(true);
+  const [aspectRatio, setAspectRatio] = useState(16 / 9);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -37,10 +39,10 @@ export default function Video(props: VideoProps) {
         // @ts-ignore
         video.currentTime = timestamp;
       }
-    }
-    // Reset the initialLoad flag after the first render
-    if (initialLoad) {
-      setInitialLoad(false);
+      // Reset the initialLoad flag after the first render
+      if (initialLoad) {
+        setInitialLoad(false);
+      }
     }
   }, [timestamp, initialLoad]);
 
@@ -52,6 +54,19 @@ export default function Video(props: VideoProps) {
       handlePause();
     }
   }, [paused]);
+
+  // effect to set correct aspet ratio
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      // @ts-ignore
+      const { videoWidth, videoHeight } = video;
+      const aspectRatio = videoWidth / videoHeight;
+
+      console.log({ videoWidth, videoHeight, aspectRatio });
+      setAspectRatio(aspectRatio);
+    }
+  }, [loaded]);
 
   // useEffect(() => {
   //   // @ts-ignore
@@ -76,23 +91,26 @@ export default function Video(props: VideoProps) {
   // }, [timestamp]);
 
   // useEffect(() => {
-  //   if (
-  //     timestamp !== null
-  //   ) {
+  //   if (timestamp !== null) {
   //     // @ts-ignore
   //     videoRef.current!.currentTime = timestamp;
   //   }
   // }, []);
 
   const handlePause = () => {
-    console.log("handlePause");
     const frame = captureImage();
     if (frame) {
       onFrame(frame);
     }
     /* tslint:disable:no-string-literal */
     const t = Number(videoRef?.current?.["currentTime"]);
-    if (onTimestamp) {
+
+    if (
+      onTimestamp &&
+      // @ts-ignore
+      // stop-gap for infinite rendering loop. TODO: fix this
+      Math.abs(timestamp - videoRef.current!.currentTime) > 0.5
+    ) {
       onTimestamp(t);
     }
   };
@@ -103,6 +121,12 @@ export default function Video(props: VideoProps) {
     if (video && canvas) {
       // @ts-ignore
       const ctx = canvas.getContext("2d");
+      // @ts-ignore
+      canvas.width = video.videoWidth;
+      // @ts-ignore
+      canvas.height = video.videoHeight;
+      //  @ts-ignore
+      console.log(canvas.width, canvas.height);
       // @ts-ignore
       ctx!.drawImage(video, 0, 0, canvas.width, canvas.height);
       // @ts-ignore
@@ -128,7 +152,7 @@ export default function Video(props: VideoProps) {
   };
 
   return (
-    <>
+    <AspectRatio ratio={aspectRatio}>
       <video
         controls
         autoPlay
@@ -141,6 +165,8 @@ export default function Video(props: VideoProps) {
         onSeeked={handlePause}
       />
       <canvas ref={canvasRef} style={{ display: "none" }} />
-    </>
+    </AspectRatio>
   );
 }
+
+export const MemoizedVideo = React.memo(Video);
