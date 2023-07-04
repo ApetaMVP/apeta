@@ -37,17 +37,17 @@ export default function TopHeader(props: TopHeaderProps) {
           />
         </MediaQuery>
         <Group position="apart" w="100%">
-          <Box w={100}>
+          <Box w={80}>
             <a href="/site/for-you">
               <Image fit="contain" src="/logo.png" />
             </a>
           </Box>
           <Group>
-            <LinkButton variant="default" link="/site/upload">
+            <LinkButton compact size="xs" variant="default" link="/site/upload">
               + Upload
             </LinkButton>
             {!loggedIn ? (
-              <LinkButton link="/auth/login" ml="xs">
+              <LinkButton compact size="xs" link="/auth/login" ml="xs">
                 Log In
               </LinkButton>
             ) : (
