@@ -24,8 +24,10 @@ export default function WelcomeModal({
               1. Post a video and ask for help on your sport
             </Text>
             <Text weight="bold">
-              2. You are an expert like this guy. Post content and answer
-              questions to build and engage your audience.
+              2. You are an expert like{" "}
+              <a href="https://www.instagram.com/p/CkekluDA3nE/">this guy.</a>{" "}
+              Post content and answer questions to build and engage your
+              audience.
             </Text>
           </Stack>
         </Box>
