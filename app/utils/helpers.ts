@@ -18,3 +18,12 @@ export function formatTimeAgo(
     return next && next(value, unit, suffix, ms, next);
   }
 }
+
+export function isUrl(url: string) {
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

@@ -5,9 +5,11 @@ import {
   Group,
   LoadingOverlay,
   MultiSelect,
+  Radio,
   rem,
   Stack,
   Textarea,
+  TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { ActionArgs, json, LoaderArgs, redirect } from "@remix-run/node";
@@ -27,11 +29,25 @@ import { getUserId } from "~/server/cookie.server";
 import { createPost } from "~/server/post.server";
 import { createPresignedUrl } from "~/server/s3.server";
 import { getTags } from "~/server/tags.server";
+import { isUrl } from "~/utils/helpers";
 
-const schema = z.object({
-  caption: z.string().nonempty(),
-  tags: z.string().array().nonempty(),
-});
+const schema = z
+  .object({
+    caption: z.string().optional(),
+    tags: z.string().array().optional(),
+    link: z.string().optional(),
+    postType: z.enum(["video", "link"]),
+  })
+  .partial()
+  .refine(({ caption, tags, link, postType }) => {
+    console.log({ caption, tags, link, postType });
+    if (postType === "video") {
+      return caption && tags;
+    } else if (postType === "link") {
+      return link && isUrl(link);
+    }
+    return false;
+  });
 
 export const loader = async ({ request }: LoaderArgs) => {
   if (!(await requireAuth(request)).userId) {
@@ -43,9 +59,10 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export const action = async ({ request }: ActionArgs) => {
   const userId = await getUserId(request);
-  const { filename, caption, tags } = Object.fromEntries(
-    (await request.formData()).entries(),
-  );
+  const formData = Object.fromEntries((await request.formData()).entries());
+  const { filename, caption, tags, text, link, postType } = formData;
+
+  const isValid = schema.parse(formData);
 
   const submitted = new URL(request.url).searchParams.get("video");
   if (submitted) {
@@ -97,7 +114,7 @@ export default function Upload() {
       setLoading(false);
     };
 
-    if (actionData) {
+    if (actionData?.uploadUrl) {
       uploadVideo();
     } else {
       let data = [];
@@ -114,8 +131,20 @@ export default function Upload() {
     initialValues: {
       caption: "",
       tags: [],
+      text: "",
+      link: "",
+      postType: "video",
     },
   });
+
+  const formValid = () => {
+    if (form.values.postType === "video") {
+      return form.isValid() && file;
+    }
+    return form.isValid();
+  };
+
+  console.log(formValid());
 
   return (
     <Card>
@@ -129,39 +158,63 @@ export default function Upload() {
       />
       <Form method="post" encType="multipart/form-data">
         <Stack>
-          <FileInput
-            label="Video"
-            accept="video/*"
-            icon={<IconUpload size={rem(14)} />}
-            onChange={(e) => {
-              setFile(e);
-            }}
-          />
-          <Textarea
-            label="Caption"
-            name="caption"
-            {...form.getInputProps("caption")}
-          />
-          <MultiSelect
-            label="Tags"
-            name="tags"
-            data={sTags}
-            limit={3}
-            searchable
-            creatable
-            getCreateLabel={(query) => `+ Create #${query}`}
-            onCreate={(query) => {
-              const item = { value: query, label: `#${query}` };
-              setSTags((current) => [...current, item]);
-              return item;
-            }}
-            {...form.getInputProps("tags")}
-          />
+          <Radio.Group
+            name="postType"
+            label="Post type"
+            mb={6}
+            {...form.getInputProps("postType")}
+          >
+            <Group>
+              <Radio value="video" label="Video" />
+              <Radio value="link" label="Link" />
+            </Group>
+          </Radio.Group>
+          {form.values.postType === "video" && (
+            <>
+              <FileInput
+                label="Video"
+                accept="video/*"
+                icon={<IconUpload size={rem(14)} />}
+                onChange={(e) => {
+                  setFile(e);
+                }}
+              />
+              <Textarea
+                label="Caption"
+                name="caption"
+                {...form.getInputProps("caption")}
+              />
+            </>
+          )}
+          {form.values.postType === "link" && (
+            <TextInput
+              label="Link"
+              name="link"
+              {...form.getInputProps("link")}
+            />
+          )}
+          {form.values.postType === "video" && (
+            <MultiSelect
+              label="Tags"
+              name="tags"
+              data={sTags}
+              limit={3}
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Create #${query}`}
+              onCreate={(query) => {
+                const item = { value: query, label: `#${query}` };
+                setSTags((current) => [...current, item]);
+                return item;
+              }}
+              {...form.getInputProps("tags")}
+            />
+          )}
           <Group>
             <LinkButton link="/site" variant="default">
               Discard
             </LinkButton>
-            <Button type="submit" disabled={!form.isValid() || !file}>
+            <Button type="submit" disabled={!formValid()}>
               Post
             </Button>
           </Group>
