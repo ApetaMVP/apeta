@@ -61,7 +61,7 @@ export default function FeedbackCard(props: FeedbackCardProps) {
           />
         </Group>
 
-        <Text align="start" lineClamp={3} mb="md" mt="md">
+        <Text align="start" mb="md" mt="md">
           {feedback.content}
         </Text>
         <Grid grow={true}>
