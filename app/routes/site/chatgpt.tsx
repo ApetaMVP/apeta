@@ -12,7 +12,13 @@ const openai = new OpenAIApi(config);
 async function getChatGptResponse(prompt: string) {
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    messages: [{ role: "user", content: prompt }],
+    messages: [
+      {
+        role: "user",
+        content: "Please keep response to a few sentences in a casual tone.",
+      },
+      { role: "user", content: prompt },
+    ],
   });
   return response.data?.choices.map((c) => c.message?.content);
 }
