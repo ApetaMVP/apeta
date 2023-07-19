@@ -104,7 +104,6 @@ export default function FeedbackEntry(props: FeedbackEntryProps) {
         {fetcher.data?.choices.map((c: string, i: number) => {
           return (
             <Card
-              ref={ref}
               mb={20}
               key={`aichoice-${i}`}
               style={{ cursor: "pointer", border: "2px solid #d40c0b" }}
