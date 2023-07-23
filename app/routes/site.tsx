@@ -4,6 +4,7 @@ import { LoaderArgs } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import LeftNav from "~/components/LeftNav";
+import WelcomeModal from "~/components/popup/WelcomeModal";
 import TopHeader from "~/components/TopHeader";
 import { getUserId } from "~/server/cookie.server";
 import { getTags } from "~/server/tags.server";
@@ -47,6 +48,7 @@ export default function Site() {
         />
       }
     >
+      <WelcomeModal startOpened={!loggedIn} />
       <Box>
         <Outlet />
       </Box>
