@@ -38,7 +38,6 @@ model Post {
   feedbackCount Int
   tags          String[]
   postType      PostType   @default(VIDEO)
-  linkUrl       String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

@@ -10,14 +10,12 @@ export async function createPost({
   content,
   tags,
   postType,
-  link,
 }: {
   userId: string;
   mediaUrl: string;
   content: string;
   tags: string[];
   postType: "LINK" | "VIDEO";
-  link?: string;
 }) {
   const post = await prisma.post.create({
     data: {
@@ -32,7 +30,6 @@ export async function createPost({
       feedbackCount: 0,
       tags,
       postType,
-      ...(link ? { link } : {}),
     },
   });
   tags.forEach(async (t) => {

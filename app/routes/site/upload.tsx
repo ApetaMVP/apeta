@@ -64,12 +64,12 @@ export const action = async ({ request }: ActionArgs) => {
     .map((t) => (t.includes("#") ? t : `#${t}`));
 
   const parsedFormData = schema.parse({ ...rest, tags });
-  const { caption, postType } = parsedFormData;
+  const { caption, postType, link } = parsedFormData;
 
   if (postType === "LINK") {
     const post = await createPost({
       userId: userId!,
-      mediaUrl: filename as string,
+      mediaUrl: link as string,
       content: caption as string,
       tags,
       postType: "LINK",
