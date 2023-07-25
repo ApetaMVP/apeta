@@ -33,17 +33,15 @@ import { isUrl } from "~/utils/helpers";
 
 const schema = z
   .object({
-    caption: z.string().optional(),
-    tags: z.string().array().optional(),
+    caption: z.string().nonempty(),
+    tags: z.string().array().nonempty(),
     link: z.string().optional(),
-    postType: z.enum(["video", "link"]),
+    postType: z.enum(["VIDEO", "LINK"]),
   })
   .partial()
-  .refine(({ caption, tags, link, postType }) => {
-    console.log({ caption, tags, link, postType });
-    if (postType === "video") {
-      return caption && tags;
-    } else if (postType === "link") {
+  .refine(({ link, postType }) => {
+    console.log({ link, postType });
+    if (postType === "LINK") {
       return link && isUrl(link);
     }
     return false;
@@ -60,18 +58,34 @@ export const loader = async ({ request }: LoaderArgs) => {
 export const action = async ({ request }: ActionArgs) => {
   const userId = await getUserId(request);
   const formData = Object.fromEntries((await request.formData()).entries());
-  const { filename, caption, tags, text, link, postType } = formData;
+  const { filename, tags: tagsStr, ...rest } = formData;
+  const tags = (tagsStr as string)
+    .split(",")
+    .map((t) => (t.includes("#") ? t : `#${t}`));
 
-  const isValid = schema.parse(formData);
+  const parsedFormData = schema.parse({ ...rest, tags });
+  const { caption, postType } = parsedFormData;
+
+  if (postType === "LINK") {
+    const post = await createPost({
+      userId: userId!,
+      mediaUrl: filename as string,
+      content: caption as string,
+      tags,
+      postType: "LINK",
+    });
+    return redirect(`/site/post/${post.id}`);
+  }
 
   const submitted = new URL(request.url).searchParams.get("video");
   if (submitted) {
-    const post = await createPost(
-      userId!,
-      filename as string,
-      caption as string,
-      (tags as string).split(",").map((t) => (t.includes("#") ? t : `#${t}`)),
-    );
+    const post = await createPost({
+      userId: userId!,
+      mediaUrl: filename as string,
+      content: caption as string,
+      tags,
+      postType: "VIDEO",
+    });
     return redirect(`/site/post/${post.id}`);
   }
 
@@ -81,7 +95,7 @@ export const action = async ({ request }: ActionArgs) => {
     userId: userId!,
     filename: path,
     caption: caption as string,
-    tags: tags as string,
+    tags: tagsStr as string,
     uploadUrl,
   });
 };
@@ -133,12 +147,12 @@ export default function Upload() {
       tags: [],
       text: "",
       link: "",
-      postType: "video",
+      postType: "VIDEO",
     },
   });
 
   const formValid = () => {
-    if (form.values.postType === "video") {
+    if (form.values.postType === "VIDEO") {
       return form.isValid() && file;
     }
     return form.isValid();
@@ -165,12 +179,12 @@ export default function Upload() {
             {...form.getInputProps("postType")}
           >
             <Group>
-              <Radio value="video" label="Video" />
-              <Radio value="link" label="Link" />
+              <Radio value="VIDEO" label="Video" />
+              <Radio value="LINK" label="Link" />
             </Group>
           </Radio.Group>
-          {form.values.postType === "video" && (
-            <>
+          <>
+            {form.values.postType === "VIDEO" && (
               <FileInput
                 label="Video"
                 accept="video/*"
@@ -179,37 +193,37 @@ export default function Upload() {
                   setFile(e);
                 }}
               />
-              <Textarea
-                label="Caption"
-                name="caption"
-                {...form.getInputProps("caption")}
+            )}
+            {form.values.postType === "LINK" && (
+              <TextInput
+                label="Link"
+                name="link"
+                {...form.getInputProps("link")}
               />
-            </>
-          )}
-          {form.values.postType === "link" && (
-            <TextInput
-              label="Link"
-              name="link"
-              {...form.getInputProps("link")}
+            )}
+            <Textarea
+              label="Caption"
+              name="caption"
+              {...form.getInputProps("caption")}
             />
-          )}
-          {form.values.postType === "video" && (
-            <MultiSelect
-              label="Tags"
-              name="tags"
-              data={sTags}
-              limit={3}
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Create #${query}`}
-              onCreate={(query) => {
-                const item = { value: query, label: `#${query}` };
-                setSTags((current) => [...current, item]);
-                return item;
-              }}
-              {...form.getInputProps("tags")}
-            />
-          )}
+          </>
+
+          <MultiSelect
+            label="Tags"
+            name="tags"
+            data={sTags}
+            limit={3}
+            searchable
+            creatable
+            getCreateLabel={(query) => `+ Create #${query}`}
+            onCreate={(query) => {
+              const item = { value: query, label: `#${query}` };
+              setSTags((current) => [...current, item]);
+              return item;
+            }}
+            {...form.getInputProps("tags")}
+          />
+
           <Group>
             <LinkButton link="/site" variant="default">
               Discard
