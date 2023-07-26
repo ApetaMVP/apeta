@@ -1,5 +1,6 @@
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { useEffect, useRef } from "react";
+import { useIsMobile } from "~/hooks/screenSize";
 import { Feedback, FullPost } from "~/utils/types";
 import FeedbackCard from "./FeedbackCard";
 
@@ -22,12 +23,17 @@ export default function FeedbackCardList(props: FeedbackCardListProps) {
     onClickTimeline,
   } = props;
 
+  const isMobile = useIsMobile();
+
   const highlightedId = highlightedFeedback?.[0]?.id;
   return (
-    <ScrollArea h={500}>
+    <ScrollArea h={"100%"}>
       <Stack spacing={"md"}>
         {feedback.map((f) => (
-          <ScrollPositionWrapper key={f.id} scrolled={f.id === highlightedId}>
+          <ScrollPositionWrapper
+            key={f.id}
+            scrolled={!isMobile && f.id === highlightedId}
+          >
             <Box onClick={() => onClickTimeline([f])}>
               <FeedbackCard
                 customStyles={{ height: "100%" }}

@@ -198,6 +198,7 @@ export default function Post() {
             post={post}
             timestamp={timestamp}
             videoLoaded={videoLoaded}
+            setHighlightedFeedback={setHighlightedFeedback}
           />
         </Card>
       </Grid.Col>
@@ -255,6 +256,7 @@ function VideoSection({
   onTimestamp,
   onFrame,
   setProgress,
+  setHighlightedFeedback,
 }: {
   highlightedFeedback: Feedback[];
   post: FullPost;
@@ -265,6 +267,7 @@ function VideoSection({
   onTimestamp: (t: number) => void;
   onFrame: (f: string) => void;
   setProgress: (p: number) => void;
+  setHighlightedFeedback: (f: Feedback[]) => void;
 }) {
   const showMarkup =
     highlightedFeedback?.length > 0 &&
@@ -273,8 +276,9 @@ function VideoSection({
     <Card.Section>
       {showMarkup && (
         <img
-          style={{ width: "100%" }}
+          style={{ width: "100%", cursor: "pointer" }}
           src={highlightedFeedback[0]?.mediaUrl || ""}
+          onClick={() => setHighlightedFeedback([])}
         />
       )}
 
