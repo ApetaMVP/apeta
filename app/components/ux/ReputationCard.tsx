@@ -14,7 +14,7 @@ import {
     Grid
   } from "@mantine/core";
 
-export default function ExpertCard (){ 
+export default function ReputationCard (){ 
 
 return( 
     <Group>
