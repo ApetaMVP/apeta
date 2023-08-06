@@ -9,6 +9,7 @@ import { getUserId } from "~/server/cookie.server";
 import { getPosts, likePost } from "~/server/post.server";
 import sanitizedSearch from "~/utils/helpers";
 import { Post } from "~/utils/types";
+import ReputationCard from "~/components/ux/ReputationCard";
 
 const BATCH = 20;
 
@@ -126,6 +127,11 @@ export default function ForYou() {
           ))}
         
       </InfiniteScroll>
+      <Center>
+      <ReputationCard
+    
+      />
+      </Center>
       </Grid.Col>
       <Grid.Col>
       <TextInput
