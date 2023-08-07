@@ -52,13 +52,35 @@ return(
 
             </Group>
             <Group>
-                <Badge></Badge>
-                <Badge></Badge>
+                <Badge>Avg Response Time: 12 Hours</Badge>
+               
             </Group>
-            <Group position="right">
-                <Badge></Badge>
-                <Badge></Badge>
-                <Badge></Badge>
+            <CardSection>
+                <div>
+                    <br></br>
+                </div>
+            </CardSection>
+            <Group>
+            <Badge color="cyan">Expert Provided Response Time: 24 Hours</Badge>
+            </Group>
+            <CardSection>
+                <div>
+                    <br></br>
+                </div>
+            </CardSection>
+            <Group position="right" grow>
+                <Badge color="grape">Most Helpful Comments: 2</Badge>
+                <Badge color="green">Up Voted Video Comments: 10</Badge>
+                
+            </Group>
+            <CardSection>
+                <div>
+                    <br></br>
+                </div>
+            </CardSection>
+            <Group position="left" grow>
+            <Badge color="orange">Apeta Score: 18</Badge>
+
             </Group>
             <Group position="apart">
                 <Card.Section>
@@ -76,10 +98,11 @@ return(
 
             </Group>
             <Group position="apart" mt="md" mb="xs">
-            <Button>
+            <Button color="violet">
                 Book a lesson
             </Button>
             <Button
+            color="lime"
             component="a"
             target="_blank"
             rel="noopener noreferrer"
