@@ -9,7 +9,7 @@ import { getUserId } from "~/server/cookie.server";
 import { getPosts, likePost } from "~/server/post.server";
 import sanitizedSearch from "~/utils/helpers";
 import { Post } from "~/utils/types";
-import ReputationCard from "~/components/ux/ReputationCard";
+import ReputationSearchCard from "~/components/ux/ReputationSearchCard";
 
 const BATCH = 20;
 
@@ -128,7 +128,7 @@ export default function ForYou() {
         
       </InfiniteScroll>
       {/* <Center>
-      <ReputationCard
+      <ReputationSearchCard
     
       />
       </Center> */}

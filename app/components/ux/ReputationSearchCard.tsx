@@ -16,7 +16,7 @@ import {
     Grid
   } from "@mantine/core";
 
-export default function ReputationCard (){ 
+export default function ReputationSearchCard (){ 
 
 return( 
     <Group>
