@@ -40,7 +40,7 @@ return(
             <Card.Section w="50%">
             <Text
             m="sm"
-            lineClamp={9}
+            
             >
                 Hey! My name is Alex Ovchinnikov and this will be my second year coaching tennis at NHSTC. I am excited to 
                 keep growing the tennis community here and getting everyone on a court and playing.  I believe that tennis 
@@ -82,21 +82,7 @@ return(
             <Badge color="orange">Apeta Score: 18</Badge>
 
             </Group>
-            <Group position="apart">
-                <Card.Section>
-                <AspectRatio ratio={16 / 9}>
-                <video controls src=""/>
-                </AspectRatio>
-
-                </Card.Section>
-                <AspectRatio ratio={16 / 9}>
-                <video controls src=""/>
-                </AspectRatio>
-                <Card.Section>
-
-                </Card.Section>
-
-            </Group>
+            
             <Group position="apart" mt="md" mb="xs">
             <Button color="violet">
                 Book a lesson
