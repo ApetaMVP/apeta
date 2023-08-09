@@ -22,6 +22,7 @@ import { requireAuth } from "~/server/auth.server";
 import { getUserId } from "~/server/cookie.server";
 import { uploadHandler } from "~/server/s3.server";
 import { getUser, updateUserPfp } from "~/server/user.server";
+import ReputationCard from "../../components/ux/ReputationCard";
 
 export const loader = async ({ request }: LoaderArgs) => {
   if (!(await requireAuth(request)).userId) {
@@ -98,6 +99,11 @@ export default function Settings() {
           </Group>
         </Stack>
       </fetcher.Form>
+      <Group>
+        <ReputationCard/>
+      </Group>
     </Card>
+    
+    
   );
 }
