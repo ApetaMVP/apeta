@@ -100,7 +100,7 @@ export default function Settings() {
         </Stack>
       </fetcher.Form>
       <Group>
-        <ReputationCard/>
+        {/* <ReputationCard/> */}
       </Group>
     </Card>
     
