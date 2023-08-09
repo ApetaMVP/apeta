@@ -127,11 +127,11 @@ export default function ForYou() {
           ))}
         
       </InfiniteScroll>
-      <Center>
+      {/* <Center>
       <ReputationCard
     
       />
-      </Center>
+      </Center> */}
       </Grid.Col>
       <Grid.Col>
       <TextInput
