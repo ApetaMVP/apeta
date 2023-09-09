@@ -1,8 +1,12 @@
 export default function Privacy() {
   return (
-    <body>
+    <body
+      style={{
+        fontFamily: "sans-serif",
+      }}
+    >
       <h1>Privacy Policy</h1>
-      <p>Last Updated: 08/23/23</p>
+      <p>Last Updated: 09/08/23</p>
 
       <p>
         <strong>Apeta LLC</strong> ("we", "us", or "our") is committed to
@@ -117,7 +121,7 @@ export default function Privacy() {
       <h2>Contact Us</h2>
       <p>
         If you have any questions, concerns, or requests regarding this Privacy
-        Policy, please contact us at josh@apeta.dev.
+        Policy, please contact us at help@apeta.dev.
       </p>
     </body>
   );
