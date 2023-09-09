@@ -1,4 +1,4 @@
-export default function Support() {
+export default function SupportPage() {
   return (
     <body
       style={{
