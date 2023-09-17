@@ -1,14 +1,22 @@
+import { Post } from "@prisma/client";
 import { json } from "@remix-run/node";
 import { FypPost } from "~/utils/types";
 import { prisma } from "./prisma.server";
 import { getUserWithLikes } from "./user.server";
 
-export async function createPost(
-  userId: string,
-  mediaUrl: string,
-  content: string,
-  tags: string[],
-) {
+export async function createPost({
+  userId,
+  mediaUrl,
+  content,
+  tags,
+  postType,
+}: {
+  userId: string;
+  mediaUrl: string;
+  content: string;
+  tags: string[];
+  postType: "LINK" | "VIDEO";
+}) {
   const post = await prisma.post.create({
     data: {
       author: {
@@ -21,6 +29,7 @@ export async function createPost(
       likeCount: 0,
       feedbackCount: 0,
       tags,
+      postType,
     },
   });
   tags.forEach(async (t) => {

@@ -37,6 +37,7 @@ model Post {
   feedback      Feedback[]
   feedbackCount Int
   tags          String[]
+  postType      PostType   @default(VIDEO)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
@@ -133,4 +134,9 @@ model Tag {
 enum VoteDirection {
   UP
   DOWN
+}
+
+enum PostType {
+  VIDEO
+  LINK
 }
