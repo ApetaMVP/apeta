@@ -18,16 +18,14 @@ export default function WelcomeModal({
             </Stack>
 
             <Text size="lg" weight="bold" align="center">
-              ⭐Two ways to use it ⭐
+              The Apeta website is unsupported.{" "}
             </Text>
-            <Text weight="bold">
-              1. Post a video and ask for help on your sport
-            </Text>
-            <Text weight="bold">
-              2. You are an expert like{" "}
-              <a href="https://www.instagram.com/p/CkekluDA3nE/">this guy.</a>{" "}
-              Post content and answer questions to build and engage your
-              audience.
+
+            <Text size="lg" weight="bold" align="center">
+              To get the Apeta experience, please{" "}
+              <a href="https://apps.apple.com/app/6461686797">
+                download the Apeta mobile app.
+              </a>
             </Text>
           </Stack>
         </Box>
