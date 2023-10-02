@@ -63,7 +63,7 @@ export default function App() {
           <meta name="apple-itunes-app" content="app-id=6461686797"></meta>
           <Links />
         </head>
-        <body>
+        <body style={{ padding: 0, margin: 0 }}>
           <Outlet />
           <ScrollRestoration />
           <Scripts />

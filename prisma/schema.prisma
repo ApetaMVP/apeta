@@ -8,38 +8,57 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
-  email         String         @unique
-  password      String
-  name          String
-  username      String         @unique
-  avatarUrl     String
-  posts         Post[]
-  likes         Like[]
-  commentVotes  CommentVote[]
-  feedbackVotes FeedbackVote[]
-  comments      Comment[]
-  feedback      Feedback[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                   String            @id @default(auto()) @map("_id") @db.ObjectId
+  email                String            @unique
+  password             String
+  name                 String
+  username             String            @unique
+  avatarUrl            String
+  posts                Post[]
+  likes                Like[]
+  commentVotes         CommentVote[]
+  feedbackVotes        FeedbackVote[]
+  comments             Comment[]
+  feedback             Feedback[]
+  notifications        Notification[]
+  expertise            ExpertiseOnUser[]
+  apetaScore           Int?              @default(0)
+  apetaScorePercentile Int?              @default(0)
+
+  // these are notifications the user has triggered, i.e. by liking someone's comment or replying to a post
+  triggeredNotifications Notification[] @relation("TriggeredNotifications")
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  followers              Follow[]       @relation("Following") // When a user is followed, they are the "Following" in Follow  collection
+  following              Follow[]       @relation("Follower")
+  // When a user follows another they are the "Follower" in the Follow collection
+
+  blocking Block[] @relation("Blocker")
+  blocked  Block[] @relation("Blocked")
+
+  bio                String              @default("")
+  passwordResetToken PasswordResetToken?
 
   @@map("users")
 }
 
 model Post {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  author        User       @relation(fields: [authorId], references: [id])
-  authorId      String     @db.ObjectId
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  author        User           @relation(fields: [authorId], references: [id])
+  authorId      String         @db.ObjectId
   mediaUrl      String
+  thumbnailUrl  String?
   content       String
   likes         Like[]
   likeCount     Int
   feedback      Feedback[]
   feedbackCount Int
   tags          String[]
-  postType      PostType   @default(VIDEO)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  notifications Notification[] @relation("Notifications")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  Notification  Notification[]
+  reported      Boolean        @default(false)
 
   @@map("posts")
 }
@@ -56,10 +75,34 @@ model Like {
   @@map("likes")
 }
 
+model Follow {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  follower    User     @relation("Follower", fields: [followerId], references: [id])
+  followerId  String   @db.ObjectId
+  following   User     @relation("Following", fields: [followingId], references: [id])
+  followingId String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("follows")
+}
+
+model Block {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
+  blockerId String   @db.ObjectId
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id])
+  blockedId String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blocks")
+}
+
 model Feedback {
   id            String         @id @default(auto()) @map("_id") @db.ObjectId
   content       String
-  mediaUrl      String
+  mediaUrl      String?
   timestamp     Float
   postId        String         @db.ObjectId
   post          Post           @relation(fields: [postId], references: [id])
@@ -67,12 +110,14 @@ model Feedback {
   user          User           @relation(fields: [userId], references: [id])
   comments      Comment[]
   votes         FeedbackVote[]
+  notifications Notification[] @relation("Notifications")
   upvoteCount   Int            @default(0)
   downvoteCount Int            @default(0)
   voteSum       Int            @default(0)
   commentCount  Int
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  showTimestamp Boolean        @default(true)
 
   @@map("feedbacks")
 }
@@ -131,12 +176,78 @@ model Tag {
   @@map("tags")
 }
 
+model Notification {
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String           @db.ObjectId
+  user          User             @relation(fields: [userId], references: [id])
+  type          NotificationType
+  read          Boolean          @default(false)
+  postId        String?          @db.ObjectId
+  post          Post?            @relation("Notifications", fields: [postId], references: [id])
+  feedbackId    String?          @db.ObjectId
+  commentId     String?          @db.ObjectId
+  feedback      Feedback?        @relation("Notifications", fields: [feedbackId], references: [id])
+  relatedUserId String?          @db.ObjectId
+  relatedUser   User?            @relation("TriggeredNotifications", fields: [relatedUserId], references: [id])
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  Post          Post?            @relation(fields: [postId], references: [id])
+
+  @@map("notifications")
+}
+
+model Expertise {
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  name        String            @unique
+  displayText String
+  users       ExpertiseOnUser[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime?         @updatedAt
+
+  @@map("expertises")
+}
+
+model ExpertiseOnUser {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  expertise   Expertise @relation(fields: [expertiseId], references: [id])
+  expertiseId String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  @@map("expertiseOnUsers")
+}
+
+model PasswordResetToken {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  token  String @unique
+  tries  Int    @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  @@map("passwordRestTokens")
+}
+
 enum VoteDirection {
   UP
   DOWN
 }
 
-enum PostType {
-  VIDEO
-  LINK
+enum NotificationType {
+  FOLLOW
+  COMMENT_LIKE
+  COMMENT_DISLIKE
+  COMMENT_RESPOND
+  FEEDBACK_RESPOND
+  FEEDBACK_LIKE
+  FEEDBACK_DISLIKE
+  POST_LIKE
+  POST_RESPOND
+  NEW_POST
 }

@@ -1,10 +1,9 @@
-import TimeAgo from "react-timeago";
+import type TimeAgo from "react-timeago";
 
 export default function sanitizedSearch(term: string) {
   return term.replace("#", "");
 }
 
-// @ts-ignore
 export function formatTimeAgo(
   value: number,
   unit: TimeAgo.Unit,
@@ -26,4 +25,17 @@ export function isUrl(url: string) {
   } catch (e) {
     return false;
   }
+}
+
+export function formatPostContent(
+  content: string,
+  showFullDescription: boolean,
+) {
+  const isLongContent = content.length > 200;
+  const isTruncated = content.length > 200 && !showFullDescription;
+  const formattedContent = isTruncated
+    ? content.slice(0, 200) + "..."
+    : content;
+
+  return { formattedContent, isLongContent };
 }
