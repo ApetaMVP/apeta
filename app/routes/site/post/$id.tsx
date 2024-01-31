@@ -1,5 +1,6 @@
 import {
   AspectRatio,
+  Box,
   Card,
   Grid,
   Group,
@@ -104,6 +105,9 @@ export default function Post() {
   const [img, setImg] = useState("");
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(false);
+
+  // highlighted feedback is an array because multiple feedbacks can be on the same timestamp
+  // stacked together on the timeline
   const [highlightedFeedback, setHighlightedFeedback] = useState<Feedback[]>(
     [],
   );
@@ -184,18 +188,18 @@ export default function Post() {
             </Group>
           </Stack>
 
-          <Card.Section>
-            <MemoizedVideo
-              src={post.mediaUrl}
-              paused={paused}
-              timestamp={timestamp}
-              loaded={videoLoaded}
-              onLoaded={onLoaded}
-              onTimestamp={onTimestamp}
-              onFrame={onFrame}
-              onProgress={setProgress}
-            />
-          </Card.Section>
+          <VideoSection
+            onLoaded={onLoaded}
+            onTimestamp={onTimestamp}
+            onFrame={onFrame}
+            paused={paused}
+            setProgress={setProgress}
+            highlightedFeedback={highlightedFeedback}
+            post={post}
+            timestamp={timestamp}
+            videoLoaded={videoLoaded}
+            setHighlightedFeedback={setHighlightedFeedback}
+          />
         </Card>
       </Grid.Col>
       {/* comments/ new comment */}
@@ -231,6 +235,7 @@ export default function Post() {
                 feedback={sortedFeedback}
                 onTimestamp={onTimestamp}
                 loggedIn={loggedIn}
+                onClickTimeline={onClickTimeline}
                 highlightedFeedback={highlightedFeedback}
               />
             </div>
@@ -238,5 +243,57 @@ export default function Post() {
         </Stack>
       </Grid.Col>
     </Grid>
+  );
+}
+
+function VideoSection({
+  highlightedFeedback,
+  post,
+  paused,
+  timestamp,
+  videoLoaded,
+  onLoaded,
+  onTimestamp,
+  onFrame,
+  setProgress,
+  setHighlightedFeedback,
+}: {
+  highlightedFeedback: Feedback[];
+  post: FullPost;
+  paused: boolean;
+  timestamp: number;
+  videoLoaded: boolean;
+  onLoaded: (duration: number) => void;
+  onTimestamp: (t: number) => void;
+  onFrame: (f: string) => void;
+  setProgress: (p: number) => void;
+  setHighlightedFeedback: (f: Feedback[]) => void;
+}) {
+  const showMarkup =
+    highlightedFeedback?.length > 0 &&
+    highlightedFeedback[0].mediaUrl.length > 0;
+  return (
+    <Card.Section>
+      {showMarkup && (
+        <img
+          style={{ width: "100%", cursor: "pointer" }}
+          src={highlightedFeedback[0]?.mediaUrl || ""}
+          onClick={() => setHighlightedFeedback([])}
+        />
+      )}
+
+      <Box style={{ display: showMarkup ? "none" : "inherit" }}>
+        <MemoizedVideo
+          src={post.mediaUrl}
+          paused={paused}
+          timestamp={timestamp}
+          loaded={videoLoaded}
+          onLoaded={onLoaded}
+          onTimestamp={onTimestamp}
+          onFrame={onFrame}
+          onProgress={setProgress}
+        />
+      </Box>
+    </Card.Section>
   );
 }
